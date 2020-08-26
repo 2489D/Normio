@@ -14,7 +14,6 @@ type ClockServiceImpl(client: ClockService.ClockServiceClient) =
             let curr = stream.Current
             (curr.RoomId, curr.ClockMessage)
             |> printfn "Got a response %d %A" i
-
             i <- i + 1
         
 
@@ -23,17 +22,22 @@ let main argv =
     let channel = Channel("127.0.0.1:8080", ChannelCredentials.Insecure)
     let client = ClockServiceImpl(ClockService.ClockServiceClient(channel))
 
+    let args = argv |> List.ofSeq
+    let duration =
+        match args with
+        | "--duration" :: [seconds] -> float seconds
+        | _ -> 0.5
+    
+    let now = DateTimeOffset.Now
     let req () = RegisterReq(
                     RoomId = Guid.NewGuid().ToString(),
-                    ExamStart = Timestamp.FromDateTimeOffset DateTimeOffset.Now,
-                    ExamEnd = Timestamp.FromDateTimeOffset DateTimeOffset.Now
+                    ExamStart = Timestamp.FromDateTimeOffset now,
+                    ExamEnd = Timestamp.FromDateTimeOffset (now.AddSeconds(duration))
                 )
     
-    for _ in 1..10 do
+    for i in 1..10000 do
         client.Subscribe(req())
         
-    Console.ReadKey() |> ignore
-
     channel.ShutdownAsync().Wait()
     
     0 // return an integer exit code
