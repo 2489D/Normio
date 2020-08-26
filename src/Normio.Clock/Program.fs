@@ -14,8 +14,11 @@ type Notification = {
     StartExam: NotiTime
     EndExam: NotiTime
 }
+
+// TODO: polling -> interrupt mechanism
 let waitUntil time =
-    let isOver () = DateTimeOffset.Compare(DateTimeOffset.Now, time) >= 0
+    let isOver () =
+        DateTimeOffset.Compare(DateTimeOffset.Now, time) >= 0
     let rec loop () =
         if isOver ()
         then ()
@@ -89,13 +92,13 @@ type ClockServiceImpl() =
     override __.Subscribe(req: RegisterReq, responseStream: IServerStreamWriter<RegisterRes>, ctx: ServerCallContext): Task =
         fun () ->
             // spawner.Spawn req responseStream
-            req.ExamStart.ToDateTimeOffset() |> waitUntil
+            req.ExamStart.ToDateTimeOffset() |> waitUntil // TODO
             RegisterRes(RoomId = req.RoomId, ClockMessage = ClockMessage.StartExam)
             |> responseStream.WriteAsync
             |> Async.AwaitTask
             |> Async.RunSynchronously
 
-            req.ExamEnd.ToDateTimeOffset() |> waitUntil
+            req.ExamEnd.ToDateTimeOffset() |> waitUntil // TODO
             RegisterRes(RoomId = req.RoomId, ClockMessage = ClockMessage.EndExam)
             |> responseStream.WriteAsync
             |> Async.AwaitTask
@@ -113,9 +116,9 @@ let main argv =
     server.Services.Add(ClockService.BindService(service))
     server.Ports.Add(ServerPort(Address, Port, ServerCredentials.Insecure)) |> ignore
     server.Start()
-    
-    let _ = Console.ReadKey()
 
+    while true do
+        ()
 
     server.ShutdownAsync().Wait()
     0 // return an integer exit code
