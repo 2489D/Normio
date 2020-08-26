@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package normio_clock;
+option csharp_namespace = "Normio.Clock";
+
+import "google/protobuf/timestamp.proto";
+
+service ClockService {
+    rpc Subscribe(RegisterReq) returns (stream RegisterRes) {}
+}
+
+message RegisterReq {
+    string roomId = 1;
+    google.protobuf.Timestamp examStart = 2;
+    google.protobuf.Timestamp examEnd = 3;
+}
+
+enum ClockMessage {
+    StartExam = 0;
+    EndExam = 1;
+}
+
+message RegisterRes {
+    string roomId = 1;
+    ClockMessage clockMessage = 2;
+}
