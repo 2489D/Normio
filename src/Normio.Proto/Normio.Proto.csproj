@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Protobuf Include="Proto/Clock.proto" />
+    <Protobuf Include="Clock.proto" />
   </ItemGroup>
 
 </Project>

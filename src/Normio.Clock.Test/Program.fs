@@ -1,6 +1,4 @@
-﻿// Learn more about F# at http://fsharp.org
-
-open System
+﻿open System
 open Grpc.Core
 open Google.Protobuf.WellKnownTypes
 open Normio.Clock
@@ -12,9 +10,11 @@ type ClockServiceImpl(client: ClockService.ClockServiceClient) =
         let mutable i = 0
         while stream.MoveNext(Threading.CancellationToken.None) |> Async.AwaitTask |> Async.RunSynchronously do
             let curr = stream.Current
-            (curr.RoomId, curr.ClockMessage)
+            curr.ClockMessage
             |> printfn "Got a response %d %A" i
             i <- i + 1
+        
+        printfn "Subscription closed"
         
 
 [<EntryPoint>]
@@ -30,12 +30,11 @@ let main argv =
     
     let now = DateTimeOffset.Now
     let req () = RegisterReq(
-                    RoomId = Guid.NewGuid().ToString(),
                     ExamStart = Timestamp.FromDateTimeOffset now,
                     ExamEnd = Timestamp.FromDateTimeOffset (now.AddSeconds(duration))
                 )
     
-    for i in 1..10000 do
+    for i in 1..10 do
         client.Subscribe(req())
         
     channel.ShutdownAsync().Wait()

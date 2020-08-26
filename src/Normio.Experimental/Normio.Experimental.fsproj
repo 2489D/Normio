@@ -15,4 +15,8 @@
     <Compile Include="Program.fs" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Normio.Clock\Normio.Clock.fsproj" />
+  </ItemGroup>
+
 </Project>

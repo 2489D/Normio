@@ -93,13 +93,13 @@ type ClockServiceImpl() =
         fun () ->
             // spawner.Spawn req responseStream
             req.ExamStart.ToDateTimeOffset() |> waitUntil // TODO
-            RegisterRes(RoomId = req.RoomId, ClockMessage = ClockMessage.StartExam)
+            RegisterRes(ClockMessage = ClockMessage.StartExam)
             |> responseStream.WriteAsync
             |> Async.AwaitTask
             |> Async.RunSynchronously
 
             req.ExamEnd.ToDateTimeOffset() |> waitUntil // TODO
-            RegisterRes(RoomId = req.RoomId, ClockMessage = ClockMessage.EndExam)
+            RegisterRes(ClockMessage = ClockMessage.EndExam)
             |> responseStream.WriteAsync
             |> Async.AwaitTask
             |> Async.RunSynchronously

@@ -10,7 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Normio.Clock.Proto\Normio.Clock.Proto.csproj" />
+    <ProjectReference Include="..\Normio.Proto\Normio.Proto.csproj" />
   </ItemGroup>
 
   <ItemGroup>
