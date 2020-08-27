@@ -25,67 +25,6 @@ let waitUntil time =
         else loop ()
     loop ()
 
-// type Notifier (Id: uint32) =
-//     do printfn "New notifier spawned! %u" Id
-
-//     let doStartExam (req: RegisterReq) (stream: IServerStreamWriter<RegisterRes>) =
-//         RegisterRes(RoomId = req.RoomId, ClockMessage = ClockMessage.StartExam)
-//         |> stream.WriteAsync
-//         |> Async.AwaitTask
-//         |> Async.RunSynchronously
-//         printfn "[*] The message is successfully sent..."
-
-//     let doEndExam (req: RegisterReq) (stream: IServerStreamWriter<RegisterRes>) =
-//         RegisterRes(RoomId = req.RoomId, ClockMessage = ClockMessage.EndExam)
-//         |> stream.WriteAsync
-//         |> Async.AwaitTask
-//         |> Async.RunSynchronously
-//         printfn "[*] The message is successfully sent..."
-
-//     let agent = MailboxProcessor.Start (fun (inbox: MailboxProcessor<RegisterReq * IServerStreamWriter<RegisterRes>>) ->
-//         let rec loop () = async {
-//                 let! (req, stream) = inbox.Receive()
-                
-//                 req.ExamStart.ToDateTimeOffset() |> waitUntil
-//                 printfn "[*] Sending start message..."
-//                 doStartExam req stream
-
-//                 req.ExamEnd.ToDateTimeOffset() |> waitUntil 
-//                 printfn "[*] Sending end message..."
-//                 doEndExam req stream
-
-//                 return! loop ()
-//             }
-
-//         loop ()
-//     )
-
-//     member __.Work (req, stream) = agent.Post (req, stream)
-
-
-
-// type Spawner () =
-//     let spawnNotifier req stream i =
-//         let notifier = Notifier(i)
-//         notifier.Work (req, stream)
-
-//     let agent = MailboxProcessor.Start (fun inbox -> 
-//         let mutable i = 0u
-//         let rec loop () = async {
-//             // waits for a notification to arrive
-//             let! (req, stream) = inbox.Receive () 
-//             spawnNotifier req stream i
-//             i <- i + 1u
-//             return! loop ()
-//         }
-
-//         loop ()
-//     )
-
-//     member __.Spawn req stream =
-//         printfn "Spawning new notifier %A" req 
-//         agent.Post (req, stream)
-
 type ClockServiceImpl() =
     inherit ClockService.ClockServiceBase()
 
