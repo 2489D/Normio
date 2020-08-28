@@ -19,6 +19,7 @@ type ClockServiceImpl(client: ClockService.ClockServiceClient) =
 
 [<EntryPoint>]
 let main argv =
+    // TODO: ChannelCredentials configuration
     let channel = Channel("127.0.0.1:8080", ChannelCredentials.Insecure)
     let client = ClockServiceImpl(ClockService.ClockServiceClient(channel))
 
