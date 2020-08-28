@@ -11,10 +11,11 @@ type Room = {
 }
 
 module Room =
-    let init title = {
-        Id = RoomGuid.NewGuid ()
-        Title = title
-    }
+    let init title =
+        {
+            Id = RoomGuid.NewGuid ()
+            Title = title 
+        }
 
 module RoomTitle40 =
     let create title =

@@ -5,6 +5,7 @@ option csharp_namespace = "Normio.Protocol";
 
 service NormioService {
     rpc CreateRoom(CreateRoomReq) returns (CreateRoomRes) {}
+    rpc ExpireRoom(CreateRoomReq) returns (CreateRoomRes) {}
 }
 
 message CreateRoomReq {
