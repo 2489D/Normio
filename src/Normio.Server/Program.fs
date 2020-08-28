@@ -3,16 +3,34 @@ open System.Threading
 open System.Threading.Tasks
 open Grpc.Core
 open Google.Protobuf.WellKnownTypes
+open Normio.Domain
 open Normio.Protocol
 
 type NormioServiceImpl() =
     inherit NormioService.NormioServiceBase()
 
+    static let mutable roomPool: Room list = []
+
     override __.CreateRoom(req: CreateRoomReq, ctx: ServerCallContext): Task<CreateRoomRes> =
         printfn "[*] CreateRoom request received!"
         printfn "%A" req
-        let title = req.Title
-        let createdData = RoomData(RoomId = string (Guid.NewGuid()), Title = title)
+
+        // TODO
+        // Create Room on the Server
+
+        let title = match RoomTitle40.create req.Title with
+        | Some s -> s
+        | None -> RoomTitle40 "Untitled"
+
+        let newRoom = {
+            Id = Guid.NewGuid()
+            Title = title
+        }
+        roomPool <- newRoom :: roomPool
+
+        printfn "[*] Current Room Pool: %A" roomPool
+
+        let createdData = RoomData(RoomId = string newRoom.Id, Title = RoomTitle40.toString newRoom.Title)
         CreateRoomRes(RoomData = createdData, CreationStatus="OK")
         |> Task.FromResult
 
