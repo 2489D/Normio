@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="Program.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Google.protobuf" Version="3.13.0" />
+    <PackageReference Include="Grpc" Version="2.31.0" />
+    <PackageReference Include="Grpc.Core" Version="2.31.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Normio.Proto\Normio.Proto.csproj" />
+    <ProjectReference Include="..\Normio.Room\Normio.Room.fsproj" />
+  </ItemGroup>
+
+</Project>
