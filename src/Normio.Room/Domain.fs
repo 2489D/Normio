@@ -20,3 +20,5 @@ module RoomTitle40 =
     let create title =
         if title |> String.length > 40 then None
         else Some (RoomTitle40 title)
+
+    let toString (RoomTitle40 title) = title
