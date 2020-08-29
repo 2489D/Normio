@@ -18,7 +18,5 @@ message CreateRoomRes {
 }
 
 message RoomData {
-    string roomId = 1;
-    string title = 2;
+    string title = 1;
 }
-

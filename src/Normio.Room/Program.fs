@@ -14,12 +14,12 @@ let main argv =
     let exampleRoom = Room.init exampleRoomTitle
     let initState = RoomIsWaiting exampleRoom
     let secondState =
-        match evolve initState (StartExam exampleRoom.Id) with
-        | Ok (newState, events) -> newState
+        match evolve initState StartExam with
+        | Ok (newState, _) -> newState
         | Error _ -> failwith "EvolveError"  // FIXME
     let finalState =
-        match evolve secondState (EndExam exampleRoom.Id) with
-        | Ok (newState, events) -> newState
+        match evolve secondState EndExam with
+        | Ok (newState, _) -> newState
         | Error _ -> failwith "EvolveError"  // FIXME
     printfn "OK"
     0 // return an integer exit code
