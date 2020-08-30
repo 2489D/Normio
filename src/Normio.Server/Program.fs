@@ -47,11 +47,29 @@ type RoomPool() =
     let searchById roomId =
         roomPool
         |> List.tryFind (fun room -> room.Id = roomId)
+<<<<<<< Updated upstream
+=======
+<<<<<<< HEAD
+        |> function
+        | Some room -> Ok room
+        | None -> Error NoSuchId
+    let findFreeRoom () =
+        roomPool
+        |> List.tryFind (fun room -> room.IsAvailable)
+        |> function
+        | Some room -> Ok room
+        | None -> Error PoolIsFull
+=======
+>>>>>>> Stashed changes
         |> Option.fold (fun _ room -> Ok room) (Error NoSuchId)
     let findFreeRoom () =
         roomPool
         |> List.tryFind (fun room -> room.IsAvailable)
         |> Option.fold (fun _ room -> Ok room) (Error PoolIsFull)
+<<<<<<< Updated upstream
+=======
+>>>>>>> 0fbfc2dc847988b54cc0b85f74ffc778bc56debc
+>>>>>>> Stashed changes
 
     let acquireFreeRoom () =
         match findFreeRoom() with
@@ -132,6 +150,7 @@ type NormioServiceImpl(roomPools: RoomPool list) =
         let responseRoomId = req.Title |> RoomTitle40.create
                             |> Option.fold (fun _ s -> s) (RoomTitle40 "")
                             |> roomPool.CreateRoom
+        let responseRoomId
 
         printfn "%A" (req, responseRoomId)
 
