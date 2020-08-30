@@ -47,11 +47,15 @@ type RoomPool() =
     let searchById roomId =
         roomPool
         |> List.tryFind (fun room -> room.Id = roomId)
-        |> Option.fold (fun _ room -> Ok room) (Error NoSuchId)
+        |> function
+        | Some room -> Ok room
+        | None -> Error NoSuchId
     let findFreeRoom () =
         roomPool
         |> List.tryFind (fun room -> room.IsAvailable)
-        |> Option.fold (fun _ room -> Ok room) (Error PoolIsFull)
+        |> function
+        | Some room -> Ok room
+        | None -> Error PoolIsFull
 
     let acquireFreeRoom () =
         match findFreeRoom() with
