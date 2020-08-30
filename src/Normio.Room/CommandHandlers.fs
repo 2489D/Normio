@@ -1,24 +1,23 @@
 module Normio.CommandHandlers
 
-open Domain
 open Events
 open Commands
 open Errors
 open States
 
 let handleStartExam = function
-    | RoomIsWaiting room ->
-        [ExamStarted (room.Id)] |> Ok
+    | RoomIsWaiting _ ->
+        [ExamStarted] |> Ok
     | _ -> Error ExamAlreadyStarted
 
 let handleEndExam = function
-    | RoomOnExam room ->
-        [ExamEnded room.Id] |> Ok
+    | RoomOnExam _ ->
+        [ExamEnded] |> Ok
     | _ -> Error CannotEndExam
 
 let execute state = function
-    | StartExam _ -> handleStartExam state
-    | EndExam _ -> handleEndExam state
+    | StartExam -> handleStartExam state
+    | EndExam -> handleEndExam state
 
 let evolve state command =
     match execute state command with

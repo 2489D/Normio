@@ -1,8 +1,5 @@
 module Normio.Domain
 
-open System
-
-type RoomGuid = Guid
 type RoomTitle40 = RoomTitle40 of string
 
 type Room = {
