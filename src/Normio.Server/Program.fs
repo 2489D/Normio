@@ -18,7 +18,7 @@ type RoomWrapper() =
     }
     let roomAgent = MailboxProcessor.Start(fun inbox ->
         let rec loop oldState = async {
-            let newState = oldState
+            let newState = oldState // TODO
             return! loop newState
         }
         loop (initialState)
@@ -44,21 +44,29 @@ type RoomPool() =
     let [<Literal>] POOL_SIZE = 10 
     let roomPool = List.init POOL_SIZE (fun _ -> RoomWrapper())
 
-    let searchById roomId = roomPool |> List.tryFind (fun room -> room.Id = roomId)
-    let findFreeRoom () = roomPool |> List.tryFind (fun room -> room.IsAvailable)
-    let releaseById roomId =
-        match searchById roomId with
-        | Some room ->
-            room.Release()
-            Ok ()
-        | None -> Error NoSuchId
+    let searchById roomId =
+        roomPool
+        |> List.tryFind (fun room -> room.Id = roomId)
+        |> Option.fold (fun _ room -> Ok room) (Error NoSuchId)
+    let findFreeRoom () =
+        roomPool
+        |> List.tryFind (fun room -> room.IsAvailable)
+        |> Option.fold (fun _ room -> Ok room) (Error PoolIsFull)
+
     let acquireFreeRoom () =
         match findFreeRoom() with
-        | Some room ->
+        | Ok room ->
             room.Acquire()
             Ok room
-        | None ->
-            Error PoolIsFull
+        | Error e ->
+            Error e
+    let releaseById roomId =
+        match searchById roomId with
+        | Ok room ->
+            room.Release()
+            Ok ()
+        | Error e ->
+            Error e
 
     let dealWithMessage msg =
         match msg with
@@ -77,13 +85,13 @@ type RoomPool() =
             dealWithMessage msg |> ignore
             return! loop ()
         }
-            
+
         loop ()
     )
 
 
     member __.CreateRoom title = roomPoolAgent.PostAndReply (fun reply -> CreateRoom (title, reply))
-    member __.ExpireRoom roomId = roomPoolAgent.Post roomId
+    member __.ExpireRoom roomId = roomPoolAgent.PostAndReply (fun reply -> ExpireRoom (roomId, reply))
 
 // Message Processing Agent
 type NormioServiceImpl(roomPools: RoomPool list) =
