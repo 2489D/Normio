@@ -14,9 +14,9 @@ let main argv =
     let channel = Channel("127.0.0.1:8081", ChannelCredentials.Insecure)
     let client = NormioServiceImpl(NormioService.NormioServiceClient(channel))
 
-    let req = CreateRoomReq(Title = "hello")
-
-    client.CreateRoom(req)
+    for _ in 1..10 do
+        let req = CreateRoomReq(Title = "hello")
+        client.CreateRoom(req)
 
     channel.ShutdownAsync().Wait()
 
