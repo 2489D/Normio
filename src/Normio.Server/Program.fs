@@ -4,79 +4,89 @@ open System.Threading.Tasks
 open Grpc.Core
 open Google.Protobuf.WellKnownTypes
 open Normio.Domain
+open Normio.States
 open Normio.Protocol
 
+/// Id is for the wrapper
+/// RoomData is contained by the Room type (see Normio.Domain)
 type RoomWrapper() =
     let mutable roomId = Guid.NewGuid()
     let mutable running = false
+
+    let initialState = RoomIsWaiting {
+        Title = RoomTitle40 "untitled"
+    }
     let roomAgent = MailboxProcessor.Start(fun inbox ->
         let rec loop oldState = async {
-            let newState = //TODO
+            let newState = oldState
             return! loop newState
         }
-        loop initialState
+        loop (initialState)
     )
 
     member __.Id = roomId
     member __.IsAvailable = not running
-    member __.Acquire = running <- true
-    member __.Release =
+    member __.Acquire() = running <- true
+    member __.Release() =
         // TODO: Do release jobs
         roomId <- Guid.NewGuid() // Security Reasons
         running <- false
-
-type UserClientRequest =
-    | CreateRoom of RoomTitle40 * AsyncReplyChannel<RoomId>
-    | ExpireRoom of RoomId
 
 type RoomPoolError =
     | PoolIsFull
     | NoSuchId
 
-type RoomPool() =
-    let [<Literal>] POOL_SIZE = 100
-    let roomPool = List.init 100 (fun _ -> RoomWrapper())
+type UserClientRequest =
+    | CreateRoom of RoomTitle40 * AsyncReplyChannel<Result<Guid, RoomPoolError>>
+    | ExpireRoom of Guid * AsyncReplyChannel<Result<unit, RoomPoolError>>
 
-    let dealWithMessage msg: Result<unit, ServerError> =
+type RoomPool() =
+    let [<Literal>] POOL_SIZE = 10 
+    let roomPool = List.init POOL_SIZE (fun _ -> RoomWrapper())
+
+    let searchById roomId = roomPool |> List.tryFind (fun room -> room.Id = roomId)
+    let findFreeRoom () = roomPool |> List.tryFind (fun room -> room.IsAvailable)
+    let releaseById roomId =
+        match searchById roomId with
+        | Some room ->
+            room.Release()
+            Ok ()
+        | None -> Error NoSuchId
+    let acquireFreeRoom () =
+        match findFreeRoom() with
+        | Some room ->
+            room.Acquire()
+            Ok room
+        | None ->
+            Error PoolIsFull
+
+    let dealWithMessage msg =
         match msg with
-        | CreateRoom reply -> // Acquire a room's id
-            match findFreeRoom with
-            | Some room ->
-                reply.Reply(room.Id)
-                Ok ()
-            | None ->
-                Error PoolIsFull
-        | ExpireRoom roomId ->
-            match searchById roomId with
-            | Some room ->
-                room.Release()
-                Ok ()
-            | _ ->
-                Error NoSuchId
+        | CreateRoom (title, reply) -> // Acquire a room's id
+            match acquireFreeRoom() with
+            | Ok room -> reply.Reply(Ok room.Id) // TODO: title?
+            | Error e -> reply.Reply(Error e)
+        | ExpireRoom (roomId, reply) ->
+            match releaseById roomId with
+            | Ok _ -> reply.Reply(Ok ())
+            | Error e -> reply.Reply(Error e)
 
     let roomPoolAgent = MailboxProcessor.Start(fun inbox ->
         let rec loop () = async {
             let! msg = inbox.Receive()
-            let result = dealWithMessage msg
-            match result with
-            | Ok -> ()
-            | Error e ->
-                // TODO: Recover errors
-                ()
+            dealWithMessage msg |> ignore
             return! loop ()
         }
             
         loop ()
     )
 
-    let searchById roomId = roomPool |> List.tryFind (fun room -> room.Id = roomId)
-    let findFreeRoom = roomPool |> List.tryFind (fun room -> room.IsAvailable)
 
-    member __.CreateRoom = roomPool.PostAndReply (fun reply -> CreateRoom reply)
-    member __.ExpireRoom roomId = roomPool.Post roomId
+    member __.CreateRoom title = roomPoolAgent.PostAndReply (fun reply -> CreateRoom (title, reply))
+    member __.ExpireRoom roomId = roomPoolAgent.Post roomId
 
 // Message Processing Agent
-type NormioServiceImpl() =
+type NormioServiceImpl(roomPools: RoomPool list) =
     inherit NormioService.NormioServiceBase()
 
 // replaced by upper codes
@@ -107,23 +117,30 @@ type NormioServiceImpl() =
     // Data Cleansing
     // Natives types -> Wrapped types
     override __.CreateRoom(req: CreateRoomReq, ctx: ServerCallContext): Task<CreateRoomRes> =
-        printfn "[*] Request received!"
-        printfn "%A" (req, CreateRoom)
+        printfn "[*] CreateRoom Request received!"
 
         // TODO: Call RoomPool
-        // roomPoolAgent.Post (req, CreateRoom)
+        let roomPool = roomPools |> List.head
+        let responseRoomId = req.Title |> RoomTitle40.create
+                            |> Option.fold (fun _ s -> s) (RoomTitle40 "")
+                            |> roomPool.CreateRoom
 
-        let createdData = RoomData(Title = req.Title)
+        printfn "%A" (req, responseRoomId)
+
+        let createdData = RoomData(RoomId = responseRoomId.ToString(), Title = req.Title)
         CreateRoomRes(RoomData = createdData, CreationStatus = "OK")
         |> Task.FromResult
 
+// Server Configuration
 let [<Literal>] Address = "127.0.0.1"
 let [<Literal>] Port = 8081
+// TODO: ServerCredentials setup
 
 [<EntryPoint>]
 let main argv =
     let server = Server()
-    let service = NormioServiceImpl()
+    let roomPools = [RoomPool()]
+    let service = NormioServiceImpl(roomPools)
     server.Services.Add(NormioService.BindService(service))
     server.Ports.Add(ServerPort(Address, Port, ServerCredentials.Insecure)) |> ignore
     server.Start()
