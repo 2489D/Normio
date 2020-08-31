@@ -15,13 +15,21 @@ let handleEndExam = function
         [ExamEnded] |> Ok
     | _ -> Error CannotEndExam
 
+let handleCloseRoom = function
+    | RoomIsWaiting _ 
+    | RoomExamFinished _ ->
+        [RoomClosed] |> Ok
+    | _ -> Error CannotCloseRoom
+
 let execute state = function
-    | StartExam -> handleStartExam state
-    | EndExam -> handleEndExam state
+    | StartExam _ -> handleStartExam state
+    | EndExam _ -> handleEndExam state
+    | CloseRoom _ -> handleCloseRoom state
 
 let evolve state command =
     match execute state command with
-    | Ok events ->
-        let newState = List.fold apply state events
-        (newState, events) |> Ok
+    | Ok newEvents ->
+        let newState = List.fold apply state newEvents 
+        (newState, newEvents) |> Ok
     | Error err -> Error err
+

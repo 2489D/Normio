@@ -1,5 +1,9 @@
 module Normio.Commands
 
+open System
+
 type Command =
-    | StartExam
-    | EndExam
+    | StartExam of Guid
+    | EndExam of Guid
+    | CloseRoom of Guid
+

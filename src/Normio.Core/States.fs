@@ -11,12 +11,9 @@ type State =
 
 let apply state event =
     match state, event with
-    // Events during RoomIsWaiting
     | RoomIsWaiting room, ExamStarted ->
         RoomOnExam room
-
-    // Events during RoomOnExam
     | RoomOnExam room, ExamEnded ->
         RoomExamFinished room
-
     | _ -> state
+

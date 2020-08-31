@@ -1,20 +1,23 @@
 module Normio.Domain
 
+open System
+
 type RoomTitle40 = RoomTitle40 of string
 
 type Room = {
-    Title: RoomTitle40
+    Title: RoomTitle40 option
 }
 
 module Room =
-    let init title =
+    let init =
         {
-            Title = title 
+            Title = None
         }
 
 module RoomTitle40 =
-    let create title =
-        if title |> String.length > 40 then None
-        else Some (RoomTitle40 title)
+    let tryOfString s =
+        if s |> String.length > 40
+        then Some (RoomTitle40 s)
+        else None
 
     let toString (RoomTitle40 title) = title
