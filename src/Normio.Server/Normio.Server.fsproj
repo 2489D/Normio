@@ -16,8 +16,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Normio.Core\Normio.Core.fsproj" />
     <ProjectReference Include="..\Normio.Proto\Normio.Proto.csproj" />
-    <ProjectReference Include="..\Normio.Room\Normio.Room.fsproj" />
   </ItemGroup>
 
 </Project>
