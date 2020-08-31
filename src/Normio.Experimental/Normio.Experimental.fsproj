@@ -10,7 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Normio.Room\Normio.Core.fsproj" />
+    <ProjectReference Include="..\Normio.Core\Normio.Core.fsproj" />
   </ItemGroup>
 
 </Project>
