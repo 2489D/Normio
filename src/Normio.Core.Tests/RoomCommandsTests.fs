@@ -9,7 +9,6 @@ open Normio.Events
 open Normio.Commands
 open Normio.CommandHandlers
 open System
-open System.Collections.Generic
 open Normio.Core.TestHelpers
 
 let guid = Guid.NewGuid()
