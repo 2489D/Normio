@@ -1,4 +1,6 @@
 .ionide
+.vscode
+.metals
 bin
 obj
 

@@ -1,7 +1,10 @@
 module Normio.Events
 
-type Event =
-    | ExamStarted
-    | ExamEnded
-    | RoomClosed
+open System
+open Domain
 
+type Event =
+    | RoomOpened of Guid * RoomTitle40
+    | ExamStarted of Guid
+    | ExamEnded of Guid
+    | RoomClosed of Guid

@@ -5,12 +5,14 @@ open System
 type RoomTitle40 = RoomTitle40 of string
 
 type Room = {
+    Id: Guid
     Title: RoomTitle40 option
 }
 
 module Room =
     let init =
         {
+            Id = Guid.NewGuid()
             Title = None
         }
 
