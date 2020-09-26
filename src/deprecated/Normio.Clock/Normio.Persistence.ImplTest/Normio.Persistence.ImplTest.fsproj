@@ -8,4 +8,8 @@
     <Compile Include="Library.fs" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="neventstore" Version="7.0.0" />
+  </ItemGroup>
+
 </Project>
