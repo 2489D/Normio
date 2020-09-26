@@ -4,7 +4,14 @@ open System
 open Domain
 
 type Event =
-    | RoomOpened of Guid * RoomTitle40
+    | ExamOpened of Guid * string
     | ExamStarted of Guid
     | ExamEnded of Guid
-    | RoomClosed of Guid
+    | ExamClosed of Guid
+    | StudentEntered of Guid * Student
+    | StudentLeft of Guid * Student
+    | HostEntered of Guid * Host
+    | HostLeft of Guid * Host
+    | QuestionCreated of Guid * File
+    | QuestionDeleted of Guid * File
+    | TitleChanged of Guid * string

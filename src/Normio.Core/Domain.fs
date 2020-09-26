@@ -2,24 +2,32 @@ module Normio.Domain
 
 open System
 
-type RoomTitle40 = RoomTitle40 of string
-
-type Room = {
+type Student = {
     Id: Guid
-    Title: RoomTitle40 option
+    Name: string
 }
 
-module Room =
-    let init =
-        {
-            Id = Guid.NewGuid()
-            Title = None
-        }
+type Host = {
+    Id: Guid
+    Name: string
+}
 
-module RoomTitle40 =
-    let tryOfString s =
-        if s |> String.length > 40
-        then Some (RoomTitle40 s)
-        else None
+type File = {
+    Id: Guid
+    Name: string
+}
 
-    let toString (RoomTitle40 title) = title
+type Submission = {
+    Id: Guid
+    Exam: Guid
+    Student: Student
+    File: File
+}
+
+type Exam = {
+    Id: Guid
+    Title: string
+    Questions: File list
+    Students: Map<Guid, Student>
+    Hosts: Map<Guid, Host>
+}
