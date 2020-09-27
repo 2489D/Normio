@@ -15,4 +15,3 @@ type Command =
     | CreateQuestion of Guid * File
     | DeleteQuestion of Guid * File
     | ChangeTitle of Guid * string
-
