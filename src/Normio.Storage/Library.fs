@@ -6,12 +6,10 @@ open Normio.States
 open Normio.Events
 
 type EventStore = {
-    GetState: Guid -> Async<State>
-    SaveEvents: Guid -> Event list -> Async<unit>
+    GetState: Guid -> Async<Result<State, string>>
+    SaveEvents: Event list -> Async<Result<unit, string>>
 }
-
-Map<Guid, Event list>
-
+(*
 let getExamIdFromState = function
     | ExamIsClose id -> id
     | ExamIsWaiting exam -> Some exam.Id
@@ -49,3 +47,4 @@ module EventStore =
         | Ok es ->
             List.fold apply (ExamIsClose None) es |> Ok
         | Error msg -> Error msg
+*)
