@@ -5,7 +5,12 @@ open Normio.Domain
 open Normio.States
 open Normio.Events
 
-type EventStore = Map<Guid, Event list>
+type EventStore = {
+    GetState: Guid -> Async<State>
+    SaveEvents: Guid -> Event list -> Async<unit>
+}
+
+Map<Guid, Event list>
 
 let getExamIdFromState = function
     | ExamIsClose id -> id
