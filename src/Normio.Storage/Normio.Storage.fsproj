@@ -1,16 +1,12 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Include="Library.fs" />
-    <Compile Include="Impl.fs" />
-  </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\Normio.Core\Normio.Core.fsproj" />
   </ItemGroup>
-
+  <ItemGroup>
+    <Compile Include="EventStore.fs" />
+    <Compile Include="InMemory.fs" />
+  </ItemGroup>
 </Project>

@@ -1,6 +1,7 @@
 module Normio.Storage.InMemory
 
 open System
+open Normio.Storage.EventStore
 open Normio.States
 open Normio.Events
 

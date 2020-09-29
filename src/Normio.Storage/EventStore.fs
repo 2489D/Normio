@@ -1,7 +1,6 @@
-﻿module Normio.Storage
+﻿module Normio.Storage.EventStore
 
 open System
-open Normio.Domain
 open Normio.States
 open Normio.Events
 
