@@ -6,6 +6,8 @@
     <ProjectReference Include="..\Normio.Core\Normio.Core.fsproj" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ReadModels.fs" />
+    <Compile Include="Projections.fs" />
     <Compile Include="EventStore.fs" />
     <Compile Include="InMemory.fs" />
   </ItemGroup>

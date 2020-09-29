@@ -53,7 +53,7 @@ let getState examId =
     | Error msg -> Error msg
     |> async.Return
 
-let eventStore = {
+let eventStoreInMemory = {
     GetState = getState
     SaveEvents = saveEvents
 }
