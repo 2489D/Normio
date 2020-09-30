@@ -1,3 +1,5 @@
+module Normio.Storage.Exams
+
 open System
 open System.Collections.Generic
 

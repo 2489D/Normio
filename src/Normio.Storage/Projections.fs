@@ -50,4 +50,3 @@ let projectReadModel actions = function
     [actions.Exam.DeleteQuestion examId file] |> Async.Parallel
 | TitleChanged (examId, title) ->
     [actions.Exam.ChangeTitle examId title] |> Async.Parallel
-| _ -> failwith "ToDo"
