@@ -5,6 +5,12 @@ open Normio.Domain
 open Normio.Projections
 open Normio.ReadModels
 
+(*
+Don't Panic!
+The codes below executed after all the validations in the Domain Layer!
+So, don't bother yourself about the error handling here
+*)
+
 let private exams =
     let dict = new Dictionary<Guid, ExamReadModel>()
     dict
@@ -51,6 +57,36 @@ let private removeStudent examId (studnent: Student) =
         exams.[examId] <- { exam with Students = exam.Students |> Map.remove studnent.Id }
     }
 
+let private addHost examId (host: Host) =
+    async {
+        let exam = exams.[examId]
+        exams.[examId] <- { exam with Hosts = exam.Hosts |> Map.add host.Id host }
+    }
+
+let private removeHost examId (host: Student) =
+    async {
+        let exam = exams.[examId]
+        exams.[examId] <- { exam with Hosts = exam.Hosts |> Map.remove host.Id }
+    }
+
+let private createQuestion examId (file: File) =
+    async {
+        let exam = exams.[examId]
+        exams.[examId] <- { exam with Questions = file :: exam.Questions }
+    }
+
+let private deleteQuestion examId (file: File) =
+    async {
+        let exam = exams.[examId]
+        exams.[examId] <- { exam with Questions = exam.Questions |> List.filter (fun f -> f.Id <> file.Id)}
+    }
+
+let private changeTitle examId title =
+    async {
+        let exam = exams.[examId]
+        exams.[examId] <- { exam with Title = title }
+    }
+
 let examActions = {
     OpenExam = openExam
     StartExam = startExam
@@ -58,9 +94,9 @@ let examActions = {
     CloseExam = closeExam
     AddStudent = addStudnet
     RemoveStudent = removeStudent
-    AddHost = 
-    RemoveHost = 
-    CreateQuestion = 
-    DeleteQuestion = 
-    ChangeTitle = 
+    AddHost = addHost
+    RemoveHost = removeHost
+    CreateQuestion = createQuestion
+    DeleteQuestion = deleteQuestion
+    ChangeTitle = changeTitle
 }
