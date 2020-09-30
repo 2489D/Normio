@@ -14,8 +14,12 @@ So, don't bother yourself about the error handling here
 *)
 
 let private exams =
-    let dict = new Dictionary<Guid, ExamReadModel>()
+    let dict = Dictionary<Guid, ExamReadModel>()
     dict
+
+let getExam examId =
+    exams.[examId]
+    |> async.Return
 
 let private openExam examId title =
     async {
@@ -53,10 +57,10 @@ let private addStudent examId (student: Student) =
         exams.[examId] <- { exam with Students = exam.Students |> Map.add student.Id student }
     }
 
-let private removeStudent examId (studnent: Student) =
+let private removeStudent examId (student: Student) =
     async {
         let exam = exams.[examId]
-        exams.[examId] <- { exam with Students = exam.Students |> Map.remove studnent.Id }
+        exams.[examId] <- { exam with Students = exam.Students |> Map.remove student.Id }
     }
 
 let private addHost examId (host: Host) =

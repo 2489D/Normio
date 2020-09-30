@@ -1,9 +1,11 @@
 module Normio.Storage.InMemory
 
 open System
-open Normio.Storage.EventStore
 open Normio.States
 open Normio.Events
+open Normio.Queries
+open Normio.Storage.EventStore
+open Normio.Storage.Exams
 
 let getExamIdFromEvent = function
     | ExamOpened (id, _) -> id
@@ -56,4 +58,8 @@ let getState examId =
 let eventStoreInMemory = {
     GetState = getState
     SaveEvents = saveEvents
+}
+
+let examQueryInMemory = {
+    GetExam = getExam
 }
