@@ -8,6 +8,7 @@
   <ItemGroup>
     <Compile Include="ReadModels.fs" />
     <Compile Include="Projections.fs" />
+    <Compile Include="Queries.fs" />
     <Compile Include="EventStore.fs" />
     <Compile Include="InMemory.fs" />
   </ItemGroup>
