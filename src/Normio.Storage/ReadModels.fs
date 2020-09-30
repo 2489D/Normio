@@ -3,17 +3,22 @@ module Normio.ReadModels
 open System
 open Normio.Domain
 
+(*
+    Suppose all users need full date of the exam
+    for simplicity
+*)
+
 type ExamStatus =
-    | BeforeExam of Guid
-    | DuringExam of Guid
-    | AfterExam of Guid
+    | BeforeExam
+    | DuringExam
+    | AfterExam
 
 type ExamReadModel = {
     Id: Guid
     Status: ExamStatus
     Title: string
-    Hosts: Host list
-    Students: Student list
+    Hosts: Map<Guid, Host>
+    Students: Map<Guid, Student>
     Questions: File list
 }
 

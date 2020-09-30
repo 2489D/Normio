@@ -11,5 +11,7 @@
     <Compile Include="Queries.fs" />
     <Compile Include="EventStore.fs" />
     <Compile Include="InMemory.fs" />
+    <Compile Include="Exams.fs" />
+    <Compile Include="Exam.fs" />
   </ItemGroup>
 </Project>
