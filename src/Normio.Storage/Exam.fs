@@ -63,7 +63,7 @@ let private addHost examId (host: Host) =
         exams.[examId] <- { exam with Hosts = exam.Hosts |> Map.add host.Id host }
     }
 
-let private removeHost examId (host: Student) =
+let private removeHost examId (host: Host) =
     async {
         let exam = exams.[examId]
         exams.[examId] <- { exam with Hosts = exam.Hosts |> Map.remove host.Id }
@@ -92,7 +92,7 @@ let examActions = {
     StartExam = startExam
     EndExam = endExam
     CloseExam = closeExam
-    AddStudent = addStudnet
+    AddStudent = addStudent
     RemoveStudent = removeStudent
     AddHost = addHost
     RemoveHost = removeHost
