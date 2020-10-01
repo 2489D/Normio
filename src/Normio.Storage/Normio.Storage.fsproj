@@ -10,7 +10,7 @@
     <Compile Include="Projections.fs" />
     <Compile Include="Queries.fs" />
     <Compile Include="EventStore.fs" />
-    <Compile Include="Exams.fs" />
     <Compile Include="InMemory.fs" />
+    <Compile Include="Exams.fs" />
   </ItemGroup>
 </Project>
