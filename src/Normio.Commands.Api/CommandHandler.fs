@@ -28,6 +28,10 @@ let getExamIdFromCommand = function
 | DeleteQuestion (examId, _) -> examId
 | ChangeTitle (examId, _) -> examId
 
+/// 1. Validate the input data
+/// 2. Get the corresponding state from the input data
+/// 3. Evolve with the command from the state
+/// 4. Get the result
 let handleCommand eventStore commandData commander = async {
     let! validatedData = commander.Validate commandData
     match validatedData with
@@ -35,8 +39,8 @@ let handleCommand eventStore commandData commander = async {
         let command = commander.ToCommand validatedCommandData
         let! state = eventStore.GetState (getExamIdFromCommand command)
         match state with
-        | Ok validState ->
-            match evolve validState command with
+        | Ok state' ->
+            match evolve state' command with
             | Ok (newState, events) ->
                 return (newState, events) |> Ok
             | Error msg -> return msg |> Error
