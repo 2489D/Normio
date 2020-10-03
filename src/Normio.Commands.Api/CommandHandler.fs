@@ -4,12 +4,6 @@ open Normio.CommandHandlers
 open Normio.Commands
 open Normio.Storage.EventStore
 
-type ErrorResponse = {
-    Message: string
-}
-
-let err msg = { Message = msg }
-
 let getExamIdFromCommand = function
 | OpenExam (examId, _) -> examId
 | StartExam examId -> examId
