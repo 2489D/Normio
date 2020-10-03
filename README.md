@@ -36,12 +36,6 @@ Function layer
 
 # Server Architecture
 
-## Initial Setup
-Server initially creates `POOL_SIZE=100` rooms wrapped by `MailboxProcessor` built in `F#`.
-
-## RoomPool
-The server maintains `RoomPool` which is an instance passing messages down to `Room` instances.
-`RoomPool` maintains a list of `RoomId`s to identify `Room`s.
 
 ## Message Passing
 
