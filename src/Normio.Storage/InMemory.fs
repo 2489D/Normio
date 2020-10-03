@@ -25,35 +25,26 @@ let mutable eventStoreMap: Map<Guid, Event list> = Map.empty
 let private saveEventInner store event =
     let examId = getExamIdFromEvent event
     match Map.tryFind examId store with
-    | Some es -> Map.add examId (event :: es) store |> Ok
-    | None -> FailToFindExam examId |> Error
+    | Some es -> Map.add examId (event :: es) store
+    | None -> Map.add examId [event] store
 
 let private saveEventsInner store events =
-    List.fold (fun res evt ->
-        match res with
-        | Ok s -> saveEventInner s evt
-        | Error _ -> res
-    ) (Ok store) events
+    events |> List.fold saveEventInner store
 
 let private getEvents examId =
     match Map.tryFind examId eventStoreMap with
-    | Some es -> Ok es
-    | None -> FailToFindExam examId |> Error
+    | Some es -> es
+    | None -> []
 
-let saveEvents events =
-    match saveEventsInner eventStoreMap events with
-    | Ok store ->
-        eventStoreMap <- store
-        Ok ()
-    | Error err -> Error err
-    |> async.Return
+let saveEvents events = async {
+    let newStore =  saveEventsInner eventStoreMap events
+    eventStoreMap <- newStore
+}
 
-let getState examId =
-    match getEvents examId with
-    | Ok es ->
-        List.fold apply (ExamIsClose None) es |> Ok
-    | Error msg -> Error msg
-    |> async.Return
+let getState examId = async {
+    let events = getEvents examId
+    return List.fold apply (ExamIsClose None) events
+}
 
 let eventStoreInMemory = {
     GetState = getState

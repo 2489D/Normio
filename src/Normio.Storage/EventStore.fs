@@ -13,6 +13,6 @@ module EventStoreError =
 
 type Err = EventStoreError
 type EventStore = {
-    GetState: Guid -> Async<Result<State, Err>>
-    SaveEvents: Event list -> Async<Result<unit, Err>>
+    GetState: Guid -> Async<State>
+    SaveEvents: Event list -> Async<unit>
 }
