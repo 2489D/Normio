@@ -5,7 +5,7 @@ open Normio.CommandHandlers
 open Normio.Commands.Api.OpenExam
 open Normio.Queries
 
-let handleCommandRequest validationQueries eventStore
+let handleCommandRequest queries eventStore
     = function
     | OpenExamRequest title ->
         openExamCommander
