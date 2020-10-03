@@ -1,11 +1,22 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="Library.fs" />
+    <Compile Include="CommandHandler.fs" />
+    <Compile Include="OpenExam.fs" />
+    <Compile Include="CommandApi.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Normio.Core\Normio.Core.fsproj" />
+    <ProjectReference Include="..\Normio.Storage\Normio.Storage.fsproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FSharp.Data" Version="3.3.3" />
   </ItemGroup>
 
 </Project>
