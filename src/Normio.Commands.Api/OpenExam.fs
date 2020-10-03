@@ -33,16 +33,15 @@ let (|OpenExamRequest|_|) payload =
         | _ -> None
 
 let validateOpenExam exam = async {
-    let tooLong = exam.Title.Length > 40
-    if tooLong
-    then return Choice2Of2 "The length of exam title should be less than 40"
+    if exam.Title.Length > 40
+    then return Choice2Of2 "The title of an exam should be less than 40"
     else return Choice1Of2 exam
 }
 
-let openExamtoCommand exam =
+let openExamToCommand exam =
     OpenExam (exam.Id, exam.Title)
 
 let openExamCommander = {
     Validate = validateOpenExam
-    ToCommand = openExamtoCommand
+    ToCommand = openExamToCommand
 }
