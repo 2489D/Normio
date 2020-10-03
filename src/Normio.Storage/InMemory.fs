@@ -1,8 +1,8 @@
 module Normio.Storage.InMemory
 
 open System
-open Normio.States
 open Normio.Events
+open Normio.States
 open Normio.Queries
 open Normio.Storage.EventStore
 open Normio.Storage.Exams
@@ -41,16 +41,16 @@ let saveEvents events = async {
     eventStoreMap <- newStore
 }
 
-let getState examId = async {
-    let events = getEvents examId
-    return List.fold apply (ExamIsClose None) events
-}
+let getState examId =
+    getEvents examId
+    |> List.fold apply (ExamIsClose None)
+    |> async.Return
 
-let eventStoreInMemory = {
+let inMemoryEventStore = {
     GetState = getState
     SaveEvents = saveEvents
 }
 
-let examQueryInMemory = {
-    GetExam = getExam
+let inMemoryQueries = {
+    Exam = examQueries
 }
