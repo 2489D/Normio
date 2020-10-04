@@ -69,9 +69,9 @@ let execute state = function
     | EndExam id -> handleEndExam id state
     | CloseExam id -> handleCloseExam id state
     | AddStudent (id, student) -> handleAddStudent id student state
-    | RemoveStudent (id ,student) -> handleRemoveStudent id student state
+    | RemoveStudent (examId, studentId) -> handleRemoveStudent examId studentId state
     | AddHost (id, host) -> handleAddHost id host state
-    | RemoveHost (id, host) -> handleRemoveHost id host state
+    | RemoveHost (examId, hostId) -> handleRemoveHost examId hostId state
     | CreateQuestion (id, file) -> handleCreateQuestion id file state
     | DeleteQuestion (id, file) -> handleDeleteQuestion id file state
     | ChangeTitle (id, title) -> handleChangeTitle id title state

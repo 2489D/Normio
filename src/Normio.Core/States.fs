@@ -30,14 +30,14 @@ let apply state event =
     | ExamIsWaiting exam, StudentEntered (_, student) ->
         { exam with Students = Map.add student.Id student exam.Students }
         |> ExamIsWaiting
-    | ExamIsWaiting exam, StudentLeft (_, student) ->
-        { exam with Students = Map.remove student.Id exam.Students }
+    | ExamIsWaiting exam, StudentLeft (_, studentId) ->
+        { exam with Students = Map.remove studentId exam.Students }
         |> ExamIsWaiting
     | ExamIsWaiting exam, HostEntered (_, host) ->
         { exam with Hosts = Map.add host.Id host exam.Hosts }
         |> ExamIsWaiting
-    | ExamIsWaiting exam, HostLeft (_, host) ->
-        { exam with Hosts = Map.remove host.Id exam.Hosts }
+    | ExamIsWaiting exam, HostLeft (_, hostId) ->
+        { exam with Hosts = Map.remove hostId exam.Hosts }
         |> ExamIsWaiting
     | ExamIsWaiting exam, QuestionCreated (_, file) ->
         { exam with Questions = file :: exam.Questions  }

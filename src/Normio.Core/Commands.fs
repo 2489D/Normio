@@ -9,9 +9,9 @@ type Command =
     | EndExam of Guid
     | CloseExam of Guid
     | AddStudent of Guid * Student
-    | RemoveStudent of Guid * Student
+    | RemoveStudent of Guid * Guid
     | AddHost of Guid * Host
-    | RemoveHost of Guid * Host
+    | RemoveHost of Guid * Guid
     | CreateQuestion of Guid * File
     | DeleteQuestion of Guid * File
     | ChangeTitle of Guid * string
