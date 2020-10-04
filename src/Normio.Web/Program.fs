@@ -1,56 +1,40 @@
 ﻿open System
-open Normio.Storage
+open System.Text
 open Suave
-open Suave.Json
 open Suave.Filters
 open Suave.Operators
 open Suave.Successful
+open Suave.RequestErrors
 
-open Normio.Web.Requests
-
+open Normio.Domain
 open Normio.States
-let tryGetExamFromState = function
-    | ExamIsWaiting exam -> Some exam
-    | ExamIsRunning exam -> Some exam
-    | ExamIsFinished exam -> Some exam
-    | ExamIsClose id -> None
+open Normio.Storage.InMemory
+open Normio.CommandApi
 
-let getStudents (store: EventStore) =
-    let inner (store: EventStore) (req: GetStudents) =
-        match EventStore.tryGetState store req.ExamId with
-        | Ok state ->
-            match tryGetExamFromState state with
-            | Some exam -> Ok exam.Students
-            | None -> Error "Exam is closed"
-        | Error msg -> Error msg
-    mapJson (inner store)
+let commandApiHandler eventStore (context : HttpContext) = async {
+    let payload = Encoding.UTF8.GetString context.request.rawForm
+    let! response = handleCommandRequest queryInMemory eventStore payload
+    match response with
+    | Ok (state, events) ->
+        return! OK (sprintf "%A" state) context
+    | Error msg ->
+        return! BAD_REQUEST msg context
+}
 
-let createStudent (context: HttpContext) = async.Return
-let deleteStudent (context: HttpContext) = async.Return
-
-let app =
-    let store = EventStore.createStorage()
-    path "/exams" >=> choose [
-        path "/students" >=> choose [
-            GET >=> choose [
-                path "/" >=> (getStudents store)
-            ]
-            POST >=> createStudent
-            DELETE >=> deleteStudent
-        ]
-        path "/hosts" >=> choose [
-            GET >=> getHost
-            POST >=> createHost
-            DELETE >=> deleteHost
-        ]
-        path "/questions" >=> choose [
-            GET >=> getQuestions
-            POST 
-        ]
-    ]
-
+let commandApi eventStore =
+    path "/command"
+        >=> POST
+        >=> commandApiHandler eventStore
 
 [<EntryPoint>]
 let main argv =
-    startWebServer defaultConfig app
-    0 // return an integer exit code
+    let app =
+        let eventStore = eventStoreInMemory
+        choose [
+          commandApi eventStore
+        ]
+    let cfg =
+        {defaultConfig with
+            bindings = [HttpBinding.createSimple HTTP "0.0.0.0" 8083]}
+    startWebServer cfg app
+    0

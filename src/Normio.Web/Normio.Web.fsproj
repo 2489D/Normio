@@ -4,7 +4,6 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Requests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>
@@ -13,5 +12,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Normio.Storage\Normio.Storage.fsproj" />
     <ProjectReference Include="..\Normio.Core\Normio.Core.fsproj" />
+    <ProjectReference Include="..\Normio.Commands.Api\Normio.Commands.Api.fsproj" />
   </ItemGroup>
 </Project>
