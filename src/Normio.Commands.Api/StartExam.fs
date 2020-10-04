@@ -3,7 +3,7 @@ module StartExam
 open FSharp.Data
 open Commands
 open ReadModels
-open CommandHandlers
+open CommandHandler
 
 [<Literal>]
 let StartExamJson = """ {
