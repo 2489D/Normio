@@ -5,7 +5,7 @@ open Normio.Domain
 open Normio.ReadModels
 
 type ExamQueries = {
-    GetExam: Guid -> Async<ExamReadModel>
+    GetExam: Guid -> Async<ExamReadModel option>
 }
 
 type Queries = {
