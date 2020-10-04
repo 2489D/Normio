@@ -12,6 +12,8 @@
     <Compile Include="StartExam.fs" />
     <Compile Include="EndExam.fs" />
     <Compile Include="CloseExam.fs" />
+    <Compile Include="AddStudent.fs" />
+    <Compile Include="RemoveStudent.fs" />
     <Compile Include="CommandApi.fs" />
   </ItemGroup>
   <ItemGroup>
