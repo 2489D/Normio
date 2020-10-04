@@ -4,6 +4,7 @@ open System
 open Normio.Core.Events
 open Normio.Core.States
 open Normio.Storage.Queries
+open Normio.Storage.Projections
 open Normio.Storage.EventStore
 open Normio.Storage.Exams
 
@@ -51,6 +52,10 @@ let inMemoryEventStore = {
     SaveEvents = saveEvents
 }
 
-let inMemoryQueries = {
+let inMemoryQueries: Queries = {
     Exam = examQueries
+}
+
+let inMemoryActions = {
+    Exam = examActions
 }
