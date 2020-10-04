@@ -2,6 +2,7 @@
 .idea
 .vscode
 .metals
+.DS_Store
 bin
 obj
 
