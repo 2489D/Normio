@@ -8,12 +8,6 @@ open Normio.ReadModels
 open Normio.Projections
 open Normio.Queries
 
-(*
-Don't Panic!
-The codes below executed after all the validations in the Domain Layer!
-So, don't bother yourself about the error handling here
-*)
-
 let private exams = new Dictionary<Guid, ExamReadModel>()
 
 let private openExam examId title =
