@@ -14,6 +14,7 @@ open Normio.Core.Events
 open Normio.Storage.InMemory
 open Normio.Storage.Projections
 open Normio.Commands.Api.CommandApi
+open Normio.Web.JsonFormatter
 
 let eventStream = Event<Event list>()
 let project event =
@@ -29,7 +30,7 @@ let commandApiHandler eventStore (context : HttpContext) = async {
     | Ok (state, events) ->
         do! inMemoryEventStore.SaveEvents events
         eventStream.Trigger(events)
-        return! OK (sprintf "%A" state) context
+        return! toStateJson state context
     | Error msg ->
         return! BAD_REQUEST msg context
 }
