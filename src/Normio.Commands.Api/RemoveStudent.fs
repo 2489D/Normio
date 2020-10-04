@@ -2,7 +2,6 @@ module Normio.Commands.Api.RemoveStudent
 
 open System
 open FSharp.Data
-open Normio.Core.Domain
 open Normio.Core.Commands
 open Normio.Storage.ReadModels
 open Normio.Commands.Api.CommandHandlers
@@ -35,11 +34,11 @@ let validateRemoveStudent getExam (req: Guid * Guid) = async {
             if exam.Students |> Map.containsKey studentId
             then return Choice1Of2 (examId, studentId)
             else return Choice2Of2 "Invalid Student Id"
-        | _ -> return Choice2Of2 "A student can enter only before the exam starts"
+        | _ -> return Choice2Of2 "A student can leave only before the exam starts"
     | None -> return Choice2Of2 "Invalid Exam Id"
 }
 
-let addExamCommander getExam = {
+let removeStudentCommander getExam = {
     Validate = validateRemoveStudent getExam
     ToCommand = RemoveStudent
 }

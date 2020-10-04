@@ -37,7 +37,7 @@ let validateAddStudent getExam (req: Guid * Student) = async {
     | None -> return Choice2Of2 "Invalid Exam Id"
 }
 
-let addExamCommander getExam = {
+let addStudentCommander getExam = {
     Validate = validateAddStudent getExam
     ToCommand = AddStudent
 }
