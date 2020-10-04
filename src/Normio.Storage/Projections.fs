@@ -15,9 +15,9 @@ type ExamActions = {
     EndExam: Guid -> Async<unit>
     CloseExam: Guid -> Async<unit>
     AddStudent: Guid -> Student -> Async<unit>
-    RemoveStudent: Guid -> Student -> Async<unit>
+    RemoveStudent: Guid -> Guid -> Async<unit>
     AddHost: Guid -> Host -> Async<unit>
-    RemoveHost: Guid -> Host -> Async<unit>
+    RemoveHost: Guid -> Guid -> Async<unit>
     CreateQuestion: Guid -> File -> Async<unit>
     DeleteQuestion: Guid -> File -> Async<unit>
     ChangeTitle: Guid -> string -> Async<unit>
@@ -38,12 +38,12 @@ let projectReadModel actions = function
     [actions.Exam.CloseExam examId] |> Async.Parallel
 | StudentEntered (examId, student) ->
     [actions.Exam.AddStudent examId student] |> Async.Parallel
-| StudentLeft (examId, student) ->
-    [actions.Exam.RemoveStudent examId student] |> Async.Parallel
+| StudentLeft (examId, studentId) ->
+    [actions.Exam.RemoveStudent examId studentId] |> Async.Parallel
 | HostEntered (examId, host) ->
     [actions.Exam.AddHost examId host] |> Async.Parallel
-| HostLeft (examId, host) ->
-    [actions.Exam.RemoveHost examId host] |> Async.Parallel
+| HostLeft (examId, hostId) ->
+    [actions.Exam.RemoveHost examId hostId] |> Async.Parallel
 | QuestionCreated (examId, file) ->
     [actions.Exam.CreateQuestion examId file] |> Async.Parallel
 | QuestionDeleted (examId, file) ->
