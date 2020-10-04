@@ -8,6 +8,7 @@
     <Compile Include="CommandHandler.fs" />
     <Compile Include="OpenExam.fs" />
     <Compile Include="StartExam.fs" />
+    <Compile Include="EndExam.fs" />
     <Compile Include="CommandApi.fs" />
   </ItemGroup>
 

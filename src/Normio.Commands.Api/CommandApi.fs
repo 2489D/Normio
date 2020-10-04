@@ -9,6 +9,7 @@ open Normio.Storage.Queries
 
 open Normio.Commands.Api.OpenExam
 open Normio.Commands.Api.StartExam
+open Normio.Commands.Api.EndExam
 
 let handleCommandRequest queries eventStore
     = function
@@ -17,5 +18,8 @@ let handleCommandRequest queries eventStore
         |> handleCommand eventStore exam
     | StartExamRequest examId ->
         startExamCommander queries.Exam.GetExam
+        |> handleCommand eventStore examId
+    | EndExamRequest examId ->
+        endExamCommander queries.Exam.GetExam
         |> handleCommand eventStore examId
     | _ -> Error "Invalid Command" |> async.Return
