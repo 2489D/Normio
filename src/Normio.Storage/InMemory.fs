@@ -54,7 +54,3 @@ let inMemoryEventStore = {
 let inMemoryQueries = {
     Exam = examQueries
 }
-
-let queryInMemory = {
-    Exam = examQueryInMemory
-}
