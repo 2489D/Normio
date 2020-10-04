@@ -20,26 +20,18 @@ type OpenExamRequest = JsonProvider<OpenExamJson>
 let (|OpenExamRequest|_|) payload =
     try
         let req = OpenExamRequest.Parse(payload).OpenExam
-        {
-            Id = Guid.NewGuid()
-            Title = req.Title
-            Students = Map.empty
-            Hosts = Map.empty
-            Questions = []
-        } |> Some
+        (Guid.NewGuid(), req.Title) |> Some
     with
     | _ -> None
 
-let validateOpenExam exam = async {
-    if exam.Title.Length > 40
-    then return Choice2Of2 "The title of an exam should be less than 40"
-    else return Choice1Of2 exam
+let validateOpenExam (id, (title: string)) = async {
+    match title.Length with
+    | l when l > 40 ->
+        return Error "The title of an exam should be less than 40"
+    | _ -> return Ok (id, title)
 }
-
-let openExamToCommand exam =
-    OpenExam (exam.Id, exam.Title)
 
 let openExamCommander = {
     Validate = validateOpenExam
-    ToCommand = openExamToCommand
+    ToCommand = OpenExam
 }

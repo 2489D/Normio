@@ -12,6 +12,8 @@ open Normio.Queries
 Don't Panic!
 The codes below executed after all the validations in the Domain Layer!
 So, don't bother yourself about the error handling here
+
+Except getExam
 *)
 
 let private exams = new Dictionary<Guid, ExamReadModel>()
@@ -103,9 +105,13 @@ let examActions = {
 }
 
 let getExam examId =
-    exams.[examId]
-    |> async.Return
+    match exams.TryGetValue examId with
+    | true, exam -> exam |> Some
+    | _ -> None
+
+let getExamAsync examId =
+    getExam examId |> async.Return
 
 let examQueries = {
-    GetExam = getExam
+    GetExam = getExamAsync
 }
