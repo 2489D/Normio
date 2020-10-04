@@ -4,17 +4,6 @@ open Normio.CommandHandlers
 open Normio.Commands
 open Normio.Storage.EventStore
 
-type Commander<'a, 'b> = {
-    Validate: 'a -> Async<Choice<'b, string>>
-    ToCommand: 'b -> Command
-}
-
-type ErrorResponse = {
-    Message: string
-}
-
-let err msg = { Message = msg }
-
 let getExamIdFromCommand = function
 | OpenExam (examId, _) -> examId
 | StartExam examId -> examId
@@ -27,6 +16,11 @@ let getExamIdFromCommand = function
 | CreateQuestion (examId, _) -> examId
 | DeleteQuestion (examId, _) -> examId
 | ChangeTitle (examId, _) -> examId
+
+type Commander<'a, 'b> = {
+    Validate: 'a -> Async<Choice<'b, string>>
+    ToCommand: 'b -> Command
+}
 
 /// 1. Validate the input data
 /// 2. Get the corresponding state from the input data

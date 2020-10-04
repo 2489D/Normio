@@ -4,8 +4,9 @@ open System
 open System.Collections.Generic
 
 open Normio.Domain
-open Normio.Projections
 open Normio.ReadModels
+open Normio.Projections
+open Normio.Queries
 
 (*
 Don't Panic!
@@ -13,13 +14,7 @@ The codes below executed after all the validations in the Domain Layer!
 So, don't bother yourself about the error handling here
 *)
 
-let private exams =
-    let dict = Dictionary<Guid, ExamReadModel>()
-    dict
-
-let getExam examId =
-    exams.[examId]
-    |> async.Return
+let private exams = new Dictionary<Guid, ExamReadModel>()
 
 let private openExam examId title =
     async {
@@ -31,7 +26,7 @@ let private openExam examId title =
             Hosts = Map.empty
             Questions = []
         }
-        exams.TryAdd(examId, exam) |> ignore
+        exams.Add(examId, exam)
     }
 
 let private startExam examId =
@@ -105,4 +100,12 @@ let examActions = {
     CreateQuestion = createQuestion
     DeleteQuestion = deleteQuestion
     ChangeTitle = changeTitle
+}
+
+let getExam examId =
+    exams.[examId]
+    |> async.Return
+
+let examQueries = {
+    GetExam = getExam
 }

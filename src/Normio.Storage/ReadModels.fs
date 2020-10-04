@@ -4,7 +4,7 @@ open System
 open Normio.Domain
 
 (*
-    Suppose all users need full date of the exam
+    Suppose all users need full data of the exam
     for simplicity
 *)
 
@@ -21,4 +21,3 @@ type ExamReadModel = {
     Students: Map<Guid, Student>
     Questions: File list
 }
-

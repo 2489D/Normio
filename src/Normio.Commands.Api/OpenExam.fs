@@ -3,10 +3,9 @@ module Normio.Commands.Api.OpenExam
 open System
 open FSharp.Data
 
-open Normio.CommandHandlers
-open Normio.Commands
 open Normio.Domain
-
+open Normio.Commands
+open Normio.CommandHandlers
 
 [<Literal>]
 let OpenExamJson = """ {
@@ -27,10 +26,9 @@ let (|OpenExamRequest|_|) payload =
             Students = Map.empty
             Hosts = Map.empty
             Questions = []
-        }
-        |> Some
+        } |> Some
     with
-        | _ -> None
+    | _ -> None
 
 let validateOpenExam exam = async {
     if exam.Title.Length > 40
