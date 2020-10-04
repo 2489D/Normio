@@ -12,8 +12,7 @@ open Normio.Commands.Api.StartExam
 open Normio.Commands.Api.EndExam
 open Normio.Commands.Api.CloseExam
 
-let handleCommandRequest queries eventStore
-    = function
+let handleCommandRequest queries eventStore = function
     | OpenExamRequest exam ->
         openExamCommander
         |> handleCommand eventStore exam
