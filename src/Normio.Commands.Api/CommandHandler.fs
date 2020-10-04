@@ -1,7 +1,7 @@
-﻿module Normio.CommandHandlers
+﻿module Normio.Commands.Api.CommandHandlers
 
-open Normio.CommandHandlers
-open Normio.Commands
+open Normio.Core.CommandHandlers
+open Normio.Core.Commands
 open Normio.Storage.EventStore
 
 let getExamIdFromCommand = function

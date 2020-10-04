@@ -1,7 +1,7 @@
-module Normio.Commands
+module Normio.Core.Commands
 
 open System
-open Domain
+open Normio.Core.Domain
 
 type Command =
     | OpenExam of Guid * string

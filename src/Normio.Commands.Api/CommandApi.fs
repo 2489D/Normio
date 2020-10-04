@@ -1,11 +1,11 @@
-module Normio.CommandApi
+module Normio.Commands.Api.CommandApi
 
 open System
 open System.Text
-open Normio.States
-open Normio.Events
-open Normio.CommandHandlers
-open Normio.Queries
+open Normio.Core.States
+open Normio.Core.Events
+open Normio.Commands.Api.CommandHandlers
+open Normio.Storage.Queries
 
 open Normio.Commands.Api.OpenExam
 open Normio.Commands.Api.StartExam

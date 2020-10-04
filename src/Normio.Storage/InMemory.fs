@@ -1,9 +1,9 @@
 module Normio.Storage.InMemory
 
 open System
-open Normio.Events
-open Normio.States
-open Normio.Queries
+open Normio.Core.Events
+open Normio.Core.States
+open Normio.Storage.Queries
 open Normio.Storage.EventStore
 open Normio.Storage.Exams
 

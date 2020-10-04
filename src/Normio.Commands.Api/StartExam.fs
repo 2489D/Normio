@@ -1,9 +1,9 @@
 module Normio.Commands.Api.StartExam
 
 open FSharp.Data
-open Normio.Commands
-open Normio.ReadModels
-open Normio.CommandHandlers
+open Normio.Core.Commands
+open Normio.Storage.ReadModels
+open Normio.Commands.Api.CommandHandlers
 
 [<Literal>]
 let StartExamJson = """ {

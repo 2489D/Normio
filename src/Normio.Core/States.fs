@@ -1,8 +1,8 @@
-module Normio.States
+module Normio.Core.States
 
 open System
-open Domain
-open Events
+open Normio.Core.Domain
+open Normio.Core.Events
 
 /// 1. ExamIsClose None
 /// 2. ExamIsWaiting Exam

@@ -3,10 +3,10 @@ module Normio.Storage.Exams
 open System
 open System.Collections.Generic
 
-open Normio.Domain
-open Normio.ReadModels
-open Normio.Projections
-open Normio.Queries
+open Normio.Core.Domain
+open Normio.Storage.ReadModels
+open Normio.Storage.Projections
+open Normio.Storage.Queries
 
 let private exams = new Dictionary<Guid, ExamReadModel>()
 

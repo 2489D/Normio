@@ -1,7 +1,7 @@
-module Normio.Events
+module Normio.Core.Events
 
 open System
-open Domain
+open Normio.Core.Domain
 
 type Event =
     | ExamOpened of Guid * string

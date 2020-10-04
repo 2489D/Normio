@@ -1,8 +1,8 @@
 ﻿module Normio.Storage.EventStore
 
 open System
-open Normio.States
-open Normio.Events
+open Normio.Core.States
+open Normio.Core.Events
 
 type EventStore = {
     GetState: Guid -> Async<State>

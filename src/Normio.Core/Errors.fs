@@ -1,4 +1,4 @@
-module Normio.Errors
+module Normio.Core.Errors
 
 type Error =
     | ExamAlreadyStarted

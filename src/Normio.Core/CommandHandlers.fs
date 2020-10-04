@@ -1,9 +1,9 @@
-module Normio.CommandHandlers
+module Normio.Core.CommandHandlers
 
-open Events
-open Commands
-open Errors
-open States
+open Normio.Core.Events
+open Normio.Core.Commands
+open Normio.Core.Errors
+open Normio.Core.States
 
 let handleOpenExam id title = function
     | ExamIsClose None ->

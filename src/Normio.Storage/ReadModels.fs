@@ -1,7 +1,7 @@
-module Normio.ReadModels
+module Normio.Storage.ReadModels
 
 open System
-open Normio.Domain
+open Normio.Core.Domain
 
 (*
     Suppose all users need full data of the exam

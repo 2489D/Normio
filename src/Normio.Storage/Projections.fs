@@ -1,8 +1,8 @@
-module Normio.Projections
+module Normio.Storage.Projections
 
 open System
-open Normio.Domain
-open Normio.Events
+open Normio.Core.Domain
+open Normio.Core.Events
 
 (*
 We are going to use `Event` returned from `evolve` function to populate ReadModels

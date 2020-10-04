@@ -3,9 +3,9 @@ module Normio.Commands.Api.OpenExam
 open System
 open FSharp.Data
 
-open Normio.Domain
-open Normio.Commands
-open Normio.CommandHandlers
+open Normio.Core.Domain
+open Normio.Core.Commands
+open Normio.Commands.Api.CommandHandlers
 
 [<Literal>]
 let OpenExamJson = """ {

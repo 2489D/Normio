@@ -1,4 +1,4 @@
-module Normio.Domain
+module Normio.Core.Domain
 
 open System
 

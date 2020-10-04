@@ -6,10 +6,10 @@ open Suave.Operators
 open Suave.Successful
 open Suave.RequestErrors
 
-open Normio.Domain
-open Normio.States
+open Normio.Core.Domain
+open Normio.Core.States
 open Normio.Storage.InMemory
-open Normio.CommandApi
+open Normio.Commands.Api.CommandApi
 
 let commandApiHandler eventStore (context : HttpContext) = async {
     let payload = Encoding.UTF8.GetString context.request.rawForm
