@@ -54,3 +54,7 @@ let eventStoreInMemory = {
 let examQueryInMemory = {
     GetExam = getExam
 }
+
+let queryInMemory = {
+    Exam = examQueryInMemory
+}
