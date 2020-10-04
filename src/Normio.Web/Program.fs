@@ -1,4 +1,6 @@
-﻿open System
+﻿module Normio.Web.Program
+
+open System
 open System.Text
 open Suave
 open Suave.Filters
@@ -39,6 +41,7 @@ let commandApi eventStore =
 
 [<EntryPoint>]
 let main argv =
+    printfn "---Normio Web Server Starts---"
     let app =
         let eventStore = inMemoryEventStore
         choose [
