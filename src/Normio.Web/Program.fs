@@ -32,7 +32,7 @@ let commandApiHandler eventStore (context : HttpContext) = async {
         eventStream.Trigger(events)
         return! toStateJson state context
     | Error msg ->
-        return! BAD_REQUEST msg context
+        return! toErrorJson msg context
 }
 
 let commandApi eventStore =

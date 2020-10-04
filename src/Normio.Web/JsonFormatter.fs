@@ -5,10 +5,10 @@ open Normio.Core
 open Normio.Core.Domain
 open Normio.Core.States
 
-
 open Suave
 open Suave.Operators
 open Suave.Successful
+open Suave.RequestErrors
 open Newtonsoft.Json.Linq
 
 let (.=) key (value: obj) = JProperty(key, value)
@@ -95,3 +95,9 @@ let toStateJson state =
     |> stateJObj
     |> string
     |> JSON OK
+
+let toErrorJson err =
+    jobj [
+        "error" .= err
+    ]
+    |> string |> JSON BAD_REQUEST
