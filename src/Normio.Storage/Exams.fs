@@ -46,10 +46,10 @@ let private addStudent examId (student: Student) =
         exams.[examId] <- { exam with Students = exam.Students |> Map.add student.Id student }
     }
 
-let private removeStudent examId (student: Student) =
+let private removeStudent examId studentId =
     async {
         let exam = exams.[examId]
-        exams.[examId] <- { exam with Students = exam.Students |> Map.remove student.Id }
+        exams.[examId] <- { exam with Students = exam.Students |> Map.remove studentId }
     }
 
 let private addHost examId (host: Host) =
@@ -58,10 +58,10 @@ let private addHost examId (host: Host) =
         exams.[examId] <- { exam with Hosts = exam.Hosts |> Map.add host.Id host }
     }
 
-let private removeHost examId (host: Host) =
+let private removeHost examId hostId =
     async {
         let exam = exams.[examId]
-        exams.[examId] <- { exam with Hosts = exam.Hosts |> Map.remove host.Id }
+        exams.[examId] <- { exam with Hosts = exam.Hosts |> Map.remove hostId }
     }
 
 let private createQuestion examId (file: File) =
