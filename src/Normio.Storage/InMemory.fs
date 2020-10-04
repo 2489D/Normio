@@ -26,7 +26,7 @@ let mutable eventStoreMap: Map<Guid, Event list> = Map.empty
 let private saveEventInner store event =
     let examId = getExamIdFromEvent event
     match Map.tryFind examId store with
-    | Some es -> Map.add examId (event :: es) store
+    | Some es -> Map.add examId (es @ [event]) store
     | None -> Map.add examId [event] store
 
 let private saveEventsInner store events =
