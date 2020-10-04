@@ -96,14 +96,12 @@ let examActions = {
     ChangeTitle = changeTitle
 }
 
-let getExam examId =
+let getExam examId = async {
     match exams.TryGetValue examId with
-    | true, exam -> exam |> Some
-    | _ -> None
-
-let getExamAsync examId =
-    getExam examId |> async.Return
+    | true, exam -> return exam |> Some
+    | _ -> return None
+}
 
 let examQueries = {
-    GetExam = getExamAsync
+    GetExam = getExam
 }
