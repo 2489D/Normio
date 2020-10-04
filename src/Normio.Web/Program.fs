@@ -13,7 +13,7 @@ open Normio.CommandApi
 
 let commandApiHandler eventStore (context : HttpContext) = async {
     let payload = Encoding.UTF8.GetString context.request.rawForm
-    let! response = handleCommandRequest queryInMemory eventStore payload
+    let! response = handleCommandRequest inMemoryQueries eventStore payload
     match response with
     | Ok (state, events) ->
         return! OK (sprintf "%A" state) context
@@ -29,7 +29,7 @@ let commandApi eventStore =
 [<EntryPoint>]
 let main argv =
     let app =
-        let eventStore = eventStoreInMemory
+        let eventStore = inMemoryEventStore
         choose [
           commandApi eventStore
         ]
