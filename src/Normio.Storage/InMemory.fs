@@ -8,7 +8,7 @@ open Normio.Storage.Projections
 open Normio.Storage.EventStore
 open Normio.Storage.Exams
 
-let getExamIdFromEvent = function
+let private getExamIdFromEvent = function
     | ExamOpened (id, _) -> id
     | ExamStarted id -> id
     | ExamEnded id -> id
@@ -21,35 +21,39 @@ let getExamIdFromEvent = function
     | QuestionDeleted (id, _) -> id
     | TitleChanged (id, _) -> id
 
-let mutable eventStoreMap: Map<Guid, Event list> = Map.empty
+type InMemoryEventStore() =
+    let mutable eventStore: Map<Guid, Event list> = Map.empty
 
-let private saveEventInner store event =
-    let examId = getExamIdFromEvent event
-    match Map.tryFind examId store with
-    | Some es -> Map.add examId (es @ [event]) store
-    | None -> Map.add examId [event] store
+    let storeWithNewEvent store event =
+        let examId = getExamIdFromEvent event
+        match Map.tryFind examId store with
+        | Some es -> Map.add examId (event :: es) store
+        | None -> Map.add examId [event] store
+    
+    let storeWithNewEvents store events =
+        events |> List.fold storeWithNewEvent store
+    
+    let getEvents store examId =
+        match Map.tryFind examId store with
+        | Some es -> es |> List.rev
+        | None -> []
+    
+    member this.GetState examId = async {
+        return getEvents eventStore examId
+        |> List.fold apply (ExamIsClose None)
+    }
 
-let private saveEventsInner store events =
-    events |> List.fold saveEventInner store
+    member this.SaveEvents events = async {
+        let newStore = storeWithNewEvents eventStore events
+        eventStore <- newStore
+    }
 
-let private getEvents examId =
-    match Map.tryFind examId eventStoreMap with
-    | Some es -> es
-    | None -> []
+let private eventStoreObj = InMemoryEventStore()
 
-let saveEvents events = async {
-    let newStore =  saveEventsInner eventStoreMap events
-    eventStoreMap <- newStore
-}
-
-let getState examId =
-    getEvents examId
-    |> List.fold apply (ExamIsClose None)
-    |> async.Return
 
 let inMemoryEventStore = {
-    GetState = getState
-    SaveEvents = saveEvents
+    GetState = eventStoreObj.GetState
+    SaveEvents = eventStoreObj.SaveEvents
 }
 
 let inMemoryQueries: Queries = {
