@@ -35,7 +35,7 @@ let getExamByExamId examQuery (ctx: HttpContext) = async {
         let! examReadModel = examQuery examId
         match examReadModel with
         | Some exam' ->
-            return! JSON OK (examReadModelJObj exam' |> string) ctx
+            return! OK (sprintf "%A" exam') ctx
         | None -> return! toErrorJson "Invalid Exam Id" ctx
     | _ -> return! toErrorJson "Invalid Payload" ctx
 }
