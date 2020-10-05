@@ -28,7 +28,7 @@ let commandApiHandler eventStore (context : HttpContext) = async {
     let! response = handleCommandRequest inMemoryQueries eventStore payload
     match response with
     | Ok (state, events) ->
-        do! eventStoreObj.SaveEvents events
+        do! inMemoryEventStore.SaveEvents events
         eventStream.Trigger(events)
         return! toStateJson state context
     | Error msg ->
@@ -44,7 +44,7 @@ let commandApi eventStore =
 let main argv =
     printfn "---Normio Web Server Starts---"
     let app =
-        let eventStore = eventStoreObj
+        let eventStore = inMemoryEventStore
         choose [
           commandApi eventStore
         ]
