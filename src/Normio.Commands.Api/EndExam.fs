@@ -2,6 +2,7 @@ module Normio.Commands.Api.EndExam
 
 open FSharp.Data
 open Normio.Core.Commands
+open Normio.Core.States
 open Normio.Storage.ReadModels
 open Normio.Commands.Api.CommandHandlers
 
@@ -22,17 +23,14 @@ let (|EndExamRequest|_|) payload =
     with
     | _ -> None
 
-let validateEndExam getExam examId = async {
-    let! exam = getExam examId
-    match exam with
-    | Some exam ->
-        match exam.Status with
-        | DuringExam -> return Choice1Of2 examId
-        | _ -> return Choice2Of2 "Cannot end exam unless it is in the middle of exam"
-    | None -> return Choice2Of2 "Invalid Exam Id"
+let validateEndExam getState examId = async {
+    let! state = getState examId
+    match state with
+    | ExamIsRunning _ -> return Choice1Of2 examId
+    | _ -> return Choice2Of2 "Exam is not running"
 }
 
-let endExamCommander getExam = {
-    Validate = validateEndExam getExam
+let endExamCommander getState = {
+    Validate = validateEndExam getState
     ToCommand = EndExam
 }

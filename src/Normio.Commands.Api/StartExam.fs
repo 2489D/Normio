@@ -1,6 +1,7 @@
 module Normio.Commands.Api.StartExam
 
 open FSharp.Data
+open Normio.Core.States
 open Normio.Core.Commands
 open Normio.Storage.ReadModels
 open Normio.Commands.Api.CommandHandlers
@@ -22,17 +23,14 @@ let (|StartExamRequest|_|) payload =
     with
     | _ -> None
 
-let validateStartExam getExam examId = async {
-    let! exam = getExam examId
-    match exam with
-    | Some exam ->
-        match exam.Status with
-        | BeforeExam -> return Choice1Of2 examId
-        | _ -> return Choice2Of2 "Exam already started"
-    | None -> return Choice2Of2 "Invalid Exam Id"
+let validateStartExam getState examId = async {
+    let! state = getState examId
+    match state with
+    | ExamIsWaiting _ -> return Choice1Of2 examId
+    | _ -> return Choice2Of2 "Exam is not waiting"
 }
 
-let startExamCommander getExam = {
-    Validate = validateStartExam getExam
+let startExamCommander getState = {
+    Validate = validateStartExam getState
     ToCommand = StartExam
 }

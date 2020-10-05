@@ -12,17 +12,18 @@ open Normio.Commands.Api.StartExam
 open Normio.Commands.Api.EndExam
 open Normio.Commands.Api.CloseExam
 
+// TODO: 
 let handleCommandRequest queries eventStore = function
     | OpenExamRequest exam ->
         openExamCommander
         |> handleCommand eventStore exam
     | StartExamRequest examId ->
-        startExamCommander queries.Exam.GetExamByExamId
+        startExamCommander eventStore.GetState
         |> handleCommand eventStore examId
     | EndExamRequest examId ->
-        endExamCommander queries.Exam.GetExamByExamId
+        endExamCommander eventStore.GetState
         |> handleCommand eventStore examId
     | CloseExamRequest examId ->
-        closeExamCommander queries.Exam.GetExamByExamId
+        closeExamCommander eventStore.GetState
         |> handleCommand eventStore examId
     | _ -> Error "Invalid Command" |> async.Return
