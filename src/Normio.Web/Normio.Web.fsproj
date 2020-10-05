@@ -10,6 +10,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="JsonFormatter.fs" />
+    <Compile Include="QueriesApi.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>

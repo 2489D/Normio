@@ -4,6 +4,7 @@ open System
 open Normio.Core
 open Normio.Core.Domain
 open Normio.Core.States
+open Normio.Storage.ReadModels
 
 open Suave
 open Suave.Operators
@@ -41,13 +42,23 @@ let hostJObj (host: Domain.Host) =
         "name" .= host.Name
     ]
 
-let examJObj exam =
+let examJObj (exam: Exam) =
     jobj [
         "title" .= exam.Title
         "examId" .= exam.Id
         "students" .= (exam.Students |> mapJArray studentJObj)
         "hosts" .= (exam.Hosts |> mapJArray hostJObj)
         "questions" .= (exam.Questions)
+    ]
+
+let examReadModelJObj examRM =
+    jobj [
+        "status" .= examRM.Status
+        "title" .= examRM.Title
+        "id" .= examRM.Id
+        "hosts" .= (examRM.Hosts |> mapJArray hostJObj)
+        "students" .= (examRM.Students |> mapJArray studentJObj)
+        "questions" .= examRM.Questions
     ]
 
 let examIdJObj (examId: Guid) =

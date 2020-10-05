@@ -15,6 +15,7 @@ open Normio.Storage.InMemory
 open Normio.Storage.Projections
 open Normio.Commands.Api.CommandApi
 open Normio.Web.JsonFormatter
+open Normio.Web.QueriesApi
 
 let eventStream = Event<Event list>()
 let project event =
@@ -47,6 +48,7 @@ let main argv =
         let eventStore = inMemoryEventStore
         choose [
           commandApi eventStore
+          queriesApi inMemoryQueries eventStore
         ]
     do eventStream.Publish.Add(projectEvents)
     do eventStream.Publish.Add(printfn "%A")
