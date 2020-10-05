@@ -103,5 +103,5 @@ let getExam examId = async {
 }
 
 let examQueries = {
-    GetExam = getExam
+    GetExamByExamId = getExam
 }
