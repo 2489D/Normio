@@ -5,7 +5,7 @@ open Normio.Core.Domain
 open Normio.Storage.ReadModels
 
 type ExamQueries = {
-    GetExam: Guid -> Async<ExamReadModel option>
+    GetExamByExamId: Guid -> Async<ExamReadModel option>
 }
 
 type Queries = {
