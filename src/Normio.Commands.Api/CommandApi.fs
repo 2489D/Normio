@@ -17,12 +17,12 @@ let handleCommandRequest queries eventStore = function
         openExamCommander
         |> handleCommand eventStore exam
     | StartExamRequest examId ->
-        startExamCommander queries.Exam.GetExam
+        startExamCommander queries.Exam.GetExamByExamId
         |> handleCommand eventStore examId
     | EndExamRequest examId ->
-        endExamCommander queries.Exam.GetExam
+        endExamCommander queries.Exam.GetExamByExamId
         |> handleCommand eventStore examId
     | CloseExamRequest examId ->
-        closeExamCommander queries.Exam.GetExam
+        closeExamCommander queries.Exam.GetExamByExamId
         |> handleCommand eventStore examId
     | _ -> Error "Invalid Command" |> async.Return
