@@ -3,6 +3,7 @@ module Normio.Commands.Api.AddStudent
 open System
 open FSharp.Data
 open Normio.Core.Domain
+open Normio.Core.States
 open Normio.Core.Commands
 open Normio.Storage.ReadModels
 open Normio.Commands.Api.CommandHandlers
@@ -25,19 +26,15 @@ let (|AddStudentRequest|_|) payload =
     with
     | _ -> None
 
-let validateAddStudent getExam (req: Guid * Student) = async {
+let validateAddStudent getState (req: Guid * Student) = async {
     let examId, student = req
-    let! exam = getExam examId
-    match exam with
-    | Some exam ->
-        match exam.Status with
-        | BeforeExam ->
-            return Choice1Of2 (examId, student)
-        | _ -> return Choice2Of2 "A student can enter only before the exam starts"
-    | None -> return Choice2Of2 "Invalid Exam Id"
+    let! state = getState examId
+    match state with
+    | ExamIsWaiting _ -> return Choice1Of2 (examId, student)
+    | _ -> return Choice2Of2 "Exam is not waiting"
 }
 
-let addStudentCommander getExam = {
-    Validate = validateAddStudent getExam
+let addStudentCommander getState = {
+    Validate = validateAddStudent getState
     ToCommand = AddStudent
 }

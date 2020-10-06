@@ -4,6 +4,7 @@ open FSharp.Data
 open System
 
 open Normio.Core.Commands
+open Normio.Core.States
 open Normio.Commands.Api.CommandHandlers
 
 [<Literal>]
@@ -25,15 +26,15 @@ let (|ChangeTitleRequest|_|) payload =
     with
         | _ -> None
 
-let validateChangeTitle getExam (req: Guid * string) = async {
+let validateChangeTitle getState (req: Guid * string) = async {
     let examId, newTitle = req
-    let! exam = getExam examId
-    match exam with
-    | Some _ -> return Choice1Of2 (examId, newTitle)
-    | None -> return Choice2Of2 "Invalid exam id"
+    let! state = getState examId
+    match state with
+    | ExamIsWaiting _ -> return Choice1Of2 (examId, newTitle)
+    | _ -> return Choice2Of2 "Exam is not waiting"
 }
 
-let changeTitleCommander getExam = {
-    Validate = validateChangeTitle getExam
+let changeTitleCommander getState = {
+    Validate = validateChangeTitle getState
     ToCommand = ChangeTitle
 }

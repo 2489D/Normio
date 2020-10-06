@@ -3,6 +3,7 @@ module Normio.Commands.Api.AddHost
 open System
 open FSharp.Data
 open Normio.Core.Domain
+open Normio.Core.States
 open Normio.Core.Commands
 open Normio.Storage.ReadModels
 open Normio.Commands.Api.CommandHandlers
@@ -25,19 +26,16 @@ let (|AddHostRequest|_|) payload =
     with
     | _ -> None
 
-let validateAddHost getExam (req: Guid * Host) = async {
+let validateAddHost getStatus (req: Guid * Host) = async {
     let examId, host = req
-    let! exam = getExam examId
-    match exam with
-    | Some exam ->
-        match exam.Status with
-        | BeforeExam ->
+    let! state = getStatus examId
+    match state with
+    | ExamIsWaiting exam ->
             return Choice1Of2 (examId, host)
-        | _ -> return Choice2Of2 "A host can enter only before the exam starts"
-    | None -> return Choice2Of2 "Invalid Exam Id"
+    | _ -> return Choice2Of2 "Exam is not waiting"
 }
 
-let addHostCommander getExam = {
-    Validate = validateAddHost getExam
+let addHostCommander getState = {
+    Validate = validateAddHost getState
     ToCommand = AddHost
 }
