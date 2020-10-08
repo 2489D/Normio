@@ -73,8 +73,8 @@ let projectEvents events =
 
 let commandApiHandler eventStore : HttpHandler =
     fun (next: HttpFunc) (context : HttpContext) -> task {
-        let payload = context.Request.Form.ToString()
-//        let payload = Encoding.UTF8.GetString context.request.rawForm
+        use stream = new StreamReader(context.Request.Body);
+        let! payload = stream.ReadToEndAsync();
         let! response = handleCommandRequest inMemoryQueries eventStore payload
         match response with
         | Ok (state, events) ->
@@ -129,7 +129,7 @@ let configureServices (services : IServiceCollection) =
     services.AddGiraffe() |> ignore
 
 let configureLogging (builder : ILoggingBuilder) =
-    builder.AddFilter(fun l -> l.Equals LogLevel.Trace)
+    builder.AddFilter(fun l -> l.Equals LogLevel.Debug)
            .AddConsole()
            .AddDebug() |> ignore
 
@@ -141,6 +141,7 @@ let main args =
         .ConfigureWebHostDefaults(
             fun webHostBuilder ->
                 webHostBuilder
+                    .UseEnvironment(Environments.Development)
                     .UseContentRoot(contentRoot)
                     .UseWebRoot(webRoot)
                     .Configure(configureApp)
