@@ -2,13 +2,21 @@ module Normio.Web.Dev.App
 
 open System
 open System.IO
+open System.Text
 open Microsoft.AspNetCore.Builder
 open Microsoft.AspNetCore.Cors.Infrastructure
 open Microsoft.AspNetCore.Hosting
+open Microsoft.AspNetCore.Http
 open Microsoft.Extensions.Hosting
 open Microsoft.Extensions.Logging
 open Microsoft.Extensions.DependencyInjection
 open Giraffe
+
+open FSharp.Control.Tasks.V2.ContextInsensitive
+open Normio.Core.Events
+open Normio.Storage.InMemory
+open Normio.Storage.Projections
+open Normio.Commands.Api.CommandApi
 
 // ---------------------------------
 // Models
@@ -37,12 +45,9 @@ module Views =
             body [] content
         ]
 
-    let partial () =
-        h1 [] [ encodedText "Normio.Web.Dev" ]
-
     let index (model : Message) =
         [
-            partial()
+            h1 [] [ encodedText "Normio.WebDev" ]
             p [] [ encodedText model.Text ]
         ] |> layout
 
@@ -56,6 +61,30 @@ let indexHandler (name : string) =
     let view      = Views.index model
     htmlView view
 
+let eventStream = Event<Event list>()
+
+let project event =
+    projectReadModel inMemoryActions event
+    |> Async.RunSynchronously |> ignore
+
+let projectEvents events =
+    events
+    |> List.iter project
+
+let commandApiHandler eventStore : HttpHandler =
+    fun (next: HttpFunc) (context : HttpContext) -> task {
+        let payload = context.Request.Form.ToString()
+//        let payload = Encoding.UTF8.GetString context.request.rawForm
+        let! response = handleCommandRequest inMemoryQueries eventStore payload
+        match response with
+        | Ok (state, events) ->
+            do! inMemoryEventStore.SaveEvents events
+            eventStream.Trigger(events)
+            return! json state next context
+        | Error msg ->
+            return! json msg next context
+    }
+
 let webApp =
     choose [
         GET >=>
@@ -63,6 +92,7 @@ let webApp =
                 route "/" >=> indexHandler "world"
                 routef "/hello/%s" indexHandler
             ]
+        route "/command" >=> POST >=> commandApiHandler eventStore
         setStatusCode 404 >=> text "Not Found" ]
 
 // ---------------------------------
@@ -98,7 +128,7 @@ let configureServices (services : IServiceCollection) =
     services.AddGiraffe() |> ignore
 
 let configureLogging (builder : ILoggingBuilder) =
-    builder.AddFilter(fun l -> l.Equals LogLevel.Error)
+    builder.AddFilter(fun l -> l.Equals LogLevel.Trace)
            .AddConsole()
            .AddDebug() |> ignore
 
@@ -112,7 +142,7 @@ let main args =
                 webHostBuilder
                     .UseContentRoot(contentRoot)
                     .UseWebRoot(webRoot)
-                    .Configure(Action<IApplicationBuilder> configureApp)
+                    .Configure(configureApp)
                     .ConfigureServices(configureServices)
                     .ConfigureLogging(configureLogging)
                     |> ignore)

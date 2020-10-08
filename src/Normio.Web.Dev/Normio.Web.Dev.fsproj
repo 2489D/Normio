@@ -21,4 +21,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Normio.Storage\Normio.Storage.fsproj" />
+    <ProjectReference Include="..\Normio.Commands.Api\Normio.Commands.Api.fsproj" />
+    <ProjectReference Include="..\Normio.Core\Normio.Core.fsproj" />
+  </ItemGroup>
 </Project>
