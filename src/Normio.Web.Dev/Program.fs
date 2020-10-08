@@ -86,6 +86,7 @@ let commandApiHandler eventStore : HttpHandler =
     }
 
 let webApp =
+    let eventStore = inMemoryEventStore
     choose [
         GET >=>
             choose [
