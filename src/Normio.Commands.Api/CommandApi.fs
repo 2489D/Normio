@@ -17,6 +17,7 @@ open Normio.Commands.Api.AddHost
 open Normio.Commands.Api.RemoveHost
 open Normio.Commands.Api.ChangeTitle
 
+// TODO : JSON parse using Newtonsoft.Json --> System.Text.Json
 let handleCommandRequest queries eventStore = function
     | OpenExamRequest exam ->
         openExamCommander
