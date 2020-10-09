@@ -5,6 +5,7 @@ open System.IO
 open Microsoft.AspNetCore.Builder
 open Microsoft.AspNetCore.Cors.Infrastructure
 open Microsoft.AspNetCore.Hosting
+open Microsoft.AspNetCore.SignalR
 open Microsoft.Extensions.Hosting
 open Microsoft.Extensions.Logging
 open Microsoft.Extensions.DependencyInjection
@@ -14,6 +15,7 @@ open Giraffe
 open Normio.Storage.InMemory
 open Normio.Web.Dev.CommandApiHandler
 open Normio.Web.Dev.QueryApiHandler
+open Normio.Web.Dev.Hub
 
 // ---------------------------------
 // Web app
@@ -21,9 +23,12 @@ open Normio.Web.Dev.QueryApiHandler
 
 let webApp =
     let eventStore = inMemoryEventStore
+    do eventStream.Publish.Add(projectEvents)
+    // TODO: do eventStream.Publish.Add(signalEvents eventHub) -- inject the eventHub context and we are done
     choose [
         commandApi eventStore
         queriesApi inMemoryQueries eventStore
+        route "/websocket" >=> 
         setStatusCode 404 >=> text "Not Found"
     ]
 
@@ -54,10 +59,14 @@ let configureApp (app : IApplicationBuilder) =
         .UseHttpsRedirection()
         .UseCors(configureCors)
         .UseStaticFiles()
+        .UseEndpoints(fun endpoints ->
+            endpoints.MapHub<EventHub>("/signal")
+            |> ignore)
         .UseGiraffe(webApp)
 
 let configureServices (services : IServiceCollection) =
     services.AddCors()    |> ignore
+    services.AddSignalR() |> ignore
     services.AddGiraffe() |> ignore
 
 let configureLogging (builder : ILoggingBuilder) =
@@ -69,17 +78,17 @@ let configureLogging (builder : ILoggingBuilder) =
 let main args =
     let contentRoot = Directory.GetCurrentDirectory()
     let webRoot     = Path.Combine(contentRoot, "WebRoot")
-    Host.CreateDefaultBuilder(args)
-        .ConfigureWebHostDefaults(
-            fun webHostBuilder ->
-                webHostBuilder
-                    .UseEnvironment(Environments.Development)
-                    .UseContentRoot(contentRoot)
-                    .UseWebRoot(webRoot)
-                    .Configure(configureApp)
-                    .ConfigureServices(configureServices)
-                    .ConfigureLogging(configureLogging)
-                    |> ignore)
-        .Build()
-        .Run()
+    let host = Host.CreateDefaultBuilder(args)
+                .ConfigureWebHostDefaults(
+                fun webHostBuilder ->
+                    webHostBuilder
+                        .UseEnvironment(Environments.Development)
+                        .UseContentRoot(contentRoot)
+                        .UseWebRoot(webRoot)
+                        .Configure(configureApp)
+                        .ConfigureServices(configureServices)
+                        .ConfigureLogging(configureLogging)
+                        |> ignore)
+                .Build()
+    host.Run()
     0
