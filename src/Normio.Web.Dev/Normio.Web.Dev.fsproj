@@ -13,6 +13,8 @@
     <Compile Include="EventHub.fs" />
     <Compile Include="CommandApiHandler.fs" />
     <Compile Include="QueryApiHandler.fs" />
+    <Compile Include="ErrorHandler.fs" />
+    <Compile Include="Configurations.fs" />
     <Compile Include="Program.fs" />
     <None Include="web.config" />
     <Content Include="WebRoot/**/*">

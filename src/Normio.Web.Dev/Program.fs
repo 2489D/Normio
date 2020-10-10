@@ -15,6 +15,7 @@ open Giraffe
 open Normio.Storage.InMemory
 open Normio.Web.Dev.CommandApiHandler
 open Normio.Web.Dev.QueryApiHandler
+open Normio.Web.Dev.Configurations
 open Normio.Web.Dev.Hub
 
 // ---------------------------------
@@ -23,72 +24,27 @@ open Normio.Web.Dev.Hub
 
 let webApp =
     let eventStore = inMemoryEventStore
-    do eventStream.Publish.Add(projectEvents)
-    // TODO: do eventStream.Publish.Add(signalEvents eventHub) -- inject the eventHub context and we are done
     choose [
         commandApi eventStore
         queriesApi inMemoryQueries eventStore
-        route "/websocket" >=> 
         setStatusCode 404 >=> text "Not Found"
     ]
-
-// ---------------------------------
-// Error handler
-// ---------------------------------
-
-let errorHandler =
-    fun (ex : Exception) (logger : ILogger) ->
-        logger.LogError(ex, "An unhandled exception has occurred while executing the request.")
-        clearResponse >=> setStatusCode 500 >=> text ex.Message
-
-// ---------------------------------
-// Config and Main
-// ---------------------------------
-
-let configureCors (builder : CorsPolicyBuilder) =
-    builder.WithOrigins("http://localhost:8080")
-           .AllowAnyMethod()
-           .AllowAnyHeader()
-           |> ignore
-
-let configureApp (app : IApplicationBuilder) =
-    let env = app.ApplicationServices.GetService<IWebHostEnvironment>()
-    (match env.EnvironmentName with
-    | "Development" -> app.UseDeveloperExceptionPage()
-    | _ -> app.UseGiraffeErrorHandler(errorHandler))
-        .UseHttpsRedirection()
-        .UseCors(configureCors)
-        .UseStaticFiles()
-        .UseEndpoints(fun endpoints ->
-            endpoints.MapHub<EventHub>("/signal")
-            |> ignore)
-        .UseGiraffe(webApp)
-
-let configureServices (services : IServiceCollection) =
-    services.AddCors()    |> ignore
-    services.AddSignalR() |> ignore
-    services.AddGiraffe() |> ignore
-
-let configureLogging (builder : ILoggingBuilder) =
-    builder.AddFilter(fun l -> l.Equals LogLevel.Debug)
-           .AddConsole()
-           .AddDebug() |> ignore
 
 [<EntryPoint>]
 let main args =
     let contentRoot = Directory.GetCurrentDirectory()
     let webRoot     = Path.Combine(contentRoot, "WebRoot")
-    let host = Host.CreateDefaultBuilder(args)
+    Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(
                 fun webHostBuilder ->
                     webHostBuilder
                         .UseEnvironment(Environments.Development)
                         .UseContentRoot(contentRoot)
                         .UseWebRoot(webRoot)
-                        .Configure(configureApp)
+                        .Configure(configureApp webApp)
                         .ConfigureServices(configureServices)
                         .ConfigureLogging(configureLogging)
                         |> ignore)
                 .Build()
-    host.Run()
+                .Run()
     0
