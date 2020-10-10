@@ -17,7 +17,7 @@ open Normio.Web.Dev.JsonFormatter
 
 let commandApiHandler eventStore : HttpHandler =
     fun (next: HttpFunc) (context : HttpContext) -> task {
-        let eventHub = context.GetService<NormioEventService>()
+        let eventHub = context.GetService<NormioEventWorker>()
         use stream = new StreamReader(context.Request.Body);
         let! payload = stream.ReadToEndAsync();
         let! response = handleCommandRequest inMemoryQueries eventStore payload

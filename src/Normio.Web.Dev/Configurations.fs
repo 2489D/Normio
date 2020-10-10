@@ -36,6 +36,7 @@ let configureApp webApp (app : IApplicationBuilder) =
 let configureServices (services : IServiceCollection) =
     services.AddCors()    |> ignore
     services.AddSignalR() |> ignore
+    services.AddSingleton<NormioEventWorker>() |> ignore
     services.AddGiraffe() |> ignore
 
 let configureLogging (builder : ILoggingBuilder) =
