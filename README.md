@@ -3,39 +3,13 @@
 Online Exam/Quiz Management API provider
 
 
-# Architecture
+# How to Build
+
+Check everything compiles before you commit!
+
+You need `.NET Core SDK 3.1` or a higher version of the SDK.
 
 ```
-User Client
-(ClientReq/ClientRes)
-Persistence Layer(PL)
-((Aggregate, Command), Event list))
-Function layer
+dotnet tool restore
+dotnet fake run build.fsx
 ```
-
-## User
-
-
-1. Host: Online exam managers
-    - Do we need hierachy for hosts? (e.g. master host and other hosts)
-2. Students: students enrolled for the online exam
-
-
-## Persistence Layer
-
-
-1. Provides ReadModels for each user client
-    - A read model defines what kinds of data should be visible to the user
-2. Persistence Aggregate
-
-
-## Function Layer (oldState -> newState)
-
-1. Progress
-
-
-# Server Architecture
-
-
-## Message Passing
-
