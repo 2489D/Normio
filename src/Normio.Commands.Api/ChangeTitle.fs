@@ -27,12 +27,15 @@ let (|ChangeTitleRequest|_|) payload =
     with
         | _ -> None
 
-let validateChangeTitle getState (req: Guid * ExamTitle40) = async {
+let validateChangeTitle getExamByExamId (req: Guid * string) = async {
     let examId, newTitle = req
-    let! state = getState examId
-    match state with
-    | ExamIsWaiting _ -> return Choice1Of2 (examId, newTitle)
-    | _ -> return Choice2Of2 "Exam is not waiting"
+    let! exam = getExamByExamId examId
+    match exam with
+    | Some _ -> 
+        match examTitle40.Create newTitle with
+        | Ok title -> return Choice1Of2 (examId, title)
+        | Error err -> return Choice2Of2 (err |> DomainError.toString)
+    | _ -> return Choice2Of2 "Invalid Exam Id"
 }
 
 let changeTitleCommander getState = {
