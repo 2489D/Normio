@@ -61,7 +61,7 @@ type Submission = {
 
 type Exam = {
     Id: Guid
-    Title: string
+    Title: ExamTitle40
     Questions: File list
     Students: Map<Guid, Student>
     Hosts: Map<Guid, Host>
