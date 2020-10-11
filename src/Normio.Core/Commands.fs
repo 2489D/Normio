@@ -7,7 +7,6 @@ type Command =
     | OpenExam of Guid * ExamTitle40
     | StartExam of Guid
     | EndExam of Guid
-    
     | CloseExam of Guid
     | AddStudent of Guid * Student
     | RemoveStudent of Guid * Guid
