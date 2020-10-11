@@ -10,7 +10,7 @@ e.g. ExamOpened (examId, title) will project the data to ExamForStudent
 *)
 
 type ExamActions = {
-    OpenExam: Guid -> string -> Async<unit>
+    OpenExam: Guid -> ExamTitle40 -> Async<unit>
     StartExam: Guid -> Async<unit>
     EndExam: Guid -> Async<unit>
     CloseExam: Guid -> Async<unit>
@@ -20,7 +20,7 @@ type ExamActions = {
     RemoveHost: Guid -> Guid -> Async<unit>
     CreateQuestion: Guid -> File -> Async<unit>
     DeleteQuestion: Guid -> File -> Async<unit>
-    ChangeTitle: Guid -> string -> Async<unit>
+    ChangeTitle: Guid -> ExamTitle40 -> Async<unit>
 }
 
 type ProjectionActions = {

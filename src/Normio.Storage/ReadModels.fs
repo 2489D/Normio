@@ -16,7 +16,7 @@ type ExamStatus =
 type ExamReadModel = {
     Id: Guid
     Status: ExamStatus
-    Title: string
+    Title: ExamTitle40
     Hosts: Map<Guid, Host>
     Students: Map<Guid, Student>
     Questions: File list

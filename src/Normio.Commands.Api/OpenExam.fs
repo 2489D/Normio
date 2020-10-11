@@ -25,10 +25,9 @@ let (|OpenExamRequest|_|) payload =
     | _ -> None
 
 let validateOpenExam (id, (title: string)) = async {
-    let len = title |> String.length 
-    if len <= 40
-    then return Choice1Of2 (id, title)
-    else return Choice2Of2 "The title of an exam should be less than 40"
+    match title |> examTitle40.Create with
+    | Ok title40 -> return Choice1Of2 (id, title40)
+    | Error msg -> return Choice2Of2 msg
 }
 
 let openExamCommander = {

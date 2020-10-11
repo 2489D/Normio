@@ -19,14 +19,14 @@ open Normio.Commands.Api.ChangeTitle
 
 // TODO : JSON parse using Newtonsoft.Json --> System.Text.Json
 let handleCommandRequest queries eventStore = function
-    | OpenExamRequest exam ->
+    | OpenExamRequest (examId, title) ->
         openExamCommander
-        |> handleCommand eventStore exam
+        |> handleCommand eventStore (examId, title)
     | StartExamRequest examId ->
-        startExamCommander eventStore.GetState
+        startExamCommander queries.Exam.GetExamByExamId
         |> handleCommand eventStore examId
     | EndExamRequest examId ->
-        endExamCommander eventStore.GetState
+        endExamCommander queries.Exam.GetExamByExamId
         |> handleCommand eventStore examId
     | CloseExamRequest examId ->
         closeExamCommander eventStore.GetState

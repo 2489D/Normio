@@ -2,9 +2,9 @@ module Normio.Core.Domain
 
 open System
 
-type EntityBuilder<'TValue, 'TValidated> = {
-    Create: 'TValue -> Result<'TValidated, string>
-    ToRaw: 'TValidated -> 'TValue
+type EntityBuilder<'a, 'b> = {
+    Create: 'a -> Result<'b, string>
+    ToRaw: 'b -> 'a
 }
 
 type ExamTitle40 = ExamTitle40 of string

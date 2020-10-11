@@ -23,11 +23,11 @@ let (|EndExamRequest|_|) payload =
     with
     | _ -> None
 
-let validateEndExam getState examId = async {
-    let! state = getState examId
+let validateEndExam getExamByExamId examId = async {
+    let! state = getExamByExamId examId
     match state with
-    | ExamIsRunning _ -> return Choice1Of2 examId
-    | _ -> return Choice2Of2 "Exam is not running"
+    | Some _ -> return Choice1Of2 examId
+    | _ -> return Choice2Of2 "Invalid Exam Id"
 }
 
 let endExamCommander getState = {
