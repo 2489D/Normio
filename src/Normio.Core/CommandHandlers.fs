@@ -1,5 +1,6 @@
 module Normio.Core.CommandHandlers
 
+open Normio.Core.Domain
 open Normio.Core.Events
 open Normio.Core.Commands
 open Normio.Core.Errors
@@ -8,73 +9,92 @@ open Normio.Core.States
 let handleOpenExam id title = function
     | ExamIsClose None ->
         [ExamOpened (id, title)] |> Ok
-    | _ -> Error "Unable to open an exam"
+    | _ -> CannotOpenExam "Exam already opened" |> Error
 
-let handleStartExam id = function
+let handleStartExam = function
     | ExamIsWaiting exam ->
-        [ExamStarted exam.Id] |> Ok
-    | _ -> Error "Unable to start the exam"
+        if exam.Questions |> List.isEmpty
+        then CannotStartExam "There is no question" |> Error
+        else [ExamStarted exam.Id] |> Ok
+    | ExamIsClose _ -> CannotStartExam "Exam not opened" |> Error
+    | _ -> CannotStartExam "Exam already started" |> Error
 
-let handleEndExam id = function
+let handleEndExam = function
     | ExamIsRunning exam ->
         [ExamEnded exam.Id] |> Ok
-    | _ -> Error "Unable to end the exam"
+    | ExamIsFinished _ -> CannotEndExam "Exam already ended" |> Error
+    | _ -> CannotEndExam "Exam not started" |> Error
 
-let handleCloseExam id = function
+let handleCloseExam = function
     | ExamIsFinished exam ->
         [ExamClosed exam.Id] |> Ok
-    | _ -> Error "Unable to close the exam"
+    | _ -> CannotCloseExam "Exam not ended" |> Error
 
-let handleAddStudent id student = function
+let handleAddStudent student = function
     | ExamIsWaiting exam ->
         [StudentEntered (exam.Id, student)] |> Ok
-    | _ -> Error "Unable to add the student into the exam"
+    | ExamIsClose _ -> CannotAddStudent "Exam not opened" |> Error
+    | _ -> CannotAddStudent "Exam already started" |> Error
 
-let handleRemoveStudent id student = function
-    | ExamIsWaiting exam ->
-        [StudentLeft (exam.Id, student)] |> Ok
-    | _ -> Error "Unable to remove the student at the exam"
+let handleRemoveStudent studentId = function
+    | ExamIsWaiting exam
+    | ExamIsFinished exam ->
+        if exam.Students |> Map.containsKey studentId
+        then [StudentLeft (exam.Id, studentId)] |> Ok
+        else CannotRemoveStudent "Student is not in exam" |> Error
+    | ExamIsClose _ -> CannotRemoveStudent "Exam not opened" |> Error
+    | ExamIsRunning _ -> CannotRemoveStudent "Exam is running" |> Error
 
-let handleAddHost id host = function
-    | ExamIsWaiting exam ->
+let handleAddHost host = function
+    | ExamIsWaiting exam
+    | ExamIsRunning exam
+    | ExamIsFinished exam ->
         [HostEntered (exam.Id, host)] |> Ok
-    | _ -> Error "Unable to add the host into the exam"
+    | _ -> CannotAddHost "Exam not opened" |> Error
 
-let handleRemoveHost id host = function
-    | ExamIsWaiting exam ->
-        [HostLeft (exam.Id, host)] |> Ok
-    | _ -> Error "Unable to remove the host into the exam"
+let handleRemoveHost hostId = function
+    | ExamIsWaiting exam
+    | ExamIsRunning exam
+    | ExamIsFinished exam ->
+        if exam.Hosts |> Map.containsKey hostId
+        then [HostLeft (exam.Id, hostId)] |> Ok
+        else CannotRemoveHost "Host is not in exam" |> Error
+    | _ -> CannotRemoveHost "Exam not opened" |> Error
 
-let handleCreateQuestion id file = function
+let handleCreateQuestion file = function
     | ExamIsWaiting exam ->
         [QuestionCreated (exam.Id, file)] |> Ok
-    | _ -> Error "Unable to create the question on the exam"
+    | ExamIsClose _ -> CannotCreateQuestion "Exam not opened" |> Error
+    | _ -> CannotCreateQuestion "Exam already started" |> Error
 
-let handleDeleteQuestion id file = function
+let handleDeleteQuestion (file: File) = function
     | ExamIsWaiting exam ->
-        [QuestionDeleted (exam.Id, file)] |> Ok
-    | _ -> Error "Unable to remove the question on the exam"
+        if exam.Questions |> List.exists (fun f -> f.Id = file.Id)
+        then [QuestionDeleted (exam.Id, file)] |> Ok
+        else CannotDeleteQuestion "There is no such question file" |> Error
+    | ExamIsClose _ -> CannotDeleteQuestion "Exam not opened" |> Error
+    | _ -> CannotDeleteQuestion "Exam already started" |> Error
 
-let handleChangeTitle id title = function
-    | ExamIsWaiting exam
-    | ExamIsRunning exam ->
+let handleChangeTitle title = function
+    | ExamIsWaiting exam ->
         [TitleChanged (exam.Id, title)] |> Ok
-    | _ -> Error "Unable to change the title of the exam"
+    | ExamIsClose _ -> CannotChangeTitle "Exam not opened" |> Error
+    | _ -> CannotChangeTitle "Exam already started" |> Error
 
 
 /// Produces a list of events as a consequence of a command into a state
 let execute state = function
     | OpenExam (id, title) -> handleOpenExam id title state
-    | StartExam id -> handleStartExam id state
-    | EndExam id -> handleEndExam id state
-    | CloseExam id -> handleCloseExam id state
-    | AddStudent (id, student) -> handleAddStudent id student state
-    | RemoveStudent (examId, studentId) -> handleRemoveStudent examId studentId state
-    | AddHost (id, host) -> handleAddHost id host state
-    | RemoveHost (examId, hostId) -> handleRemoveHost examId hostId state
-    | CreateQuestion (id, file) -> handleCreateQuestion id file state
-    | DeleteQuestion (id, file) -> handleDeleteQuestion id file state
-    | ChangeTitle (id, title) -> handleChangeTitle id title state
+    | StartExam _ -> handleStartExam state
+    | EndExam _ -> handleEndExam state
+    | CloseExam _ -> handleCloseExam state
+    | AddStudent (_, student) -> handleAddStudent student state
+    | RemoveStudent (_, studentId) -> handleRemoveStudent studentId state
+    | AddHost (_, host) -> handleAddHost host state
+    | RemoveHost (_, hostId) -> handleRemoveHost hostId state
+    | CreateQuestion (_, file) -> handleCreateQuestion file state
+    | DeleteQuestion (_, file) -> handleDeleteQuestion file state
+    | ChangeTitle (_, title) -> handleChangeTitle title state
 
 
 let evolve state command =

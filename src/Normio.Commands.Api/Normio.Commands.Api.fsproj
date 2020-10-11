@@ -8,7 +8,7 @@
     <ProjectReference Include="..\Normio.Storage\Normio.Storage.fsproj" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CommandHandler.fs" />
+    <Compile Include="CommandHandlers.fs" />
     <Compile Include="OpenExam.fs" />
     <Compile Include="StartExam.fs" />
     <Compile Include="EndExam.fs" />
