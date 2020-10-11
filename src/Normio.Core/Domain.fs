@@ -27,29 +27,29 @@ let userName40 = {
     ToRaw = fun (UserName40 name) -> name
 }
 
-type FileString40 = FileString40 of string
+type FileString200 = FileString200 of string
 
-let fileString40 = {
+let fileString200 = {
     Create = fun s ->
-        if s |> String.length > 40
+        if s |> String.length > 200
         then "Too long" |> Error
-        else FileString40 s |> Ok
-    ToRaw = fun (FileString40 s) -> s
+        else FileString200 s |> Ok
+    ToRaw = fun (FileString200 s) -> s
 }
 
 type Student = {
     Id: Guid
-    Name: string
+    Name: UserName40
 }
 
 type Host = {
     Id: Guid
-    Name: string
+    Name: UserName40
 }
 
 type File = {
     Id: Guid
-    Name: string
+    Name: FileString200
 }
 
 type Submission = {
