@@ -29,11 +29,11 @@ let handleCommandRequest queries eventStore = function
         endExamCommander queries.Exam.GetExamByExamId
         |> handleCommand eventStore examId
     | CloseExamRequest examId ->
-        closeExamCommander eventStore.GetState
+        closeExamCommander queries.Exam.GetExamByExamId
         |> handleCommand eventStore examId
-    | AddStudentRequest (examId, student) ->
-        addStudentCommander eventStore.GetState 
-        |> handleCommand eventStore (examId, student)
+    | AddStudentRequest (examId, stuId, name) ->
+        addStudentCommander queries.Exam.GetExamByExamId 
+        |> handleCommand eventStore (examId, stuId, name)
     | RemoveStudentRequest (examId, studentId) ->
         removeStudentCommander eventStore.GetState
         |> handleCommand eventStore (examId, studentId)
