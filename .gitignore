@@ -3,7 +3,6 @@
 .vscode
 .metals
 .DS_Store
-.paket
 bin
 obj
 
