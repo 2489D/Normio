@@ -3,6 +3,7 @@ module Normio.Commands.Api.ChangeTitle
 open FSharp.Data
 open System
 
+open Normio.Core.Domain
 open Normio.Core.Commands
 open Normio.Core.States
 open Normio.Commands.Api.CommandHandlers
@@ -26,7 +27,7 @@ let (|ChangeTitleRequest|_|) payload =
     with
         | _ -> None
 
-let validateChangeTitle getState (req: Guid * string) = async {
+let validateChangeTitle getState (req: Guid * ExamTitle40) = async {
     let examId, newTitle = req
     let! state = getState examId
     match state with
