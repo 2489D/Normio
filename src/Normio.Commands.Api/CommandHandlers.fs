@@ -1,6 +1,7 @@
 ﻿module Normio.Commands.Api.CommandHandlers
 
 open Normio.Core.Commands
+open Normio.Core.Errors
 open Normio.Core.CommandHandlers
 open Normio.Storage.EventStore
 
