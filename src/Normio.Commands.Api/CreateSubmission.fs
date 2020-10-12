@@ -18,29 +18,30 @@ let CreateSubmissionJson = """ {
 }
 """
 
-type RemoveHostRequest = JsonProvider<CreateSubmissionJson>
+type CreateSubmissionJson = JsonProvider<CreateSubmissionJson>
 
-let (|RemoveHostRequest|_|) payload =
+let (|CreateSubmissionRequest|_|) payload =
     try
-        let req = RemoveHostRequest.Parse(payload).CreateSubmission
-        (Guid.NewGuid(), req.ExamId, req.StudentId, {| Id = Guid.NewGuid(); Name = req.FileString |}) |> Some
+        let req = CreateSubmissionJson.Parse(payload).CreateSubmission
+        (Guid.NewGuid(), req.ExamId, req.StudentId, (Guid.NewGuid(), req.FileString )) |> Some
     with
     | _ -> None
 
-let validateRemoveHost getExamByExamId (submissionId, examId, studentId, file) = async {
+let validateCreateSubmission getExamByExamId (submissionId, examId, studentId, file) = async {
     let! exam = getExamByExamId examId
     match exam with
     | Some exam' ->
         if exam'.Students |> Map.containsKey studentId
         then
-            match file |> fileString200.Create with
+            let (fileId, fileString) = file
+            match fileString |> fileString200.Create with
             | Ok fileString -> 
                 let submission = {
                     Id = submissionId
                     ExamId = examId
                     Student = exam'.Students |> Map.find studentId
                     File = {
-                        Id = Guid.NewGuid()
+                        Id = fileId
                         Name = fileString
                     }
                 }
@@ -51,7 +52,7 @@ let validateRemoveHost getExamByExamId (submissionId, examId, studentId, file) =
     | _ -> return Choice2Of2 "Invalid Exam Id"
 }
 
-let removeHostCommander getExamByExamId = {
-    Validate = validateRemoveHost getExamByExamId
+let createSubmissionCommander getExamByExamId = {
+    Validate = validateCreateSubmission getExamByExamId
     ToCommand = CreateSubmission
 }
