@@ -61,6 +61,12 @@ let handleRemoveHost hostId = function
         else CannotRemoveHost "Host is not in exam" |> Error
     | _ -> CannotRemoveHost "Exam not opened" |> Error
 
+let handleCreateSubmission submission = function
+    | ExamIsRunning exam ->
+        [SubmissionCreated (exam.Id, submission)] |> Ok
+    | _ -> CannotCreateSubmission "Exam is not running" |> Error
+        
+
 let handleCreateQuestion file = function
     | ExamIsWaiting exam ->
         [QuestionCreated (exam.Id, file)] |> Ok
@@ -92,6 +98,7 @@ let execute state = function
     | RemoveStudent (_, studentId) -> handleRemoveStudent studentId state
     | AddHost (_, host) -> handleAddHost host state
     | RemoveHost (_, hostId) -> handleRemoveHost hostId state
+    | CreateSubmissions (_, submission) -> handleCreateSubmission submission state
     | CreateQuestion (_, file) -> handleCreateQuestion file state
     | DeleteQuestion (_, file) -> handleDeleteQuestion file state
     | ChangeTitle (_, title) -> handleChangeTitle title state

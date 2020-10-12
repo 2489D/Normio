@@ -22,6 +22,7 @@ let apply state event =
             Id = id
             Title = title
             Questions = []
+            Submissions = []
             Students = Map.empty
             Hosts = Map.empty
         }
@@ -48,6 +49,9 @@ let apply state event =
     | ExamIsWaiting exam, TitleChanged (_, newTitle) ->
         { exam with Title = newTitle }
         |> ExamIsWaiting
+    | ExamIsRunning exam, SubmissionCreated (_, submission) ->
+        { exam with Submissions = submission :: exam.Submissions }
+        |> ExamIsRunning
     | ExamIsRunning exam, ExamEnded _ ->
         ExamIsFinished exam
     | ExamIsFinished exam, ExamClosed _ ->

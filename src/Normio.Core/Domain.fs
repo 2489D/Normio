@@ -61,7 +61,7 @@ type File = {
 
 type Submission = {
     Id: Guid
-    Exam: Guid
+    ExamId: Guid
     Student: Student
     File: File
 }
@@ -70,6 +70,7 @@ type Exam = {
     Id: Guid
     Title: ExamTitle40
     Questions: File list
+    Submissions: Submission list
     Students: Map<Guid, Student>
     Hosts: Map<Guid, Host>
 }

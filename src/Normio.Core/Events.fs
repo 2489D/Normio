@@ -12,6 +12,7 @@ type Event =
     | StudentLeft of Guid * Guid
     | HostEntered of Guid * Host
     | HostLeft of Guid * Guid
+    | SubmissionCreated of Guid * Submission
     | QuestionCreated of Guid * File
     | QuestionDeleted of Guid * File
     | TitleChanged of Guid * ExamTitle40

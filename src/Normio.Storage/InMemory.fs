@@ -17,6 +17,7 @@ let private getExamIdFromEvent = function
     | StudentLeft (id, _) -> id
     | HostEntered (id, _) -> id
     | HostLeft (id, _) -> id
+    | SubmissionCreated (id, _) -> id
     | QuestionCreated (id, _) -> id
     | QuestionDeleted (id, _) -> id
     | TitleChanged (id, _) -> id

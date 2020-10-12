@@ -15,9 +15,10 @@ let private openExam examId title =
             Id = examId
             Status = BeforeExam
             Title = title
+            Questions = []
+            Submissions = []
             Students = Map.empty
             Hosts = Map.empty
-            Questions = []
         }
         exams.Add(examId, exam)
     }
@@ -63,6 +64,12 @@ let private removeHost examId hostId =
         exams.[examId] <- { exam with Hosts = exam.Hosts |> Map.remove hostId }
     }
 
+let private createSubmission examId submission =
+    async {
+        let exam = exams.[examId]
+        exams.[examId] <- { exam with Submissions = submission :: exam.Submissions }
+    }
+
 let private createQuestion examId (file: File) =
     async {
         let exam = exams.[examId]
@@ -90,6 +97,7 @@ let examActions = {
     RemoveStudent = removeStudent
     AddHost = addHost
     RemoveHost = removeHost
+    CreateSubmission = createSubmission
     CreateQuestion = createQuestion
     DeleteQuestion = deleteQuestion
     ChangeTitle = changeTitle
