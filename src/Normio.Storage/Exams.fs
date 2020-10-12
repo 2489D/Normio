@@ -2,7 +2,6 @@ module Normio.Storage.Exams
 
 open System
 open System.Collections.Generic
-
 open Normio.Core.Domain
 open Normio.Storage.ReadModels
 open Normio.Storage.Projections
