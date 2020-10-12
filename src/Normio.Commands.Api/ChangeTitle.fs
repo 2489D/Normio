@@ -1,11 +1,8 @@
 module Normio.Commands.Api.ChangeTitle
 
 open FSharp.Data
-open System
-
 open Normio.Core.Domain
 open Normio.Core.Commands
-open Normio.Core.States
 open Normio.Commands.Api.CommandHandlers
 
 [<Literal>]
@@ -27,8 +24,7 @@ let (|ChangeTitleRequest|_|) payload =
     with
         | _ -> None
 
-let validateChangeTitle getExamByExamId (req: Guid * string) = async {
-    let examId, newTitle = req
+let validateChangeTitle getExamByExamId (examId, newTitle) = async {
     let! exam = getExamByExamId examId
     match exam with
     | Some _ -> 
@@ -38,7 +34,7 @@ let validateChangeTitle getExamByExamId (req: Guid * string) = async {
     | _ -> return Choice2Of2 "Invalid Exam Id"
 }
 
-let changeTitleCommander getState = {
-    Validate = validateChangeTitle getState
+let changeTitleCommander getExamByExamId = {
+    Validate = validateChangeTitle getExamByExamId
     ToCommand = ChangeTitle
 }

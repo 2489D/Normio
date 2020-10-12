@@ -31,19 +31,19 @@ let handleCommandRequest queries eventStore = function
     | CloseExamRequest examId ->
         closeExamCommander queries.Exam.GetExamByExamId
         |> handleCommand eventStore examId
-    | AddStudentRequest (examId, stuId, name) ->
+    | AddStudentRequest (examId, studentId, name) ->
         addStudentCommander queries.Exam.GetExamByExamId 
-        |> handleCommand eventStore (examId, stuId, name)
+        |> handleCommand eventStore (examId, studentId, name)
     | RemoveStudentRequest (examId, studentId) ->
-        removeStudentCommander eventStore.GetState
+        removeStudentCommander queries.Exam.GetExamByExamId
         |> handleCommand eventStore (examId, studentId)
-    | AddHostRequest (examId, host) ->
-        addHostCommander eventStore.GetState 
-        |> handleCommand eventStore (examId, host)
+    | AddHostRequest (examId, hostId, name) ->
+        addHostCommander queries.Exam.GetExamByExamId 
+        |> handleCommand eventStore (examId, hostId, name)
     | RemoveHostRequest (examId, hostId) ->
-        removeHostCommander eventStore.GetState
+        removeHostCommander queries.Exam.GetExamByExamId
         |> handleCommand eventStore (examId, hostId)
     | ChangeTitleRequest (examId, newTitle) ->
-        changeTitleCommander eventStore.GetState
+        changeTitleCommander queries.Exam.GetExamByExamId
         |> handleCommand eventStore (examId, newTitle)
     | _ -> Error "Invalid Command" |> async.Return

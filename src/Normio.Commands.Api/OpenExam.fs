@@ -2,7 +2,6 @@ module Normio.Commands.Api.OpenExam
 
 open System
 open FSharp.Data
-
 open Normio.Core.Domain
 open Normio.Core.Commands
 open Normio.Commands.Api.CommandHandlers
@@ -24,7 +23,7 @@ let (|OpenExamRequest|_|) payload =
     with
     | _ -> None
 
-let validateOpenExam (id, (title: string)) = async {
+let validateOpenExam (id, title) = async {
     match title |> examTitle40.Create with
     | Ok title40 -> return Choice1Of2 (id, title40)
     | Error err -> return Choice2Of2 (err |> DomainError.toString)

@@ -2,8 +2,6 @@ module Normio.Commands.Api.EndExam
 
 open FSharp.Data
 open Normio.Core.Commands
-open Normio.Core.States
-open Normio.Storage.ReadModels
 open Normio.Commands.Api.CommandHandlers
 
 [<Literal>]
@@ -30,7 +28,7 @@ let validateEndExam getExamByExamId examId = async {
     | _ -> return Choice2Of2 "Invalid Exam Id"
 }
 
-let endExamCommander getState = {
-    Validate = validateEndExam getState
+let endExamCommander getExamByExamId = {
+    Validate = validateEndExam getExamByExamId
     ToCommand = EndExam
 }

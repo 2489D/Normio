@@ -3,9 +3,7 @@ module Normio.Commands.Api.AddHost
 open System
 open FSharp.Data
 open Normio.Core.Domain
-open Normio.Core.States
 open Normio.Core.Commands
-open Normio.Storage.ReadModels
 open Normio.Commands.Api.CommandHandlers
 
 [<Literal>]
@@ -22,20 +20,22 @@ type AddHostRequest = JsonProvider<AddHostJson>
 let (|AddHostRequest|_|) payload =
     try
         let req = AddHostRequest.Parse(payload).AddHost
-        (req.ExamId, ({ Id = Guid.NewGuid(); Name = req.Name}: Host)) |> Some
+        (req.ExamId, Guid.NewGuid(), req.Name) |> Some
     with
     | _ -> None
 
-let validateAddHost getStatus (req: Guid * Host) = async {
-    let examId, host = req
-    let! state = getStatus examId
-    match state with
-    | ExamIsWaiting exam ->
-            return Choice1Of2 (examId, host)
-    | _ -> return Choice2Of2 "Exam is not waiting"
+let validateAddHost getExamByExamId (examId, hostId, name) = async {
+    let! exam = getExamByExamId examId
+    match exam with
+    | Some _ ->
+        match name |> userName40.Create with
+        | Ok name40 ->
+            return Choice1Of2 (examId, ({ Id = hostId; Name = name40 }: Host))
+        | Error msg -> return Choice2Of2 (msg |> DomainError.toString)
+    | _ -> return Choice2Of2 "Invalid Exam Id"
 }
 
-let addHostCommander getState = {
-    Validate = validateAddHost getState
+let addHostCommander getExamByExamId = {
+    Validate = validateAddHost getExamByExamId
     ToCommand = AddHost
 }

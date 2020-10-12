@@ -3,9 +3,7 @@ module Normio.Commands.Api.AddStudent
 open System
 open FSharp.Data
 open Normio.Core.Domain
-open Normio.Core.States
 open Normio.Core.Commands
-open Normio.Storage.ReadModels
 open Normio.Commands.Api.CommandHandlers
 
 [<Literal>]
@@ -26,18 +24,18 @@ let (|AddStudentRequest|_|) payload =
     with
     | _ -> None
 
-let validateAddStudent getExamByExamId (examId, stuId, name) = async {
+let validateAddStudent getExamByExamId (examId, studentId, name) = async {
     let! exam = getExamByExamId examId
     match exam with
     | Some _ ->
         match name |> userName40.Create with
         | Ok name40 ->
-            return Choice1Of2 (examId, ({ Id = stuId; Name = name40 }: Student))
+            return Choice1Of2 (examId, ({ Id = studentId; Name = name40 }: Student))
         | Error msg -> return Choice2Of2 (msg |> DomainError.toString)
     | _ -> return Choice2Of2 "Invalid Exam Id"
 }
 
-let addStudentCommander getState = {
-    Validate = validateAddStudent getState
+let addStudentCommander getExamByExamId = {
+    Validate = validateAddStudent getExamByExamId
     ToCommand = AddStudent
 }
