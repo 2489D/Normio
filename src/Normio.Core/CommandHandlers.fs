@@ -98,7 +98,7 @@ let execute state = function
     | RemoveStudent (_, studentId) -> handleRemoveStudent studentId state
     | AddHost (_, host) -> handleAddHost host state
     | RemoveHost (_, hostId) -> handleRemoveHost hostId state
-    | CreateSubmissions (_, submission) -> handleCreateSubmission submission state
+    | CreateSubmission (_, submission) -> handleCreateSubmission submission state
     | CreateQuestion (_, file) -> handleCreateQuestion file state
     | DeleteQuestion (_, file) -> handleDeleteQuestion file state
     | ChangeTitle (_, title) -> handleChangeTitle title state

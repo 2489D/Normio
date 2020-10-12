@@ -14,6 +14,7 @@ let getExamIdFromCommand = function
 | RemoveStudent (examId, _) -> examId
 | AddHost (examId, _) -> examId
 | RemoveHost (examId, _) -> examId
+| CreateSubmission (examId, _) -> examId
 | CreateQuestion (examId, _) -> examId
 | DeleteQuestion (examId, _) -> examId
 | ChangeTitle (examId, _) -> examId

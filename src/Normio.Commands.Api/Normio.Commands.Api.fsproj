@@ -17,6 +17,7 @@
     <Compile Include="RemoveStudent.fs" />
     <Compile Include="AddHost.fs" />
     <Compile Include="RemoveHost.fs" />
+    <Compile Include="CreateSubmission.fs" />
     <Compile Include="CreateQuestion.fs" />
     <Compile Include="DeleteQuestion.fs" />
     <Compile Include="ChangeTitle.fs" />
