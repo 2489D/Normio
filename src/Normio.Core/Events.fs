@@ -4,7 +4,7 @@ open System
 open Normio.Core.Domain
 
 type Event =
-    | ExamOpened of Guid * string
+    | ExamOpened of Guid * ExamTitle40
     | ExamStarted of Guid
     | ExamEnded of Guid
     | ExamClosed of Guid
@@ -14,4 +14,4 @@ type Event =
     | HostLeft of Guid * Guid
     | QuestionCreated of Guid * File
     | QuestionDeleted of Guid * File
-    | TitleChanged of Guid * string
+    | TitleChanged of Guid * ExamTitle40

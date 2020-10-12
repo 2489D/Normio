@@ -1,10 +1,7 @@
 module Normio.Commands.Api.RemoveHost
 
-open System
 open FSharp.Data
-open Normio.Core.States
 open Normio.Core.Commands
-open Normio.Storage.ReadModels
 open Normio.Commands.Api.CommandHandlers
 
 [<Literal>]
@@ -25,18 +22,14 @@ let (|RemoveHostRequest|_|) payload =
     with
     | _ -> None
 
-let validateRemoveHost getState (req: Guid * Guid) = async {
-    let examId, hostId = req
-    let! state = getState examId
-    match state with
-    | ExamIsWaiting exam ->
-        if exam.Hosts |> Map.containsKey hostId
-        then return Choice1Of2 (examId, hostId)
-        else return Choice2Of2 "Invalid Host Id"
-    | _ -> return Choice2Of2 "Exam is not waiting"
+let validateRemoveHost getExamByExamId (examId, hostId) = async {
+    let! exam = getExamByExamId examId
+    match exam with
+    | Some _ -> return Choice1Of2 (examId, hostId)
+    | _ -> return Choice2Of2 "Invalid Exam Id"
 }
 
-let removeHostCommander getState = {
-    Validate = validateRemoveHost getState
+let removeHostCommander getExamByExamId = {
+    Validate = validateRemoveHost getExamByExamId
     ToCommand = RemoveHost
 }

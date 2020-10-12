@@ -2,8 +2,6 @@ module Normio.Commands.Api.CloseExam
 
 open FSharp.Data
 open Normio.Core.Commands
-open Normio.Core.States
-open Normio.Storage.ReadModels
 open Normio.Commands.Api.CommandHandlers
 
 [<Literal>]
@@ -23,14 +21,14 @@ let (|CloseExamRequest|_|) payload =
     with
     | _ -> None
 
-let validateCloseExam getState examId = async {
-    let! state = getState examId
+let validateCloseExam getExamByExamId examId = async {
+    let! state = getExamByExamId examId
     match state with
-    | ExamIsFinished _ -> return Choice1Of2 examId
-    | _ -> return Choice2Of2 "Exam is not finished"
+    | Some _ -> return Choice1Of2 examId
+    | _ -> return Choice2Of2 "Invalid Exam Id"
 }
 
-let closeExamCommander getState = {
-    Validate = validateCloseExam getState
+let closeExamCommander getExamByExamId = {
+    Validate = validateCloseExam getExamByExamId
     ToCommand = CloseExam
 }

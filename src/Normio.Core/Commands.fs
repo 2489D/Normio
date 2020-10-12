@@ -4,7 +4,7 @@ open System
 open Normio.Core.Domain
 
 type Command =
-    | OpenExam of Guid * string
+    | OpenExam of Guid * ExamTitle40
     | StartExam of Guid
     | EndExam of Guid
     | CloseExam of Guid
@@ -14,4 +14,4 @@ type Command =
     | RemoveHost of Guid * Guid
     | CreateQuestion of Guid * File
     | DeleteQuestion of Guid * File
-    | ChangeTitle of Guid * string
+    | ChangeTitle of Guid * ExamTitle40

@@ -3,9 +3,7 @@ module Normio.Commands.Api.AddStudent
 open System
 open FSharp.Data
 open Normio.Core.Domain
-open Normio.Core.States
 open Normio.Core.Commands
-open Normio.Storage.ReadModels
 open Normio.Commands.Api.CommandHandlers
 
 [<Literal>]
@@ -22,19 +20,22 @@ type AddStudentRequest = JsonProvider<AddStudentJson>
 let (|AddStudentRequest|_|) payload =
     try
         let req = AddStudentRequest.Parse(payload).AddStudent
-        (req.ExamId, ({ Id = Guid.NewGuid(); Name = req.Name}: Student)) |> Some
+        (req.ExamId, Guid.NewGuid(), req.Name) |> Some
     with
     | _ -> None
 
-let validateAddStudent getState (req: Guid * Student) = async {
-    let examId, student = req
-    let! state = getState examId
-    match state with
-    | ExamIsWaiting _ -> return Choice1Of2 (examId, student)
-    | _ -> return Choice2Of2 "Exam is not waiting"
+let validateAddStudent getExamByExamId (examId, studentId, name) = async {
+    let! exam = getExamByExamId examId
+    match exam with
+    | Some _ ->
+        match name |> userName40.Create with
+        | Ok name40 ->
+            return Choice1Of2 (examId, ({ Id = studentId; Name = name40 }: Student))
+        | Error msg -> return Choice2Of2 (msg |> DomainError.toString)
+    | _ -> return Choice2Of2 "Invalid Exam Id"
 }
 
-let addStudentCommander getState = {
-    Validate = validateAddStudent getState
+let addStudentCommander getExamByExamId = {
+    Validate = validateAddStudent getExamByExamId
     ToCommand = AddStudent
 }

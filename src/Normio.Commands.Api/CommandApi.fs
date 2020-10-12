@@ -19,31 +19,31 @@ open Normio.Commands.Api.ChangeTitle
 
 // TODO : JSON parse using Newtonsoft.Json --> System.Text.Json
 let handleCommandRequest queries eventStore = function
-    | OpenExamRequest exam ->
+    | OpenExamRequest (examId, title) ->
         openExamCommander
-        |> handleCommand eventStore exam
+        |> handleCommand eventStore (examId, title)
     | StartExamRequest examId ->
-        startExamCommander eventStore.GetState
+        startExamCommander queries.Exam.GetExamByExamId
         |> handleCommand eventStore examId
     | EndExamRequest examId ->
-        endExamCommander eventStore.GetState
+        endExamCommander queries.Exam.GetExamByExamId
         |> handleCommand eventStore examId
     | CloseExamRequest examId ->
-        closeExamCommander eventStore.GetState
+        closeExamCommander queries.Exam.GetExamByExamId
         |> handleCommand eventStore examId
-    | AddStudentRequest (examId, student) ->
-        addStudentCommander eventStore.GetState 
-        |> handleCommand eventStore (examId, student)
+    | AddStudentRequest (examId, studentId, name) ->
+        addStudentCommander queries.Exam.GetExamByExamId 
+        |> handleCommand eventStore (examId, studentId, name)
     | RemoveStudentRequest (examId, studentId) ->
-        removeStudentCommander eventStore.GetState
+        removeStudentCommander queries.Exam.GetExamByExamId
         |> handleCommand eventStore (examId, studentId)
-    | AddHostRequest (examId, host) ->
-        addHostCommander eventStore.GetState 
-        |> handleCommand eventStore (examId, host)
+    | AddHostRequest (examId, hostId, name) ->
+        addHostCommander queries.Exam.GetExamByExamId 
+        |> handleCommand eventStore (examId, hostId, name)
     | RemoveHostRequest (examId, hostId) ->
-        removeHostCommander eventStore.GetState
+        removeHostCommander queries.Exam.GetExamByExamId
         |> handleCommand eventStore (examId, hostId)
     | ChangeTitleRequest (examId, newTitle) ->
-        changeTitleCommander eventStore.GetState
+        changeTitleCommander queries.Exam.GetExamByExamId
         |> handleCommand eventStore (examId, newTitle)
     | _ -> Error "Invalid Command" |> async.Return
