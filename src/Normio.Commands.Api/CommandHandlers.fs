@@ -33,7 +33,10 @@ let handleCommand eventStore commandData commander = async {
     | Choice1Of2 validatedCommandData ->
         let command = commander.ToCommand validatedCommandData
         let! state = eventStore.GetState (getExamIdFromCommand command)
-        return evolve state command
+        match evolve state command with
+        | Ok (newState, events) ->
+            return (newState, events) |> Ok
+        | Error err -> return err |> CommandError.toString |> Error
     | Choice2Of2 msg ->
         return msg |> Error
 }
