@@ -17,9 +17,6 @@
     <Compile Include="Configurations.fs" />
     <Compile Include="Program.fs" />
     <None Include="web.config" />
-    <Content Include="WebRoot/**/*">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Giraffe" Version="4.1.*" />
