@@ -51,6 +51,15 @@ let hostsJObj (hosts: Map<Guid, Host>) =
     
 let questionsJObj (questions: File List) =
     jArray (questions |> List.map fileJObj)
+
+let submissionJObj (submission: Submission) =
+    jobj [
+        "id" .= submission.Id
+        "studentId" .= submission.Student.Id
+        "studentName" .= (submission.Student.Name |> userName40.ToRaw)
+        "fileId" .= submission.File.Id
+        "fileString" .= submission.File.Name
+    ]
     
 
 let eventJson = function
@@ -98,6 +107,12 @@ let eventJson = function
         "event" .= "studentLeft"
         "examId" .= examId
         "hostId" .= hostId
+    ]
+| SubmissionCreated (examId, submission) ->
+    jobj [
+        "event" .= "submissionCreated"
+        "examId" .= examId
+        "submission" .= (submission |> submissionJObj)
     ]
 | QuestionCreated (examId, file) ->
     jobj [
