@@ -7,6 +7,11 @@ on:
   push:
     branches:
       - master
+    paths-ignore:
+      - '**/README.md'
+      - '.config/**'
+      - '.github/**'
+      - 'scripts/**'
 
 jobs:
   build-and-deploy:
