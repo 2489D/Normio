@@ -25,7 +25,7 @@ let commandApiHandler eventStore : HttpHandler =
         | Ok (state, events) ->
             do! inMemoryEventStore.SaveEvents events
             eventHub.Trigger events
-            return! json state next context
+            return! json (state |> stateJson) next context
         | Error msg ->
             return! json msg next context
     }

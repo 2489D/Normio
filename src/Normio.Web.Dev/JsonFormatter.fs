@@ -135,13 +135,13 @@ let eventJson = function
 
 
 let stateJson = function
-| ExamIsClose (examId) ->
-    jobj[
+| ExamIsClose examId ->
+    jobj [
         "state" .= "examIsClosed"
         "examId" .= (match examId with | Some t -> sprintf "%A" t | None -> "") // ???
     ]
-| ExamIsWaiting (exam) ->
-    jobj[
+| ExamIsWaiting exam ->
+    jobj [
         "state" .= "examIsWaiting"
         "examId" .= exam.Id
         "examTitle" .= exam.Title
@@ -149,8 +149,8 @@ let stateJson = function
         "students" .= (exam.Students |> studentsJObj)
         "hosts" .= (exam.Hosts |> hostsJObj)
     ]
-| ExamIsRunning (exam) ->
-    jobj[
+| ExamIsRunning exam ->
+    jobj [
         "state" .= "examIsRunning"
         "examId" .= exam.Id
         "examTitle" .= exam.Title
@@ -158,8 +158,8 @@ let stateJson = function
         "students" .= (exam.Students |> studentsJObj)
         "hosts" .= (exam.Hosts |> hostsJObj)
     ]
-| ExamIsFinished (exam) ->
-    jobj[
+| ExamIsFinished exam ->
+    jobj [
         "state" .= "examIsFinished"
         "examId" .= exam.Id
         "examTitle" .= exam.Title
