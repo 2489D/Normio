@@ -1,4 +1,4 @@
-module Normio.Core.Events
+namespace Normio.Core.Events
 
 open System
 open Normio.Core.Domain
