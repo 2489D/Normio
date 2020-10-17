@@ -3,7 +3,7 @@ namespace Normio.Core.Domain
 type ExamTitle40 = private ExamTitle40 of string
 
 type ExamTitle40 with
-    member this.ToValue = fun (ExamTitle40 title) -> title
+    member this.Value = this |> fun (ExamTitle40 title) -> title
 
 module ExamTitle40 =
     let create title =
@@ -15,7 +15,7 @@ module ExamTitle40 =
 type UserName40 = private UserName40 of string
 
 type UserName40 with
-    member this.ToValue = fun (UserName40 name) -> name
+    member this.Value = this |> fun (UserName40 name) -> name
 
 module UserName40 =
     let create name =
@@ -27,7 +27,7 @@ module UserName40 =
 type FileString200 = private FileString200 of string
 
 type FileString200 with
-    member this.ToValue = fun (FileString200 s) -> s
+    member this.Value = this |> fun (FileString200 s) -> s
 
 module FileString200 =
     let create s =

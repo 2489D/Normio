@@ -7,6 +7,8 @@ open Normio.Core.Events
 open Normio.Core.States
 open Newtonsoft.Json.Linq
 
+// TODO : how to prevent a wrapped value from being used as `value` here?
+// how to force for the type system to use member this.Value for wrapped values?
 let (.=) key (value: obj) = JProperty(key, value)
 
 let jobj jProperties =
@@ -22,17 +24,18 @@ let jArray jObjects =
 let studentJObj (host: Student) =
     jobj [
         "id" .= host.Id
-        "name" .= host.Name
+        "name" .= host.Name.Value
     ]
 
 let hostJObj (host: Host) =
     jobj [
         "id" .= host.Id
-        "name" .= host.Name
+        "name" .= host.Name.Value
     ]
 let fileJObj (file: File) =
     jobj [
-        // TODO
+        "id" .= file.Id
+        "fileString" .= file.Name.Value
     ]
 
 let studentsJObj (students: Map<Guid, Student>) =
@@ -56,9 +59,9 @@ let submissionJObj (submission: Submission) =
     jobj [
         "id" .= submission.Id
         "studentId" .= submission.Student.Id
-        "studentName" .= (submission.Student.Name |> userName40.ToRaw)
+        "studentName" .= (submission.Student.Name.Value)
         "fileId" .= submission.File.Id
-        "fileString" .= submission.File.Name
+        "fileString" .= submission.File.Name.Value
     ]
     
 
@@ -118,19 +121,19 @@ let eventJson = function
     jobj [
         "event" .= "questionCreated"
         "examId" .= examId
-        "file" .= file
+        "file" .= (file |> fileJObj)
     ]
 | QuestionDeleted (examId, file) ->
     jobj [
         "event" .= "questionDeleted"
         "examId" .= examId
-        "file" .= file
+        "file" .= (file |> fileJObj)
     ]
 | TitleChanged (examId, title) ->
     jobj [
         "event" .= "titleChanged"
         "examId" .= examId
-        "title" .= title
+        "title" .= title.Value
     ]
 
 
@@ -144,7 +147,7 @@ let stateJson = function
     jobj [
         "state" .= "examIsWaiting"
         "examId" .= exam.Id
-        "examTitle" .= exam.Title
+        "examTitle" .= exam.Title.Value
         "questions" .= (exam.Questions |> questionsJObj)
         "students" .= (exam.Students |> studentsJObj)
         "hosts" .= (exam.Hosts |> hostsJObj)
@@ -153,7 +156,7 @@ let stateJson = function
     jobj [
         "state" .= "examIsRunning"
         "examId" .= exam.Id
-        "examTitle" .= exam.Title
+        "examTitle" .= exam.Title.Value
         "questions" .= (exam.Questions |> questionsJObj)
         "students" .= (exam.Students |> studentsJObj)
         "hosts" .= (exam.Hosts |> hostsJObj)
@@ -162,7 +165,7 @@ let stateJson = function
     jobj [
         "state" .= "examIsFinished"
         "examId" .= exam.Id
-        "examTitle" .= exam.Title
+        "examTitle" .= exam.Title.Value
         "questions" .= (exam.Questions |> questionsJObj)
         "students" .= (exam.Students |> studentsJObj)
         "hosts" .= (exam.Hosts |> hostsJObj)
