@@ -37,7 +37,7 @@ let handleCommand eventStore commandData commander = async {
         match evolve state command with
         | Ok (newState, events) ->
             return (newState, events) |> Ok
-        | Error err -> return err |> CommandError.toString |> Error
+        | Error err -> return err.ToString() |> Error
     | Choice2Of2 msg ->
         return msg |> Error
 }

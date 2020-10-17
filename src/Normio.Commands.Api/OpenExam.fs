@@ -24,9 +24,9 @@ let (|OpenExamRequest|_|) payload =
     | _ -> None
 
 let validateOpenExam (id, title) = async {
-    match title |> examTitle40.Create with
+    match title |> ExamTitle40.create with
     | Ok title40 -> return Choice1Of2 (id, title40)
-    | Error err -> return Choice2Of2 (err |> DomainError.toString)
+    | Error err -> return Choice2Of2 (err.ToString())
 }
 
 let openExamCommander = {

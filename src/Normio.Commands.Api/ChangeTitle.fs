@@ -28,9 +28,9 @@ let validateChangeTitle getExamByExamId (examId, newTitle) = async {
     let! exam = getExamByExamId examId
     match exam with
     | Some _ -> 
-        match examTitle40.Create newTitle with
+        match ExamTitle40.create newTitle with
         | Ok title -> return Choice1Of2 (examId, title)
-        | Error err -> return Choice2Of2 (err |> DomainError.toString)
+        | Error err -> return Choice2Of2 (err.ToString())
     | _ -> return Choice2Of2 "Invalid Exam Id"
 }
 

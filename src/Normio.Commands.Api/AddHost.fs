@@ -28,10 +28,10 @@ let validateAddHost getExamByExamId (examId, hostId, name) = async {
     let! exam = getExamByExamId examId
     match exam with
     | Some _ ->
-        match name |> userName40.Create with
+        match name |> UserName40.create with
         | Ok name40 ->
             return Choice1Of2 (examId, ({ Id = hostId; Name = name40 }: Host))
-        | Error msg -> return Choice2Of2 (msg |> DomainError.toString)
+        | Error err -> return Choice2Of2 (err.ToString())
     | _ -> return Choice2Of2 "Invalid Exam Id"
 }
 

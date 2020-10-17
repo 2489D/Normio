@@ -34,7 +34,7 @@ let validateCreateSubmission getExamByExamId (submissionId, examId, studentId, f
         if exam'.Students |> Map.containsKey studentId
         then
             let (fileId, fileString) = file
-            match fileString |> fileString200.Create with
+            match fileString |> FileString200.create with
             | Ok fileString -> 
                 let submission = {
                     Id = submissionId
@@ -47,7 +47,7 @@ let validateCreateSubmission getExamByExamId (submissionId, examId, studentId, f
                 }
                 return Choice1Of2 (examId, submission)
             | Error err ->
-                return Choice2Of2 (err |> DomainError.toString)
+                return Choice2Of2 (err.ToString())
         else return Choice2Of2 "Invalid Student Id"
     | _ -> return Choice2Of2 "Invalid Exam Id"
 }
