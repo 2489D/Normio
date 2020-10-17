@@ -1,4 +1,4 @@
-module Normio.Core.Errors
+namespace Normio.Core.Errors
 
 type CommandError =
     | CannotOpenExam of context:string
@@ -13,18 +13,18 @@ type CommandError =
     | CannotCreateQuestion of context:string
     | CannotDeleteQuestion of context:string
     | CannotChangeTitle of context:string
-
-module CommandError =
-    let toString = function
-        | CannotOpenExam ctx -> sprintf "Cannot open exam: %A" ctx
-        | CannotStartExam ctx -> sprintf "Cannot start exam: %A" ctx
-        | CannotEndExam ctx -> sprintf "Cannot end exam: %A" ctx
-        | CannotCloseExam ctx -> sprintf "Cannot close exam: %A" ctx
-        | CannotAddStudent ctx -> sprintf "Cannot add student: %A" ctx
-        | CannotRemoveStudent ctx -> sprintf "Cannot remove student: %A" ctx
-        | CannotAddHost ctx -> sprintf "Cannot add host: %A" ctx
-        | CannotRemoveHost ctx -> sprintf "Cannot remove host: %A" ctx
-        | CannotCreateSubmission ctx -> sprintf "Cannot create a submission: %A" ctx
-        | CannotCreateQuestion ctx -> sprintf "Cannot create question: %A" ctx
-        | CannotDeleteQuestion ctx -> sprintf "Cannot delete question: %A" ctx
-        | CannotChangeTitle ctx -> sprintf "Cannot change title: %A" ctx
+    
+    override this.ToString () =
+        match this with
+            | CannotOpenExam ctx -> sprintf "Cannot open exam: %A" ctx
+            | CannotStartExam ctx -> sprintf "Cannot start exam: %A" ctx
+            | CannotEndExam ctx -> sprintf "Cannot end exam: %A" ctx
+            | CannotCloseExam ctx -> sprintf "Cannot close exam: %A" ctx
+            | CannotAddStudent ctx -> sprintf "Cannot add student: %A" ctx
+            | CannotRemoveStudent ctx -> sprintf "Cannot remove student: %A" ctx
+            | CannotAddHost ctx -> sprintf "Cannot add host: %A" ctx
+            | CannotRemoveHost ctx -> sprintf "Cannot remove host: %A" ctx
+            | CannotCreateSubmission ctx -> sprintf "Cannot create a submission: %A" ctx
+            | CannotCreateQuestion ctx -> sprintf "Cannot create question: %A" ctx
+            | CannotDeleteQuestion ctx -> sprintf "Cannot delete question: %A" ctx
+            | CannotChangeTitle ctx -> sprintf "Cannot change title: %A" ctx

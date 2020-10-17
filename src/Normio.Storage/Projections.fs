@@ -4,11 +4,6 @@ open System
 open Normio.Core.Domain
 open Normio.Core.Events
 
-(*
-We are going to use `Event` returned from `evolve` function to populate ReadModels
-e.g. ExamOpened (examId, title) will project the data to ExamForStudent
-*)
-
 type ExamActions = {
     OpenExam: Guid -> ExamTitle40 -> Async<unit>
     StartExam: Guid -> Async<unit>

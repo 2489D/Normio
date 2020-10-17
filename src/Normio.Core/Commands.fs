@@ -1,4 +1,4 @@
-module Normio.Core.Commands
+namespace Normio.Core.Commands
 
 open System
 open Normio.Core.Domain
