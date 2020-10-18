@@ -9,7 +9,7 @@ open FSharp.Control.Tasks.V2.ContextInsensitive
 open Giraffe
 
 open Normio.Core.Events
-open Normio.Storage.InMemory
+open Normio.Storage.Exams
 open Normio.Storage.Projections
 open Normio.Commands.Api.CommandApi
 open Normio.Web.Dev.Hub
@@ -23,11 +23,11 @@ let commandApiHandler eventStore : HttpHandler =
         let! response = handleCommandRequest inMemoryQueries eventStore payload
         match response with
         | Ok (state, events) ->
-            do! inMemoryEventStore.SaveEvents events
+            do! eventStore.SaveEvents events
             eventHub.Trigger events
             return! json (state |> stateJson) next context
         | Error msg ->
-            return! json msg next context
+            return! (setStatusCode 404 >=> json msg) next context
     }
 
 let commandApi eventStore =

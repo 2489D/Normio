@@ -76,10 +76,10 @@ let private createQuestion examId (file: File) =
         exams.[examId] <- { exam with Questions = file :: exam.Questions }
     }
 
-let private deleteQuestion examId (file: File) =
+let private deleteQuestion examId fileId =
     async {
         let exam = exams.[examId]
-        exams.[examId] <- { exam with Questions = exam.Questions |> List.filter (fun f -> f.Id <> file.Id)}
+        exams.[examId] <- { exam with Questions = exam.Questions |> List.filter (fun f -> f.Id <> fileId)}
     }
 
 let private changeTitle examId title =
@@ -111,4 +111,12 @@ let getExam examId = async {
 
 let examQueries = {
     GetExamByExamId = getExam
+}
+
+let inMemoryQueries: Queries = {
+    Exam = examQueries
+}
+
+let inMemoryActions: ProjectionActions = {
+    Exam = examActions
 }

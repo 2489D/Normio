@@ -30,7 +30,7 @@ type Host = {
 [<CustomEquality; NoComparison>]
 type File = {
     Id: Guid
-    Name: FileString200
+    FileName: FileString200
 } with
     override this.Equals(other) =
         match other with

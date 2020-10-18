@@ -6,14 +6,12 @@ open Normio.Core.Commands
 open Normio.Commands.Api.CommandHandlers
 
 [<Literal>]
-let ChangeTitleJson = """
-{
+let ChangeTitleJson = """{
     "changeTitle": {
         "examId": "2a964d85-f503-40a1-8014-2c8ee5ac4a49",
         "newTitle": "newTitle"
     }
-}
-"""
+}"""
 
 type ChangeTitleRequest = JsonProvider<ChangeTitleJson>
 

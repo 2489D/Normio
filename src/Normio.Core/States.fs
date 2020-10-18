@@ -43,8 +43,8 @@ let apply state event =
     | ExamIsWaiting exam, QuestionCreated (_, file) ->
         { exam with Questions = file :: exam.Questions  }
         |> ExamIsWaiting
-    | ExamIsWaiting exam, QuestionDeleted (_, file) ->
-        { exam with Questions = exam.Questions |> List.filter (fun f -> f.Id <> file.Id )}
+    | ExamIsWaiting exam, QuestionDeleted (_, fileId) ->
+        { exam with Questions = exam.Questions |> List.filter (fun f -> f.Id <> fileId )}
         |> ExamIsWaiting
     | ExamIsWaiting exam, TitleChanged (_, newTitle) ->
         { exam with Title = newTitle }

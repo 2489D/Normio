@@ -1,6 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UserSecretsId>7e1938a8-05c9-41e6-b82f-aca6315724e9</UserSecretsId>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\Normio.Core\Normio.Core.fsproj" />
@@ -9,8 +11,13 @@
     <Compile Include="ReadModels.fs" />
     <Compile Include="Projections.fs" />
     <Compile Include="Queries.fs" />
-    <Compile Include="EventStore.fs" />
+    <Compile Include="EventStore\EventStore.fs" />
+    <Compile Include="EventStore\InMemory.fs" />
+    <Compile Include="EventStore\EventStoredTypes.fs" />
+    <Compile Include="EventStore\Cosmos.fs" />
+    <Content Include="EventStore\Settings.json" />
     <Compile Include="Exams.fs" />
-    <Compile Include="InMemory.fs" />
+    <Content Include="paket.references" />
   </ItemGroup>
+  <Import Project="..\.paket\Paket.Restore.targets" />
 </Project>

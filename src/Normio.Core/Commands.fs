@@ -14,5 +14,5 @@ type Command =
     | RemoveHost of Guid * Guid
     | CreateSubmission of Guid * Submission
     | CreateQuestion of Guid * File
-    | DeleteQuestion of Guid * File
+    | DeleteQuestion of Guid * Guid
     | ChangeTitle of Guid * ExamTitle40

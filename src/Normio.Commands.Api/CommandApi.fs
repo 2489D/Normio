@@ -16,9 +16,10 @@ open Normio.Commands.Api.RemoveStudent
 open Normio.Commands.Api.AddHost
 open Normio.Commands.Api.RemoveHost
 open Normio.Commands.Api.CreateSubmission
+open Normio.Commands.Api.CreateQuestion
+open Normio.Commands.Api.DeleteQuestion
 open Normio.Commands.Api.ChangeTitle
 
-// TODO : JSON parse using Newtonsoft.Json --> System.Text.Json
 let handleCommandRequest queries eventStore = function
     | OpenExamRequest (examId, title) ->
         openExamCommander
@@ -44,6 +45,12 @@ let handleCommandRequest queries eventStore = function
     | CreateSubmissionRequest req ->
         createSubmissionCommander queries.Exam.GetExamByExamId
         |> handleCommand eventStore req
+    | CreateQuestionRequest (examId, (fileId, fileName)) ->
+        createCreateQuestionCommander queries.Exam.GetExamByExamId
+        |> handleCommand eventStore (examId, fileId, fileName)
+    | DeleteQuestionRequest (examId, fileId) ->
+        createDeleteQuestionCommander queries.Exam.GetExamByExamId
+        |> handleCommand eventStore (examId, fileId)
     | RemoveHostRequest (examId, hostId) ->
         removeHostCommander queries.Exam.GetExamByExamId
         |> handleCommand eventStore (examId, hostId)

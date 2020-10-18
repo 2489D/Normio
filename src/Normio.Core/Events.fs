@@ -14,5 +14,5 @@ type Event =
     | HostLeft of Guid * Guid
     | SubmissionCreated of Guid * Submission
     | QuestionCreated of Guid * File
-    | QuestionDeleted of Guid * File
+    | QuestionDeleted of Guid * Guid
     | TitleChanged of Guid * ExamTitle40

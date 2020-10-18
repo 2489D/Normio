@@ -35,7 +35,7 @@ let hostJObj (host: Host) =
 let fileJObj (file: File) =
     jobj [
         "id" .= file.Id
-        "fileString" .= file.Name.Value
+        "fileString" .= file.FileName.Value
     ]
 
 let studentsJObj (students: Map<Guid, Student>) =
@@ -61,7 +61,7 @@ let submissionJObj (submission: Submission) =
         "studentId" .= submission.Student.Id
         "studentName" .= (submission.Student.Name.Value)
         "fileId" .= submission.File.Id
-        "fileString" .= submission.File.Name.Value
+        "fileString" .= submission.File.FileName.Value
     ]
     
 
@@ -123,11 +123,11 @@ let eventJson = function
         "examId" .= examId
         "file" .= (file |> fileJObj)
     ]
-| QuestionDeleted (examId, file) ->
+| QuestionDeleted (examId, fileId) ->
     jobj [
         "event" .= "questionDeleted"
         "examId" .= examId
-        "file" .= (file |> fileJObj)
+        "fileId" .= fileId
     ]
 | TitleChanged (examId, title) ->
     jobj [

@@ -1,32 +1,15 @@
-module Normio.Storage.InMemory
+module Normio.Storage.EventStore.InMemory
 
 open System
 open Normio.Core.Events
 open Normio.Core.States
-open Normio.Storage.Queries
-open Normio.Storage.Projections
 open Normio.Storage.EventStore
-open Normio.Storage.Exams
-
-let private getExamIdFromEvent = function
-    | ExamOpened (id, _) -> id
-    | ExamStarted id -> id
-    | ExamEnded id -> id
-    | ExamClosed id -> id
-    | StudentEntered (id, _) -> id
-    | StudentLeft (id, _) -> id
-    | HostEntered (id, _) -> id
-    | HostLeft (id, _) -> id
-    | SubmissionCreated (id, _) -> id
-    | QuestionCreated (id, _) -> id
-    | QuestionDeleted (id, _) -> id
-    | TitleChanged (id, _) -> id
 
 type InMemoryEventStore() =
     let mutable eventStore: Map<Guid, Event list> = Map.empty
 
     let storeWithNewEvent store event =
-        let examId = getExamIdFromEvent event
+        let examId = Helper.getExamIdFromEvent event
         match Map.tryFind examId store with
         | Some es -> Map.add examId (event :: es) store
         | None -> Map.add examId [event] store
@@ -55,12 +38,4 @@ let private eventStoreObj = InMemoryEventStore()
 let inMemoryEventStore = {
     GetState = eventStoreObj.GetState
     SaveEvents = eventStoreObj.SaveEvents
-}
-
-let inMemoryQueries: Queries = {
-    Exam = examQueries
-}
-
-let inMemoryActions = {
-    Exam = examActions
 }

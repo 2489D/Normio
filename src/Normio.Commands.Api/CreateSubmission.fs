@@ -18,11 +18,11 @@ let CreateSubmissionJson = """ {
 }
 """
 
-type CreateSubmissionJson = JsonProvider<CreateSubmissionJson>
+type CreateSubmissionRequest = JsonProvider<CreateSubmissionJson>
 
 let (|CreateSubmissionRequest|_|) payload =
     try
-        let req = CreateSubmissionJson.Parse(payload).CreateSubmission
+        let req = CreateSubmissionRequest.Parse(payload).CreateSubmission
         (Guid.NewGuid(), req.ExamId, req.StudentId, (Guid.NewGuid(), req.FileString )) |> Some
     with
     | _ -> None
@@ -42,7 +42,7 @@ let validateCreateSubmission getExamByExamId (submissionId, examId, studentId, f
                     Student = exam'.Students |> Map.find studentId
                     File = {
                         Id = fileId
-                        Name = fileString
+                        FileName = fileString
                     }
                 }
                 return Choice1Of2 (examId, submission)

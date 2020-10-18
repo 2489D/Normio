@@ -2,6 +2,8 @@ source https://api.nuget.org/v3/index.json
 
 storage: none
 framework: netcoreapp3.1
+nuget FSharp.CosmosDb
 nuget FSharp.Data
+nuget Microsoft.Azure.Cosmos.Table
+nuget Microsoft.Extensions.Configuration
 nuget Newtonsoft.Json
-nuget Suave

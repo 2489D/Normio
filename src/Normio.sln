@@ -11,6 +11,8 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Normio.Commands.Api", "Norm
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Normio.Web.Dev", "Normio.Web.Dev\Normio.Web.Dev.fsproj", "{C4E40623-AD64-40A3-9A4D-A41C0A363032}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Normio.Client", "Normio.Client\Normio.Client.csproj", "{9952DF52-87A0-4883-9740-B5E0E2BFA765}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -132,5 +134,17 @@ Global
 		{C4E40623-AD64-40A3-9A4D-A41C0A363032}.Release|x64.Build.0 = Release|Any CPU
 		{C4E40623-AD64-40A3-9A4D-A41C0A363032}.Release|x86.ActiveCfg = Release|Any CPU
 		{C4E40623-AD64-40A3-9A4D-A41C0A363032}.Release|x86.Build.0 = Release|Any CPU
+		{9952DF52-87A0-4883-9740-B5E0E2BFA765}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9952DF52-87A0-4883-9740-B5E0E2BFA765}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9952DF52-87A0-4883-9740-B5E0E2BFA765}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{9952DF52-87A0-4883-9740-B5E0E2BFA765}.Debug|x64.Build.0 = Debug|Any CPU
+		{9952DF52-87A0-4883-9740-B5E0E2BFA765}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{9952DF52-87A0-4883-9740-B5E0E2BFA765}.Debug|x86.Build.0 = Debug|Any CPU
+		{9952DF52-87A0-4883-9740-B5E0E2BFA765}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9952DF52-87A0-4883-9740-B5E0E2BFA765}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9952DF52-87A0-4883-9740-B5E0E2BFA765}.Release|x64.ActiveCfg = Release|Any CPU
+		{9952DF52-87A0-4883-9740-B5E0E2BFA765}.Release|x64.Build.0 = Release|Any CPU
+		{9952DF52-87A0-4883-9740-B5E0E2BFA765}.Release|x86.ActiveCfg = Release|Any CPU
+		{9952DF52-87A0-4883-9740-B5E0E2BFA765}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

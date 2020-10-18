@@ -1,14 +1,13 @@
 module Normio.Web.Dev.Hub
 
 open System.Threading.Tasks
-open Microsoft.Extensions.Hosting
 open Microsoft.AspNetCore.SignalR
+open FSharp.Control.Tasks.V2.ContextInsensitive
 
 open Normio.Core.Events
 open Normio.Storage.Projections
-open Normio.Storage.InMemory
+open Normio.Storage.Exams
 
-open FSharp.Control.Tasks.V2.ContextInsensitive
 
 type INormioClient =
     abstract member ReceiveEvent : string -> Task
@@ -19,13 +18,12 @@ type EventHub() =
 type NormioEventWorker(hubContext: IHubContext<EventHub, INormioClient>) =
     let eventStream = new Event<Event list>()
 
-    let project event =
-        projectReadModel inMemoryActions event
+    let project actions event =
+        projectReadModel actions event
         |> Async.RunSynchronously |> ignore
 
-    let projectEvents events =
-        events
-        |> List.iter project
+    let projectEvents actions =
+        List.iter (project actions)
 
     let signalEvents (events: Event list) =
         task {
@@ -34,7 +32,7 @@ type NormioEventWorker(hubContext: IHubContext<EventHub, INormioClient>) =
         } |> ignore
         ()
 
-    do eventStream.Publish.Add(projectEvents)
+    do eventStream.Publish.Add(projectEvents inMemoryActions)
     do eventStream.Publish.Add(signalEvents)
     do eventStream.Publish.Add(printfn "Events created : %A")
 
