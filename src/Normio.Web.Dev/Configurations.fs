@@ -1,18 +1,13 @@
 module Normio.Web.Dev.Configurations
 
-open System.Configuration
 open Microsoft.AspNetCore.Builder
 open Microsoft.AspNetCore.Cors.Infrastructure
 open Microsoft.AspNetCore.Hosting
-open Microsoft.AspNetCore.SignalR
-open Microsoft.Extensions.Configuration
-open Microsoft.Extensions.Hosting
 open Microsoft.Extensions.Logging
 open Microsoft.Extensions.DependencyInjection
 
 open Giraffe
 
-open Normio.Storage.EventStore.Cosmos
 open Normio.Web.Dev.Hub
 open Normio.Web.Dev.ErrorHandler
 
