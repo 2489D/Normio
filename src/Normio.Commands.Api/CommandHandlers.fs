@@ -28,7 +28,7 @@ type Commander<'a, 'b> = {
 /// 2. Get the corresponding state from the input data
 /// 3. Evolve with the command from the state
 /// 4. Get the result
-let handleCommand eventStore commandData commander = async {
+let handleCommand (eventStore : IEventStore) commandData commander = async {
     let! validatedData = commander.Validate commandData
     match validatedData with
     | Choice1Of2 validatedCommandData ->

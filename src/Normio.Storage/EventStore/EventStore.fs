@@ -3,6 +3,8 @@
 open System
 open Normio.Core.Events
 open Normio.Core.States
+
+[<AutoOpen>]
 module Helper =
     let getExamIdFromEvent = function
         | ExamOpened (id, _) -> id
@@ -18,7 +20,7 @@ module Helper =
         | QuestionDeleted (id, _) -> id
         | TitleChanged (id, _) -> id
 
-type EventStore = {
-    GetState: Guid -> Async<State>
-    SaveEvents: Event list -> Async<unit>
-}
+type IEventStore =
+    abstract GetState: examId:Guid -> Async<State>
+    abstract SaveEvents: event:Event list -> Async<unit>
+

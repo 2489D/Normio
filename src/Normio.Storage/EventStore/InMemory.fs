@@ -26,16 +26,20 @@ type InMemoryEventStore() =
         return getEvents eventStore examId
         |> List.fold apply (ExamIsClose None)
     }
+    
+    member this.GetEvents examId =
+        async {
+            return getEvents eventStore examId
+        }
 
     member this.SaveEvents events = async {
         let newStore = storeWithNewEvents eventStore events
         eventStore <- newStore
     }
 
-let private eventStoreObj = InMemoryEventStore()
+let eventStoreObj = InMemoryEventStore()
 
-
-let inMemoryEventStore = {
-    GetState = eventStoreObj.GetState
-    SaveEvents = eventStoreObj.SaveEvents
-}
+let inMemoryEventStory =
+    { new IEventStore with
+        member this.GetState examId = eventStoreObj.GetState examId
+        member this.SaveEvents events = eventStoreObj.SaveEvents events }

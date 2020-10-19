@@ -6,13 +6,14 @@ open FSharp.Control.Tasks.V2.ContextInsensitive
 
 open Giraffe
 
+open Normio.Storage.EventStore
 open Normio.Storage.Exams
 open Normio.Commands.Api.CommandApi
 open Normio.Web.Dev.Hub
 open Normio.Web.Dev.JsonFormatter
 
 // TODO : status code
-let commandApiHandler eventStore : HttpHandler =
+let commandApiHandler (eventStore : IEventStore) : HttpHandler =
     fun (next: HttpFunc) (context : HttpContext) -> task {
         let eventHub = context.GetService<NormioEventWorker>()
         use stream = new StreamReader(context.Request.Body);

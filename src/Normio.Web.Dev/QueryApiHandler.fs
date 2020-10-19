@@ -8,6 +8,7 @@ open FSharp.Control.Tasks.V2.ContextInsensitive
 
 open Giraffe
 
+open Normio.Storage.EventStore
 open Normio.Storage.Queries
 
 [<Literal>]
@@ -40,7 +41,7 @@ let getExamByExamId examQuery =
         | _ -> return! text "invalid payload" next context
     }
 
-let queriesApi queries eventStore =
+let queriesApi queries (eventStore : IEventStore) =
     GET >=> choose [
         route "/exams" >=> getExamByExamId queries.Exam.GetExamByExamId
     ]
