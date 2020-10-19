@@ -3,3 +3,4 @@ FSharp.Core
 FSharp.CosmosDb
 Microsoft.Extensions.Configuration
 FSharp.Data
+FSharp.SystemTextJson
