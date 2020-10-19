@@ -18,39 +18,6 @@ type EventStored = {
     Event : Event
 }
 
-type Event with
-    member this.Name =
-        match this with
-        | ExamOpened _ -> "ExamOpened"
-        | ExamStarted _ -> "ExamStarted"
-        | ExamEnded _ -> "ExamEnded"
-        | ExamClosed _ -> "ExamClosed"
-        | StudentEntered _ -> "StudentEntered"
-        | StudentLeft _ -> "StudentLeft"
-        | HostEntered _ -> "HostEntered"
-        | HostLeft _ -> "HostLeft"
-        | SubmissionCreated _ -> "SubmissionCreated"
-        | QuestionCreated _ -> "QuestionCreated"
-        | QuestionDeleted _ -> "QuestionDeleted"
-        | TitleChanged _ -> "TitleChanged"
-
-//let private getEventFromStored eventStored =
-//    match eventStored with
-//    | ExamOpenedStored event -> event |> Ok
-//    | ExamStartedStored event -> event |> Ok
-//    | ExamEndedStored event -> event |> Ok
-//    | ExamClosedStored event -> event |> Ok
-//    | StudentEnteredStored event -> event |> Ok
-//    | StudentLeftStored event -> event |> Ok
-//    | HostEnteredStored event -> event |> Ok
-//    | HostLeftStored event -> event |> Ok
-//    | SubmissionCreatedStored event -> event |> Ok
-//    | QuestionCreatedStored event -> event |> Ok
-//    | QuestionDeletedStored event -> event |> Ok
-//    | TitleChangedStored event -> event |> Ok
-//    | _ -> "Invalid event stored" |> Error
-//    
-//
 let private getConn connString =
     connString
     |> Cosmos.fromConnectionString
@@ -67,13 +34,6 @@ let private getEvents connString =
         |> Cosmos.execAsync<EventStored>
 
 let private getState connString =
-    let folder state event =
-        match event with
-        | Ok event' ->
-            match state with
-            | Ok state' -> apply state' event' |> Ok
-            | Error err -> Error err
-        | Error err -> Error err
     fun examId -> async {
             let! state = getEvents connString examId
                          |> AsyncSeq.map (fun stored -> stored.Event)
