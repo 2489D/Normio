@@ -13,11 +13,11 @@
     <Compile Include="Queries.fs" />
     <Compile Include="EventStore\EventStore.fs" />
     <Compile Include="EventStore\InMemory.fs" />
-    <Compile Include="EventStore\EventStoredTypes.fs" />
     <Compile Include="EventStore\Cosmos.fs" />
     <Content Include="EventStore\Settings.json" />
-    <Compile Include="Exams.fs" />
+    <Compile Include="ReadModel\Exams.fs" />
     <Content Include="paket.references" />
+    <None Include="CosmosDb.fsx" />
   </ItemGroup>
   <Import Project="..\.paket\Paket.Restore.targets" />
 </Project>

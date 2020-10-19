@@ -1,18 +1,14 @@
-module Normio.Storage.ReadModels
+namespace Normio.Storage.ReadModels
 
 open System
 open Normio.Core.Domain
-
-(*
-    Suppose all users need full data of the exam
-    for simplicity
-*)
 
 type ExamStatus =
     | BeforeExam
     | DuringExam
     | AfterExam
 
+// TODO: student / host
 type ExamReadModel = {
     Id: Guid
     Status: ExamStatus
