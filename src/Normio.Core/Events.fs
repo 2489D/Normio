@@ -1,8 +1,10 @@
 namespace Normio.Core.Events
 
 open System
+open System.Text.Json.Serialization
 open Normio.Core.Domain
 
+[<JsonFSharpConverter(unionEncoding = (JsonUnionEncoding.ExternalTag ||| JsonUnionEncoding.NamedFields))>]
 type Event =
     | ExamOpened of examId:Guid * title:ExamTitle40
     | ExamStarted of examId:Guid
@@ -16,4 +18,3 @@ type Event =
     | QuestionCreated of examId:Guid * file:File
     | QuestionDeleted of examId:Guid * fileId:Guid
     | TitleChanged of examId:Guid * title:ExamTitle40
-    

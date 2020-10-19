@@ -3,6 +3,7 @@ module Normio.Storage.EventStore.EventStoredTypes
 open System
 open System.Text.Json.Serialization
 open FSharp.Data
+open FSharp.CosmosDb
 open Normio.Core.Domain
 open Normio.Core.Events
 

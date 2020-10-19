@@ -25,6 +25,7 @@ type NormioEventWorker(hubContext: IHubContext<EventHub, INormioClient>) =
     let projectEvents actions =
         List.iter (project actions)
 
+    // TODO
     let signalEvents (events: Event list) =
         task {
             for event in events do

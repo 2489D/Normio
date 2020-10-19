@@ -1,5 +1,8 @@
 namespace Normio.Core.Domain
 
+open System.Text.Json.Serialization
+
+[<JsonFSharpConverter>]
 type ExamTitle40 = private ExamTitle40 of string
 
 type ExamTitle40 with
@@ -12,6 +15,7 @@ module ExamTitle40 =
         else ExamTitle40 title |> Ok
         
 
+[<JsonFSharpConverter>]
 type UserName40 = private UserName40 of string
 
 type UserName40 with
@@ -24,6 +28,7 @@ module UserName40 =
         else UserName40 name |> Ok
         
 
+[<JsonFSharpConverter>]
 type FileString200 = private FileString200 of string
 
 type FileString200 with

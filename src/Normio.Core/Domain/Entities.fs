@@ -1,11 +1,14 @@
 namespace Normio.Core.Domain
 
 open System
-open System.Xml.Schema
+open System.Text.Json.Serialization
 
 [<CustomEquality; NoComparison>]
+[<JsonFSharpConverter>]
 type Student = {
+    [<JsonPropertyName("id")>]
     Id: Guid
+    [<JsonPropertyName("name")>]
     Name: UserName40
 } with
     override this.Equals(other) =
@@ -16,8 +19,11 @@ type Student = {
         hash this.Id
 
 [<CustomEquality; NoComparison>]
+[<JsonFSharpConverter>]
 type Host = {
+    [<JsonPropertyName("id")>]
     Id: Guid
+    [<JsonPropertyName("name")>]
     Name: UserName40
 } with
     override this.Equals(other) =
@@ -28,8 +34,11 @@ type Host = {
         hash this.Id
 
 [<CustomEquality; NoComparison>]
+[<JsonFSharpConverter>]
 type File = {
+    [<JsonPropertyName("id")>]
     Id: Guid
+    [<JsonPropertyName("name")>]
     FileName: FileString200
 } with
     override this.Equals(other) =
@@ -40,8 +49,11 @@ type File = {
         hash this.Id
 
 [<CustomEquality; NoComparison>]
+[<JsonFSharpConverter>]
 type Submission = {
+    [<JsonPropertyName("id")>]
     Id: Guid
+    [<JsonPropertyName("examId")>]
     ExamId: Guid
     Student: Student
     File: File
@@ -54,9 +66,13 @@ type Submission = {
         hash this.Id
 
 [<CustomEquality; NoComparison>]
+[<JsonFSharpConverter>]
 type Exam = {
+    [<JsonPropertyName("id")>]
     Id: Guid
+    [<JsonPropertyName("title")>]
     Title: ExamTitle40
+    [<JsonPropertyName("question")>]
     Questions: File list
     Submissions: Submission list
     Students: Map<Guid, Student>
