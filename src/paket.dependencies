@@ -4,6 +4,7 @@ storage: none
 framework: netcoreapp3.1
 nuget FSharp.CosmosDb
 nuget FSharp.Data
+nuget FSharp.SystemTextJson
 nuget Microsoft.Azure.Cosmos.Table
 nuget Microsoft.Extensions.Configuration
 nuget Newtonsoft.Json

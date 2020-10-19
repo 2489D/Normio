@@ -29,6 +29,8 @@ NUGET
       FSharp.Core (>= 4.7.1)
     FSharp.Data (3.3.3)
       FSharp.Core (>= 4.3.4)
+    FSharp.SystemTextJson (0.14.8)
+      FSharp.Core (>= 4.7)
     Microsoft.Azure.Cosmos.Table (1.0.8)
       Microsoft.Azure.DocumentDB.Core (>= 2.11.2)
       Microsoft.OData.Core (>= 7.6.4)
