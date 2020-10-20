@@ -4,6 +4,7 @@
     <AssemblyName>Normio.Web.Dev.App</AssemblyName>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <UserSecretsId>840b48b8-98b4-4d9e-be4f-6aedcb9ad690</UserSecretsId>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\Normio.Storage\Normio.Storage.fsproj" />
@@ -18,10 +19,8 @@
     <Compile Include="ErrorHandler.fs" />
     <Compile Include="Configurations.fs" />
     <Compile Include="Program.fs" />
+    <Content Include="paket.references" />
     <None Include="web.config" />
   </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Giraffe" Version="4.1.*" />
-    <PackageReference Include="TaskBuilder.fs" Version="2.1.*" />
-  </ItemGroup>
+  <Import Project="..\.paket\Paket.Restore.targets" />
 </Project>

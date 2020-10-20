@@ -13,10 +13,6 @@ open Normio.Web.Dev.CommandApiHandler
 open Normio.Web.Dev.QueryApiHandler
 open Normio.Web.Dev.Configurations
 
-// ---------------------------------
-// Web app
-// ---------------------------------
-
 open Microsoft.Extensions.Configuration
 
 open FSharp.Control.Tasks.V2.ContextInsensitive

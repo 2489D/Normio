@@ -14,7 +14,6 @@
     <Compile Include="EventStore\EventStore.fs" />
     <Compile Include="EventStore\InMemory.fs" />
     <Compile Include="EventStore\Cosmos.fs" />
-    <Content Include="EventStore\Settings.json" />
     <Compile Include="ReadModel\Exams.fs" />
     <Content Include="paket.references" />
   </ItemGroup>
