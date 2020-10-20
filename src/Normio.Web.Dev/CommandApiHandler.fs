@@ -10,7 +10,6 @@ open Normio.Storage.EventStore
 open Normio.Storage.Exams
 open Normio.Commands.Api.CommandApi
 open Normio.Web.Dev.Hub
-open Normio.Web.Dev.JsonFormatter
 
 // TODO : status code
 let commandApiHandler (eventStore : IEventStore) : HttpHandler =
@@ -19,11 +18,12 @@ let commandApiHandler (eventStore : IEventStore) : HttpHandler =
         use stream = new StreamReader(context.Request.Body);
         let! payload = stream.ReadToEndAsync();
         let! response = handleCommandRequest inMemoryQueries eventStore payload
+        // TODO : better way? --> https://github.com/Tarmil/FSharp.SystemTextJson/blob/master/docs/Using.md#using-with-giraffe
         match response with
         | Ok (state, events) ->
             do! eventStore.SaveEvents events
             eventHub.Trigger events
-            return! json (state |> stateJson) next context
+            return! json state next context
         | Error msg ->
             return! (setStatusCode 404 >=> json msg) next context
     }

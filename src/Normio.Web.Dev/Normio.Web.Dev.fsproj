@@ -12,7 +12,6 @@
     <ProjectReference Include="..\Normio.Core\Normio.Core.fsproj" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="JsonFormatter.fs" />
     <Compile Include="EventHub.fs" />
     <Compile Include="CommandApiHandler.fs" />
     <Compile Include="QueryApiHandler.fs" />

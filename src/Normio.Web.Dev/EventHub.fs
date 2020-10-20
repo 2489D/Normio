@@ -10,7 +10,7 @@ open Normio.Storage.Exams
 
 
 type INormioClient =
-    abstract member ReceiveEvent : string -> Task
+    abstract member ReceiveEvent : Event -> Task
 
 type EventHub() =
     inherit Hub<INormioClient>()
@@ -29,7 +29,7 @@ type NormioEventWorker(hubContext: IHubContext<EventHub, INormioClient>) =
     let signalEvents (events: Event list) =
         task {
             for event in events do
-                do! hubContext.Clients.All.ReceiveEvent (string event)
+                do! hubContext.Clients.All.ReceiveEvent event
         } |> ignore
         ()
 
