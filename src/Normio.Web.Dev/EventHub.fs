@@ -4,9 +4,10 @@ open System.Threading.Tasks
 open Microsoft.AspNetCore.SignalR
 open FSharp.Control.Tasks.V2.ContextInsensitive
 
+open Microsoft.Extensions.Configuration
 open Normio.Core.Events
-open Normio.Storage.Projections
-open Normio.Storage.Exams
+open Normio.Persistence.Projections
+open Normio.Persistence.Exams
 
 
 type INormioClient =
@@ -15,8 +16,9 @@ type INormioClient =
 type EventHub() =
     inherit Hub<INormioClient>()
 
-type NormioEventWorker(hubContext: IHubContext<EventHub, INormioClient>) =
-    let eventStream = new Event<Event list>()
+type NormioEventWorker(hubContext: IHubContext<EventHub, INormioClient>, config: IConfiguration) =
+    let eventStream = Event<Event list>()
+    let conn = config.["EventStoreConnString"]
 
     let project actions event =
         projectReadModel actions event
@@ -25,7 +27,7 @@ type NormioEventWorker(hubContext: IHubContext<EventHub, INormioClient>) =
     let projectEvents actions =
         List.iter (project actions)
 
-    // TODO
+    // TODO : user group
     let signalEvents (events: Event list) =
         task {
             for event in events do
@@ -33,7 +35,7 @@ type NormioEventWorker(hubContext: IHubContext<EventHub, INormioClient>) =
         } |> ignore
         ()
 
-    do eventStream.Publish.Add(projectEvents inMemoryActions)
+    do eventStream.Publish.Add(projectEvents (cosmosActions conn))
     do eventStream.Publish.Add(signalEvents)
     do eventStream.Publish.Add(printfn "Events created : %A")
 

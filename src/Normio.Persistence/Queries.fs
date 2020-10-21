@@ -1,7 +1,7 @@
-module Normio.Storage.Queries
+module Normio.Persistence.Queries
 
 open System
-open Normio.Storage.ReadModels
+open Normio.Persistence.ReadModels
 
 type ExamQueries = {
     GetExamByExamId: Guid -> Async<ExamReadModel option>

@@ -1,6 +1,7 @@
-namespace Normio.Storage.ReadModels
+namespace Normio.Persistence.ReadModels
 
 open System
+open System.Text.Json.Serialization
 open Normio.Core.Domain
 
 type ExamStatus =
@@ -8,9 +9,10 @@ type ExamStatus =
     | DuringExam
     | AfterExam
 
-// TODO: student / host
+[<JsonFSharpConverter>]
 type ExamReadModel = {
     Id: Guid
+    ExamId: Guid
     Status: ExamStatus
     Title: ExamTitle40
     Questions: File list

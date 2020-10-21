@@ -1,9 +1,9 @@
-module Normio.Storage.EventStore.InMemory
+module Normio.Persistence.EventStore.InMemory
 
 open System
 open Normio.Core.Events
 open Normio.Core.States
-open Normio.Storage.EventStore
+open Normio.Persistence.EventStore
 
 type InMemoryEventStore() =
     let mutable eventStore: Map<Guid, Event list> = Map.empty

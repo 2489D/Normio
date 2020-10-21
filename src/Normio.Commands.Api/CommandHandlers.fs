@@ -3,7 +3,7 @@
 open Normio.Core.Commands
 open Normio.Core.Errors
 open Normio.Core.CommandHandlers
-open Normio.Storage.EventStore
+open Normio.Persistence.EventStore
 
 let getExamIdFromCommand = function
 | OpenExam (examId, _) -> examId

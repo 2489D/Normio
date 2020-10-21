@@ -1,26 +1,26 @@
-module Normio.Storage.Projections
+module Normio.Persistence.Projections
 
 open System
 open Normio.Core.Domain
 open Normio.Core.Events
 
-type ExamActions = {
-    OpenExam: Guid -> ExamTitle40 -> Async<unit>
-    StartExam: Guid -> Async<unit>
-    EndExam: Guid -> Async<unit>
-    CloseExam: Guid -> Async<unit>
-    AddStudent: Guid -> Student -> Async<unit>
-    RemoveStudent: Guid -> Guid -> Async<unit>
-    AddHost: Guid -> Host -> Async<unit>
-    RemoveHost: Guid -> Guid -> Async<unit>
-    CreateSubmission: Guid -> Submission -> Async<unit>
-    CreateQuestion: Guid -> File -> Async<unit>
-    DeleteQuestion: Guid -> Guid -> Async<unit>
-    ChangeTitle: Guid -> ExamTitle40 -> Async<unit>
-}
+type IExamAction =
+    abstract OpenExam: Guid -> ExamTitle40 -> Async<unit>
+    abstract StartExam: Guid -> Async<unit>
+    abstract EndExam: Guid -> Async<unit>
+    abstract CloseExam: Guid -> Async<unit>
+    abstract AddStudent: Guid -> Student -> Async<unit>
+    abstract RemoveStudent: Guid -> Guid -> Async<unit>
+    abstract AddHost: Guid -> Host -> Async<unit>
+    abstract RemoveHost: Guid -> Guid -> Async<unit>
+    abstract CreateSubmission: Guid -> Submission -> Async<unit>
+    abstract CreateQuestion: Guid -> File -> Async<unit>
+    abstract DeleteQuestion: Guid -> Guid -> Async<unit>
+    abstract ChangeTitle: Guid -> ExamTitle40 -> Async<unit>
+
 
 type ProjectionActions = {
-    Exam: ExamActions
+    Exam: IExamAction
 }
 
 let projectReadModel actions = function

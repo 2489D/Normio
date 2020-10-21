@@ -1,4 +1,4 @@
-module Normio.Storage.EventStore.Cosmos
+module Normio.Persistence.EventStore.Cosmos
 
 open System
 open System.Text.Json.Serialization
@@ -7,7 +7,7 @@ open FSharp.CosmosDb
 open Normio.Core.Domain
 open Normio.Core.Events
 open Normio.Core.States
-open Normio.Storage.EventStore
+open Normio.Persistence.EventStore
 
 [<CLIMutable>]
 type EventStored = {

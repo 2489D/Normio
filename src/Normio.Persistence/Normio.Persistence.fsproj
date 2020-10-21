@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <UserSecretsId>7e1938a8-05c9-41e6-b82f-aca6315724e9</UserSecretsId>
+    <RootNamespace>Normio.Storage</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\Normio.Core\Normio.Core.fsproj" />
@@ -17,6 +18,7 @@
     <Compile Include="ReadModel\Exams.fs" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="FSharp.Control.AsyncSeq" Version="3.0.2" />
     <PackageReference Include="FSharp.CosmosDb" Version="0.2.0" />
     <PackageReference Include="FSharp.SystemTextJson" Version="0.14.8" />
   </ItemGroup>

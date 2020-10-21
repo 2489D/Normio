@@ -5,7 +5,7 @@ VisualStudioVersion = 15.0.26124.0
 MinimumVisualStudioVersion = 15.0.26124.0
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Normio.Core", "Normio.Core\Normio.Core.fsproj", "{C176B0C6-D3D9-4578-9CE1-4A7C4C5691EA}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Normio.Storage", "Normio.Storage\Normio.Storage.fsproj", "{F1B61873-8A0A-4B7E-999F-234370127709}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Normio.Persistence", "Normio.Persistence\Normio.Persistence.fsproj", "{F1B61873-8A0A-4B7E-999F-234370127709}"
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Normio.Commands.Api", "Normio.Commands.Api\Normio.Commands.Api.fsproj", "{61E29B7F-931E-4981-B622-FF557FC21780}"
 EndProject

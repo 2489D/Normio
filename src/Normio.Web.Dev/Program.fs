@@ -7,8 +7,8 @@ open Microsoft.Extensions.Hosting
 
 open Giraffe
 
-open Normio.Storage.Exams
-open Normio.Storage.EventStore.Cosmos
+open Normio.Persistence.Exams
+open Normio.Persistence.EventStore.Cosmos
 open Normio.Web.Dev.CommandApiHandler
 open Normio.Web.Dev.QueryApiHandler
 open Normio.Web.Dev.Configurations
@@ -22,11 +22,13 @@ let webApp =
     fun (next : HttpFunc) (ctx : HttpContext) ->
         let settings = ctx.GetService<IConfiguration>()
         let conn = settings.["EventStoreConnString"]
+
         let eventStore = cosmosEventStore conn
+        let queries = cosmosQueries conn
         task {
             return! choose [
-                commandApi eventStore
-                queriesApi inMemoryQueries eventStore
+                commandApi queries eventStore
+                queriesApi queries eventStore
                 setStatusCode 404 >=> text "Not Found"
             ] next ctx
         }

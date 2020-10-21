@@ -1,12 +1,7 @@
 module Normio.Commands.Api.CommandApi
 
-open System
-open System.Text
-open Normio.Core.States
-open Normio.Core.Events
+open Normio.Persistence.Queries
 open Normio.Commands.Api.CommandHandlers
-open Normio.Storage.Queries
-
 open Normio.Commands.Api.OpenExam
 open Normio.Commands.Api.StartExam
 open Normio.Commands.Api.EndExam

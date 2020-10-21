@@ -8,8 +8,8 @@ open FSharp.Control.Tasks.V2.ContextInsensitive
 
 open Giraffe
 
-open Normio.Storage.EventStore
-open Normio.Storage.Queries
+open Normio.Persistence.EventStore
+open Normio.Persistence.Queries
 
 [<Literal>]
 let GetExamJson = """ {

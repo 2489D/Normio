@@ -6,7 +6,6 @@ open Normio.Commands.Api
 open Normio.Core.Domain
 open Normio.Core.Commands
 open Normio.Commands.Api.CommandHandlers
-open Normio.Storage.ReadModels
 
 [<Literal>]
 let DeleteQuestionJson = """ {
