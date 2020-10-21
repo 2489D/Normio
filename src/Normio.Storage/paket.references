@@ -1,6 +1,0 @@
-Microsoft.Azure.Cosmos.Table
-FSharp.Core
-FSharp.CosmosDb
-Microsoft.Extensions.Configuration
-FSharp.Data
-FSharp.SystemTextJson

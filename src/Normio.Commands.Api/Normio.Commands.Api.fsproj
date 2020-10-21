@@ -26,5 +26,4 @@
   <ItemGroup>
     <PackageReference Include="FSharp.Data" Version="3.3.3" />
   </ItemGroup>
-  <Import Project="..\.paket\Paket.Restore.targets" />
 </Project>

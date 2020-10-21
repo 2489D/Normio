@@ -15,7 +15,9 @@
     <Compile Include="EventStore\InMemory.fs" />
     <Compile Include="EventStore\Cosmos.fs" />
     <Compile Include="ReadModel\Exams.fs" />
-    <Content Include="paket.references" />
   </ItemGroup>
-  <Import Project="..\.paket\Paket.Restore.targets" />
+  <ItemGroup>
+    <PackageReference Include="FSharp.CosmosDb" Version="0.2.0" />
+    <PackageReference Include="FSharp.SystemTextJson" Version="0.14.8" />
+  </ItemGroup>
 </Project>

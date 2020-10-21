@@ -12,7 +12,8 @@
     <Compile Include="Commands.fs" />
     <Compile Include="Errors.fs" />
     <Compile Include="CommandHandlers.fs" />
-    <Content Include="paket.references" />
   </ItemGroup>
-  <Import Project="..\.paket\Paket.Restore.targets" />
+  <ItemGroup>
+    <PackageReference Include="FSharp.SystemTextJson" Version="0.14.8" />
+  </ItemGroup>
 </Project>
