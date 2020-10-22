@@ -31,7 +31,7 @@ let validateCreateSubmission getExamByExamId (submissionId, examId, studentId, f
     let! exam = getExamByExamId examId
     match exam with
     | Some exam' ->
-        if exam'.Students |> Map.containsKey studentId
+        if exam'.Students |> Array.exists (fun s -> s.Id = studentId)
         then
             let (fileId, fileString) = file
             match fileString |> FileString200.create with
@@ -39,7 +39,7 @@ let validateCreateSubmission getExamByExamId (submissionId, examId, studentId, f
                 let submission = {
                     Id = submissionId
                     ExamId = examId
-                    Student = exam'.Students |> Map.find studentId
+                    Student = exam'.Students |> Array.find (fun s -> s.Id = studentId)
                     File = {
                         Id = fileId
                         FileName = fileString

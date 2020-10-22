@@ -33,10 +33,9 @@ type NormioEventWorker(hubContext: IHubContext<EventHub, INormioClient>, config:
             for event in events do
                 do! hubContext.Clients.All.ReceiveEvent event
         } |> ignore
-        ()
 
-    do eventStream.Publish.Add(projectEvents (cosmosActions conn))
-    do eventStream.Publish.Add(signalEvents)
+    do eventStream.Publish.Add(fun events -> projectEvents (cosmosActions conn) events)
+    do eventStream.Publish.Add(fun events -> signalEvents events)
     do eventStream.Publish.Add(printfn "Events created : %A")
 
     member this.Trigger events =

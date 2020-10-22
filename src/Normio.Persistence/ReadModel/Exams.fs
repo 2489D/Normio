@@ -1,6 +1,7 @@
 module Normio.Persistence.Exams
 
 open System
+open System.Text.Json.Serialization
 open FSharp.Control
 open FSharp.CosmosDb
 
@@ -17,13 +18,20 @@ let private getConn connString =
     |> Cosmos.container "querySide"
 
 let private getExam connString (examId: Guid) =
-    getConn connString
-    |> Cosmos.query "SELECT * FROM e WHERE e.ExamId = @Id"
-    |> Cosmos.parameters [
-        "@Id", box examId
-    ]
-    |> Cosmos.execAsync<ExamReadModel option>
-    |> AsyncSeq.firstOrDefault None
+    async {
+        try
+            let! exam = getConn connString
+                        |> Cosmos.query "SELECT * FROM e WHERE e.ExamId = @Id"
+                        |> Cosmos.parameters [
+                            "@Id", box examId
+                        ]
+                        |> Cosmos.execAsync<ExamReadModel>
+                        |> AsyncSeq.toArrayAsync
+            
+            return exam |> Array.head |> Some
+        with
+        | _ -> return None
+    }
 
 let private openExam connString examId title = async {
     let exam =
@@ -31,15 +39,18 @@ let private openExam connString examId title = async {
           ExamId = examId
           Status = BeforeExam
           Title = title
-          Questions = []
-          Submissions = []
-          Students = Map.empty
-          Hosts = Map.empty }
+          Questions = Array.empty
+          Submissions = Array.empty
+          Students = Array.empty
+          Hosts = Array.empty }
     
-    getConn connString
-    |> Cosmos.insert exam
-    |> Cosmos.execAsync
-    |> ignore
+    try
+        getConn connString
+        |> Cosmos.insert exam
+        |> Cosmos.execAsync
+        |> ignore
+    with
+    | e -> printfn "%A" e
 }
         
 let private startExam connString examId = async {
@@ -66,7 +77,7 @@ let private closeExam connString examId = async {
 let private addStudent connString examId (student: Student) = async {
     let key = string examId
     getConn connString
-    |> Cosmos.update key key (fun exam -> { exam with Students = exam.Students |> Map.add student.Id student })
+    |> Cosmos.update key key (fun (exam: ExamReadModel) -> { exam with Students = exam.Students |> Array.append [| student |] })
     |> Cosmos.execAsync
     |> ignore
 }
@@ -74,7 +85,7 @@ let private addStudent connString examId (student: Student) = async {
 let private removeStudent connString examId studentId = async {
     let key = string examId
     getConn connString
-    |> Cosmos.update key key (fun exam -> { exam with Students = exam.Students |> Map.remove studentId })
+    |> Cosmos.update key key (fun (exam: ExamReadModel) -> { exam with Students = exam.Students |> Array.filter (fun s -> s.Id <> studentId) })
     |> Cosmos.execAsync
     |> ignore
 }
@@ -82,7 +93,7 @@ let private removeStudent connString examId studentId = async {
 let private addHost connString examId (host: Host) = async {
     let key = string examId
     getConn connString
-    |> Cosmos.update key key (fun exam -> { exam with Hosts = exam.Hosts |> Map.add host.Id host })
+    |> Cosmos.update key key (fun (exam: ExamReadModel) -> { exam with Hosts = exam.Hosts |> Array.append [| host |] })
     |> Cosmos.execAsync
     |> ignore
 }
@@ -90,7 +101,7 @@ let private addHost connString examId (host: Host) = async {
 let private removeHost connString examId hostId = async {
     let key = string examId
     getConn connString
-    |> Cosmos.update key key (fun exam -> { exam with Hosts = exam.Hosts |> Map.remove hostId })
+    |> Cosmos.update key key (fun (exam: ExamReadModel) -> { exam with Hosts = exam.Hosts |> Array.filter (fun h -> h.Id <> hostId) })
     |> Cosmos.execAsync
     |> ignore
 }
@@ -98,7 +109,7 @@ let private removeHost connString examId hostId = async {
 let private createSubmission connString examId submission = async {
     let key = string examId
     getConn connString
-    |> Cosmos.update key key (fun exam -> { exam with Submissions = submission :: exam.Submissions })
+    |> Cosmos.update key key (fun (exam: ExamReadModel) -> { exam with Submissions = exam.Submissions |> Array.append [| submission |] })
     |> Cosmos.execAsync
     |> ignore
 }
@@ -106,7 +117,7 @@ let private createSubmission connString examId submission = async {
 let private createQuestion connString examId (file: File) = async {
     let key = string examId
     getConn connString
-    |> Cosmos.update key key (fun exam -> { exam with Questions = file :: exam.Questions })
+    |> Cosmos.update key key (fun (exam: ExamReadModel) -> { exam with Questions = exam.Questions |> Array.append [| file |] })
     |> Cosmos.execAsync
     |> ignore
 }
@@ -114,7 +125,7 @@ let private createQuestion connString examId (file: File) = async {
 let private deleteQuestion connString examId fileId = async {
     let key = string examId
     getConn connString
-    |> Cosmos.update key key (fun exam -> { exam with Questions = exam.Questions |> List.filter (fun f -> f.Id <> fileId)})
+    |> Cosmos.update key key (fun (exam: ExamReadModel) -> { exam with Questions = exam.Questions |> Array.filter (fun f -> f.Id <> fileId)})
     |> Cosmos.execAsync
     |> ignore
 }
@@ -122,7 +133,7 @@ let private deleteQuestion connString examId fileId = async {
 let private changeTitle connString examId title = async {
     let key = string examId
     getConn connString
-    |> Cosmos.update key key (fun exam -> { exam with Title = title })
+    |> Cosmos.update key key (fun (exam: ExamReadModel) -> { exam with Title = title })
     |> Cosmos.execAsync
     |> ignore
 }

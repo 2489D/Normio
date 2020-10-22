@@ -3,7 +3,6 @@ module Normio.Web.Dev.Configurations
 open System
 open System.Text.Json
 open System.Text.Json.Serialization
-open Giraffe.Serialization.Json
 open Microsoft.AspNetCore.Builder
 open Microsoft.AspNetCore.Cors.Infrastructure
 open Microsoft.AspNetCore.Hosting
@@ -11,6 +10,7 @@ open Microsoft.Extensions.Logging
 open Microsoft.Extensions.DependencyInjection
 
 open Giraffe
+open Giraffe.Serialization
 
 open Normio.Web.Dev.Hub
 open Normio.Web.Dev.ErrorHandler
@@ -47,16 +47,20 @@ let configureApp webApp (app : IApplicationBuilder) =
         .UseGiraffe(webApp)
 
 let configureServices (services : IServiceCollection) =
-    let jsonOptions = JsonSerializerOptions()
-    jsonOptions.Converters.Add(JsonFSharpConverter())
     services.AddCors()    |> ignore
     services.AddSignalR()
         .AddJsonProtocol(fun options ->
-            options.PayloadSerializerOptions.Converters.Add(JsonFSharpConverter())) |> ignore
-    services.AddSingleton(jsonOptions) |> ignore
-    services.AddSingleton<IJsonSerializer, SystemTextJsonSerializer>() |> ignore
+            options.PayloadSerializerOptions.Converters.Add(JsonFSharpConverter()))
+    |> ignore
+    
+    // TODO
     services.AddSingleton<NormioEventWorker>() |> ignore
     services.AddGiraffe() |> ignore
+    let jsonOptions = JsonSerializerOptions()
+    jsonOptions.Converters.Add(JsonFSharpConverter())
+    services.AddSingleton(jsonOptions) |> ignore
+    services.AddSingleton<IJsonSerializer, SystemTextJsonSerializer>() |> ignore
+
 
 let configureLogging (builder : ILoggingBuilder) =
     builder.AddFilter(fun l -> l.Equals LogLevel.Debug)
