@@ -7,7 +7,6 @@ open FSharp.Control.Tasks.V2.ContextInsensitive
 open Giraffe
 
 open Normio.Persistence.EventStore
-open Normio.Persistence.Exams
 open Normio.Commands.Api.CommandApi
 open Normio.Web.Dev.Hub
 

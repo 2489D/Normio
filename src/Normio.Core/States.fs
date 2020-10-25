@@ -1,6 +1,7 @@
 module Normio.Core.States
 
 open System
+open System.Text.Json.Serialization
 open Normio.Core.Domain
 open Normio.Core.Events
 
