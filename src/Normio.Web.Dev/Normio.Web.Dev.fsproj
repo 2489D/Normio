@@ -12,6 +12,7 @@
     <ProjectReference Include="..\Normio.Persistence\Normio.Persistence.fsproj" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Serialization.fs" />
     <Compile Include="EventHub.fs" />
     <Compile Include="CommandApiHandler.fs" />
     <Compile Include="QueryApiHandler.fs" />
