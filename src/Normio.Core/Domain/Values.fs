@@ -10,8 +10,9 @@ type ExamTitle40 with
 
 module ExamTitle40 =
     let create title =
-        if title |> String.length > 40
-        then StringTooLong "Exam Title should be less than 40" |> Error
+        let len = title |> String.length
+        if len > 40 || len <= 0
+        then StringTooLong "Exam Title should be less than 40 and non empty" |> Error
         else ExamTitle40 title |> Ok
         
 
@@ -23,8 +24,9 @@ type UserName40 with
 
 module UserName40 =
     let create name =
-        if name |> String.length > 40
-        then StringTooLong "User Name should be less than 40" |> Error
+        let len = name |> String.length
+        if len > 40 || len <= 0
+        then StringTooLong "User Name should be less than 40 and non empty" |> Error
         else UserName40 name |> Ok
         
 
@@ -36,7 +38,8 @@ type FileString200 with
 
 module FileString200 =
     let create s =
-        if s |> String.length > 200
-        then StringTooLong "File String should be less than 200" |> Error
+        let len = s |> String.length
+        if len > 200 || len <= 0
+        then StringTooLong "File String should be less than 200 and non empty" |> Error
         else FileString200 s |> Ok
 
