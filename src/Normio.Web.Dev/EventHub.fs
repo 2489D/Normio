@@ -21,8 +21,10 @@ type NormioEventWorker(hubContext: IHubContext<EventHub, INormioClient>, config:
     let conn = config.["EventStoreConnString"]
 
     let project actions event =
-        projectReadModel actions event
-        |> Async.RunSynchronously |> ignore
+        let projections = projectReadModel actions event
+        projections
+        |> Async.RunSynchronously
+        |> ignore
 
     let projectEvents actions =
         List.iter (project actions)

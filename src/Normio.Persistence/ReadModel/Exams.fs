@@ -1,7 +1,6 @@
 module Normio.Persistence.Exams
 
 open System
-open System.Text.Json.Serialization
 open FSharp.Control
 open FSharp.CosmosDb
 
@@ -45,97 +44,97 @@ let private openExam connString examId title = async {
           Hosts = Array.empty }
     
     try
-        getConn connString
-        |> Cosmos.insert exam
-        |> Cosmos.execAsync
-        |> ignore
+        do! getConn connString
+            |> Cosmos.insert exam
+            |> Cosmos.execAsync
+            |> AsyncSeq.iter ignore
     with
     | e -> printfn "%A" e
 }
         
 let private startExam connString examId = async {
-    getConn connString
-    |> Cosmos.update (string examId) (string examId) (fun exam -> { exam with Status = DuringExam })
-    |> Cosmos.execAsync
-    |> ignore
+   do! getConn connString
+       |> Cosmos.update (string examId) (string examId) (fun exam -> { exam with Status = DuringExam })
+       |> Cosmos.execAsync
+       |> AsyncSeq.iter ignore
 }
 
 let private endExam connString examId = async {
-    getConn connString
-    |> Cosmos.update (string examId) (string examId) (fun exam -> { exam with Status = AfterExam })
-    |> Cosmos.execAsync
-    |> ignore
+    do! getConn connString
+        |> Cosmos.update (string examId) (string examId) (fun exam -> { exam with Status = AfterExam })
+        |> Cosmos.execAsync
+        |> AsyncSeq.iter ignore
 }
 
 let private closeExam connString examId = async {
-    getConn connString
-    |> Cosmos.delete (string examId) (string examId)
-    |> Cosmos.execAsync
-    |> ignore
+    do! getConn connString
+        |> Cosmos.delete<ExamReadModel> (string examId) (string examId)
+        |> Cosmos.execAsync
+        |> AsyncSeq.iter ignore
 }
 
 let private addStudent connString examId (student: Student) = async {
     let key = string examId
-    getConn connString
-    |> Cosmos.update key key (fun (exam: ExamReadModel) -> { exam with Students = exam.Students |> Array.append [| student |] })
-    |> Cosmos.execAsync
-    |> ignore
+    do! getConn connString
+        |> Cosmos.update key key (fun (exam: ExamReadModel) -> { exam with Students = exam.Students |> Array.append [| student |] })
+        |> Cosmos.execAsync
+        |> AsyncSeq.iter ignore
 }
 
 let private removeStudent connString examId studentId = async {
     let key = string examId
-    getConn connString
-    |> Cosmos.update key key (fun (exam: ExamReadModel) -> { exam with Students = exam.Students |> Array.filter (fun s -> s.Id <> studentId) })
-    |> Cosmos.execAsync
-    |> ignore
+    do! getConn connString
+        |> Cosmos.update key key (fun (exam: ExamReadModel) -> { exam with Students = exam.Students |> Array.filter (fun s -> s.Id <> studentId) })
+        |> Cosmos.execAsync
+        |> AsyncSeq.iter ignore
 }
 
 let private addHost connString examId (host: Host) = async {
     let key = string examId
-    getConn connString
-    |> Cosmos.update key key (fun (exam: ExamReadModel) -> { exam with Hosts = exam.Hosts |> Array.append [| host |] })
-    |> Cosmos.execAsync
-    |> ignore
+    do! getConn connString
+        |> Cosmos.update key key (fun (exam: ExamReadModel) -> { exam with Hosts = exam.Hosts |> Array.append [| host |] })
+        |> Cosmos.execAsync
+        |> AsyncSeq.iter ignore
 }
 
 let private removeHost connString examId hostId = async {
     let key = string examId
-    getConn connString
-    |> Cosmos.update key key (fun (exam: ExamReadModel) -> { exam with Hosts = exam.Hosts |> Array.filter (fun h -> h.Id <> hostId) })
-    |> Cosmos.execAsync
-    |> ignore
+    do! getConn connString
+        |> Cosmos.update key key (fun (exam: ExamReadModel) -> { exam with Hosts = exam.Hosts |> Array.filter (fun h -> h.Id <> hostId) })
+        |> Cosmos.execAsync
+        |> AsyncSeq.iter ignore
 }
 
 let private createSubmission connString examId submission = async {
     let key = string examId
-    getConn connString
-    |> Cosmos.update key key (fun (exam: ExamReadModel) -> { exam with Submissions = exam.Submissions |> Array.append [| submission |] })
-    |> Cosmos.execAsync
-    |> ignore
+    do! getConn connString
+        |> Cosmos.update<ExamReadModel> key key (fun exam -> { exam with Submissions = exam.Submissions |> Array.append [| submission |] })
+        |> Cosmos.execAsync
+        |> AsyncSeq.iter ignore
 }
 
 let private createQuestion connString examId (file: File) = async {
     let key = string examId
-    getConn connString
-    |> Cosmos.update key key (fun (exam: ExamReadModel) -> { exam with Questions = exam.Questions |> Array.append [| file |] })
-    |> Cosmos.execAsync
-    |> ignore
+    do! getConn connString
+        |> Cosmos.update<ExamReadModel> key key (fun exam -> { exam with Questions = exam.Questions |> Array.append [| file |] })
+        |> Cosmos.execAsync
+        |> AsyncSeq.iter ignore
 }
 
 let private deleteQuestion connString examId fileId = async {
     let key = string examId
-    getConn connString
-    |> Cosmos.update key key (fun (exam: ExamReadModel) -> { exam with Questions = exam.Questions |> Array.filter (fun f -> f.Id <> fileId)})
-    |> Cosmos.execAsync
-    |> ignore
+    do! getConn connString
+        |> Cosmos.update key key (fun (exam: ExamReadModel) -> { exam with Questions = exam.Questions |> Array.filter (fun f -> f.Id <> fileId)})
+        |> Cosmos.execAsync
+        |> AsyncSeq.iter ignore
 }
 
 let private changeTitle connString examId title = async {
     let key = string examId
-    getConn connString
-    |> Cosmos.update key key (fun (exam: ExamReadModel) -> { exam with Title = title })
-    |> Cosmos.execAsync
-    |> ignore
+    do! getConn connString
+        |> Cosmos.update key key (fun (exam: ExamReadModel) -> { exam with Title = title })
+        |> Cosmos.execAsync
+        |> AsyncSeq.iter ignore
 }
 
 

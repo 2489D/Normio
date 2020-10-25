@@ -11,7 +11,7 @@ open Normio.Core.Events
 /// 4. ExamIsFinished Exam
 /// 5. ExamIsClose Guid(Exam.Id)
 type State =
-    | ExamIsClose of Guid option
+    | ExamIsClose of examId:Guid option
     | ExamIsWaiting of Exam
     | ExamIsRunning of Exam
     | ExamIsFinished of Exam

@@ -19,6 +19,7 @@ let fsSerializationOption =
     let unionEncoding =
         JsonUnionEncoding.ExternalTag
         ||| JsonUnionEncoding.NamedFields
+        ||| JsonUnionEncoding.UnwrapOption
         ||| JsonUnionEncoding.UnwrapSingleCaseUnions
         ||| JsonUnionEncoding.UnwrapRecordCases
     let converter = JsonFSharpConverter(unionEncoding = unionEncoding)
