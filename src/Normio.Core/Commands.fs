@@ -4,15 +4,15 @@ open System
 open Normio.Core.Domain
 
 type Command =
-    | OpenExam of Guid * ExamTitle40
-    | StartExam of Guid
-    | EndExam of Guid
-    | CloseExam of Guid
-    | AddStudent of Guid * Student
-    | RemoveStudent of Guid * Guid
-    | AddHost of Guid * Host
-    | RemoveHost of Guid * Guid
-    | CreateSubmission of Guid * Submission
-    | CreateQuestion of Guid * File
-    | DeleteQuestion of Guid * Guid
-    | ChangeTitle of Guid * ExamTitle40
+    | OpenExam of examId:Guid * title:ExamTitle40
+    | StartExam of examId:Guid
+    | EndExam of examId:Guid
+    | CloseExam of examId:Guid
+    | AddStudent of examId:Guid * student:Student
+    | RemoveStudent of examId:Guid * studentId:Guid
+    | AddHost of examId:Guid * host:Host
+    | RemoveHost of examId:Guid * hostId:Guid
+    | CreateSubmission of examId:Guid * submission:Submission
+    | CreateQuestion of examId:Guid * question:File
+    | DeleteQuestion of examId:Guid * questionId:Guid
+    | ChangeTitle of examId:Guid * title:ExamTitle40
