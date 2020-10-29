@@ -3,9 +3,8 @@ namespace Normio.Core.Domain
 open System.Text.Json.Serialization
 
 [<JsonFSharpConverter>]
-type ExamTitle40 = private ExamTitle40 of string
-
-type ExamTitle40 with
+type ExamTitle40 =
+    private | ExamTitle40 of string
     member this.Value = this |> fun (ExamTitle40 title) -> title
 
 module ExamTitle40 =
@@ -14,12 +13,10 @@ module ExamTitle40 =
         if len > 40 || len <= 0
         then StringTooLong "Exam Title should be less than 40 and non empty" |> Error
         else ExamTitle40 title |> Ok
-        
 
 [<JsonFSharpConverter>]
-type UserName40 = private UserName40 of string
-
-type UserName40 with
+type UserName40 =
+    private | UserName40 of string
     member this.Value = this |> fun (UserName40 name) -> name
 
 module UserName40 =
@@ -31,15 +28,13 @@ module UserName40 =
         
 
 [<JsonFSharpConverter>]
-type FileString200 = private FileString200 of string
-
-type FileString200 with
+type FileString200 =
+    private | FileString200 of string
     member this.Value = this |> fun (FileString200 s) -> s
-
+ 
 module FileString200 =
     let create s =
         let len = s |> String.length
         if len > 200 || len <= 0
         then StringTooLong "File String should be less than 200 and non empty" |> Error
         else FileString200 s |> Ok
-

@@ -68,7 +68,6 @@ let handleCreateSubmission submission = function
     | ExamIsRunning exam ->
         [SubmissionCreated (exam.Id, submission)] |> Ok
     | _ -> CannotCreateSubmission "Exam is not running" |> Error
-        
 
 let handleCreateQuestion file = function
     | ExamIsWaiting exam ->
