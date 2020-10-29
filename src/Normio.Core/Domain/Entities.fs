@@ -55,7 +55,9 @@ type Submission = {
     Id: Guid
     [<JsonPropertyName("examId")>]
     ExamId: Guid
+    [<JsonPropertyName("student")>]
     Student: Student
+    [<JsonPropertyName("file")>]
     File: File
 } with
     override this.Equals(other) =
@@ -72,10 +74,13 @@ type Exam = {
     Id: Guid
     [<JsonPropertyName("title")>]
     Title: ExamTitle40
-    [<JsonPropertyName("question")>]
+    [<JsonPropertyName("questions")>]
     Questions: File list
+    [<JsonPropertyName("submissions")>]
     Submissions: Submission list
+    [<JsonPropertyName("students")>]
     Students: Map<Guid, Student>
+    [<JsonPropertyName("hosts")>]
     Hosts: Map<Guid, Host>
 } with
     override this.Equals(other) =
