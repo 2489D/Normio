@@ -42,25 +42,51 @@ let createWaitingExam () =
     
 [<Fact>]
 let ``ExamIsWaiting without a question can not start`` () =
-    let (waitingExam, testId) = createWaitingExam ()
+    let testId = newGuid ()
+    let waitingExam =
+        ExamIsWaiting {
+            Id = testId
+            Title = validTitle
+            Questions = []
+            Submissions = []
+            Students = mockStudents
+            Hosts = mockHosts
+        }
     given waitingExam
     |> applied (StartExam testId)
     |> thenShouldBeError
 
 [<Fact>]
 let ``ExamIsWaiting without a student can not start`` () =
-    let (waitingExam, testId) = createWaitingExam ()
+    let testId = newGuid ()
+    let waitingExam =
+        ExamIsWaiting {
+            Id = testId
+            Title = validTitle
+            Questions = mockFiles
+            Submissions = []
+            Students = Map.empty
+            Hosts = mockHosts
+        }
     given waitingExam
     |> applied (StartExam testId)
     |> thenShouldBeError
 
 [<Fact>]
 let ``ExamIsWaiting without a host can not start`` () =
-    let (waitingExam, testId) = createWaitingExam ()
+    let testId = newGuid ()
+    let waitingExam =
+        ExamIsWaiting {
+            Id = testId
+            Title = validTitle
+            Questions = mockFiles
+            Submissions = []
+            Students = mockStudents
+            Hosts = Map.empty
+        }
     given waitingExam
     |> applied (StartExam testId)
     |> thenShouldBeError
-
 
 [<Fact>]
 let ``Empty string should not be a valid exam title`` () =
