@@ -10,12 +10,14 @@ open Normio.Persistence.EventStore
 open Normio.Commands.Api.CommandApi
 open Normio.Web.Dev.Hub
 
+// TODO : change to RESTful api implementation
+
 // TODO : status code
 let commandApiHandler queries (eventStore : IEventStore) : HttpHandler =
     fun (next: HttpFunc) (ctx : HttpContext) -> task {
         let eventHub = ctx.GetService<NormioEventWorker>()
-        use stream = new StreamReader(ctx.Request.Body);
-        let! payload = stream.ReadToEndAsync();
+        use stream = new StreamReader(ctx.Request.Body)
+        let! payload = stream.ReadToEndAsync()
         let! response = handleCommandRequest queries eventStore payload
         // TODO : better way? --> https://github.com/Tarmil/FSharp.SystemTextJson/blob/master/docs/Using.md#using-with-giraffe
         match response with
