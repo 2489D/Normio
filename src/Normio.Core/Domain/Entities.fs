@@ -59,6 +59,8 @@ type Submission = {
     Student: Student
     [<JsonPropertyName("file")>]
     File: File
+    [<JsonPropertyName("timestamp")>]
+    TimeStamp: DateTime
 } with
     override this.Equals(other) =
         match other with

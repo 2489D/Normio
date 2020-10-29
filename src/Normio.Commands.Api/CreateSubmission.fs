@@ -39,6 +39,7 @@ let validateCreateSubmission getExamByExamId (submissionId, examId, studentId, f
                 let submission = {
                     Id = submissionId
                     ExamId = examId
+                    TimeStamp = DateTime.UtcNow
                     Student = exam'.Students |> Array.find (fun s -> s.Id = studentId)
                     File = {
                         Id = fileId
