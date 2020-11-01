@@ -1,8 +1,23 @@
-﻿// Learn more about F# at http://fsharp.org
+﻿open System.Threading
 
-open System
+let startTimer interval task =
+    [Async.Sleep interval; task]
+    |> Async.Sequential
+    |> Async.Ignore
+    |> Async.Start
 
 [<EntryPoint>]
 let main argv =
-    printfn "Hello World from F#!"
-    0 // return an integer exit code
+    let asyncPrint s = async {
+        printfn s
+    }
+
+    asyncPrint "timer 1"
+    |> startTimer 1000
+
+    asyncPrint "timer 2"
+    |> startTimer 2000
+
+    Thread.Sleep 3000
+
+    0
