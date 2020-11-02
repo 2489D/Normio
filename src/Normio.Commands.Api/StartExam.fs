@@ -13,7 +13,6 @@ type StartExamRequest =
         ExamId : Guid
     }
 
-// TODO : checking the examId exists in the readModel is not the responsibility of this validate function
 let validateStartExam req = async {
     return Ok req.ExamId
 }
