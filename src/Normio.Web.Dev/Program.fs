@@ -27,7 +27,7 @@ let webApp =
         let queries = cosmosQueries conn
         task {
             return! choose [
-                commandApi queries eventStore
+                commandApi eventStore
                 queriesApi queries eventStore
                 setStatusCode 404 >=> text "Not Found"
             ] next ctx

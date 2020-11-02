@@ -55,10 +55,8 @@ type Submission = {
     Id: Guid
     [<JsonPropertyName("examId")>]
     ExamId: Guid
-    [<JsonPropertyName("student")>]
-    Student: Student
-    [<JsonPropertyName("file")>]
-    File: File
+    [<JsonPropertyName("studentId")>]
+    StudentId: Guid
     [<JsonPropertyName("timestamp")>]
     TimeStamp: DateTime
 } with
@@ -77,7 +75,7 @@ type Exam = {
     [<JsonPropertyName("title")>]
     Title: ExamTitle40
     [<JsonPropertyName("questions")>]
-    Questions: File list
+    Questions: Guid list
     [<JsonPropertyName("submissions")>]
     Submissions: Submission list
     [<JsonPropertyName("students")>]

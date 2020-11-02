@@ -13,6 +13,6 @@ type Command =
     | AddHost of examId:Guid * host:Host
     | RemoveHost of examId:Guid * hostId:Guid
     | CreateSubmission of examId:Guid * submission:Submission
-    | CreateQuestion of examId:Guid * question:File
+    | CreateQuestion of examId:Guid * questionId:Guid
     | DeleteQuestion of examId:Guid * questionId:Guid
     | ChangeTitle of examId:Guid * title:ExamTitle40

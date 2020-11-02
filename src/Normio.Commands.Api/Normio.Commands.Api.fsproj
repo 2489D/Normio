@@ -23,7 +23,4 @@
     <Compile Include="ChangeTitle.fs" />
     <Compile Include="CommandApi.fs" />
   </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="FSharp.Data" Version="3.3.3" />
-  </ItemGroup>
 </Project>

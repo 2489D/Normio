@@ -1,7 +1,6 @@
 module Normio.Core.States
 
 open System
-open System.Text.Json.Serialization
 open Normio.Core.Domain
 open Normio.Core.Events
 
@@ -41,11 +40,11 @@ let apply state event =
     | ExamIsWaiting exam, HostLeft (_, hostId) ->
         { exam with Hosts = Map.remove hostId exam.Hosts }
         |> ExamIsWaiting
-    | ExamIsWaiting exam, QuestionCreated (_, file) ->
-        { exam with Questions = file :: exam.Questions  }
+    | ExamIsWaiting exam, QuestionCreated (_, questionId) ->
+        { exam with Questions = questionId :: exam.Questions  }
         |> ExamIsWaiting
-    | ExamIsWaiting exam, QuestionDeleted (_, fileId) ->
-        { exam with Questions = exam.Questions |> List.filter (fun f -> f.Id <> fileId )}
+    | ExamIsWaiting exam, QuestionDeleted (_, questionId) ->
+        { exam with Questions = exam.Questions |> List.filter (fun questionId' -> questionId' <> questionId )}
         |> ExamIsWaiting
     | ExamIsWaiting exam, TitleChanged (_, newTitle) ->
         { exam with Title = newTitle }

@@ -1,55 +1,52 @@
+[<AutoOpen>]
 module Normio.Commands.Api.CommandApi
 
-open Normio.Persistence.Queries
 open Normio.Commands.Api.CommandHandlers
-open Normio.Commands.Api.OpenExam
-open Normio.Commands.Api.StartExam
-open Normio.Commands.Api.EndExam
-open Normio.Commands.Api.CloseExam
-open Normio.Commands.Api.AddStudent
-open Normio.Commands.Api.RemoveStudent
-open Normio.Commands.Api.AddHost
-open Normio.Commands.Api.RemoveHost
-open Normio.Commands.Api.CreateSubmission
-open Normio.Commands.Api.CreateQuestion
-open Normio.Commands.Api.DeleteQuestion
-open Normio.Commands.Api.ChangeTitle
 
-let handleCommandRequest queries eventStore = function
-    | OpenExamRequest (examId, title) ->
-        openExamCommander
-        |> handleCommand eventStore (examId, title)
-    | StartExamRequest examId ->
-        startExamCommander queries.Exam.GetExamByExamId
-        |> handleCommand eventStore examId
-    | EndExamRequest examId ->
-        endExamCommander queries.Exam.GetExamByExamId
-        |> handleCommand eventStore examId
-    | CloseExamRequest examId ->
-        closeExamCommander queries.Exam.GetExamByExamId
-        |> handleCommand eventStore examId
-    | AddStudentRequest (examId, studentId, name) ->
-        addStudentCommander queries.Exam.GetExamByExamId 
-        |> handleCommand eventStore (examId, studentId, name)
-    | RemoveStudentRequest (examId, studentId) ->
-        removeStudentCommander queries.Exam.GetExamByExamId
-        |> handleCommand eventStore (examId, studentId)
-    | AddHostRequest (examId, hostId, name) ->
-        addHostCommander queries.Exam.GetExamByExamId 
-        |> handleCommand eventStore (examId, hostId, name)
-    | CreateSubmissionRequest req ->
-        createSubmissionCommander queries.Exam.GetExamByExamId
-        |> handleCommand eventStore req
-    | CreateQuestionRequest (examId, (fileId, fileName)) ->
-        createCreateQuestionCommander queries.Exam.GetExamByExamId
-        |> handleCommand eventStore (examId, fileId, fileName)
-    | DeleteQuestionRequest (examId, fileId) ->
-        createDeleteQuestionCommander queries.Exam.GetExamByExamId
-        |> handleCommand eventStore (examId, fileId)
-    | RemoveHostRequest (examId, hostId) ->
-        removeHostCommander queries.Exam.GetExamByExamId
-        |> handleCommand eventStore (examId, hostId)
-    | ChangeTitleRequest (examId, newTitle) ->
-        changeTitleCommander queries.Exam.GetExamByExamId
-        |> handleCommand eventStore (examId, newTitle)
-    | _ -> Error "Invalid Command" |> async.Return
+let handleOpenExamRequest eventStore req =
+    openExamCommander
+    |> handleCommand eventStore req
+    
+let handleStartExamRequest eventStore req =
+    startExamCommander
+    |> handleCommand eventStore req
+
+let handleEndExamRequest eventStore req =
+    endExamCommander
+    |> handleCommand eventStore req
+
+let handleCloseExamRequest eventStore req =
+    closeExamCommander
+    |> handleCommand eventStore req
+
+let handleAddStudentRequest eventStore req =
+    addStudentCommander
+    |> handleCommand eventStore req
+    
+let handleRemoveStudentRequest eventStore req =
+    removeStudentCommander
+    |> handleCommand eventStore req
+
+let handleAddHostRequest eventStore req =
+    addHostCommander
+    |> handleCommand eventStore req
+
+let handleRemoveHostRequest eventStore req =
+    removeHostCommander
+    |> handleCommand eventStore req
+
+let handleCreateSubmissionRequest eventStore req =
+    createSubmissionCommander
+    |> handleCommand eventStore req
+
+let handleCreateQuestionRequest eventStore req =
+    createQuestionCommander
+    |> handleCommand eventStore req
+
+let handleDeleteQuestionRequest eventStore req =
+    deleteQuestionCommander
+    |> handleCommand eventStore req
+
+let handleChangeTitleRequest eventStore req =
+    changeTitleCommander
+    |> handleCommand eventStore req

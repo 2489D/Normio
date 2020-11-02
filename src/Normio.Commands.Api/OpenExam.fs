@@ -1,35 +1,29 @@
+[<AutoOpen>]
 module Normio.Commands.Api.OpenExam
 
 open System
-open FSharp.Data
+open System.Text.Json.Serialization
 open Normio.Core.Domain
 open Normio.Core.Commands
 open Normio.Commands.Api.CommandHandlers
 
-[<Literal>]
-let OpenExamJson = """ {
-"openExam" : {
-    "title": "exam title"
+[<CLIMutable>]
+type OpenExamRequest =
+    {
+        [<JsonPropertyName("title")>]
+        Title : string
     }
+
+let validateOpenExam req = async {
+    match req.Title |> ExamTitle40.create with
+    | Ok title40 -> return Ok title40
+    | Error err -> return Error (err.ToString())
 }
-"""
 
-type OpenExamRequest = JsonProvider<OpenExamJson>
-
-let (|OpenExamRequest|_|) payload =
-    try
-        let req = OpenExamRequest.Parse(payload).OpenExam
-        (Guid.NewGuid(), req.Title) |> Some
-    with
-    | _ -> None
-
-let validateOpenExam (id, title) = async {
-    match title |> ExamTitle40.create with
-    | Ok title40 -> return Choice1Of2 (id, title40)
-    | Error err -> return Choice2Of2 (err.ToString())
-}
+let toOpenExamCommand title =
+    OpenExam (Guid.NewGuid(), title)
 
 let openExamCommander = {
     Validate = validateOpenExam
-    ToCommand = OpenExam
+    ToCommand = toOpenExamCommand
 }

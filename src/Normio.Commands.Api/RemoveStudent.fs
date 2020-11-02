@@ -1,35 +1,25 @@
+[<AutoOpen>]
 module Normio.Commands.Api.RemoveStudent
 
-open FSharp.Data
+open System
+open System.Text.Json.Serialization
 open Normio.Core.Commands
 open Normio.Commands.Api.CommandHandlers
 
-[<Literal>]
-let RemoveStudentJson = """ {
-"removeStudent" : {
-        "examId" : "2a964d85-f503-40a1-8014-2c8ee5ac4a49",
-        "studentId" : "2a964d85-f503-40a1-8014-2c8ee5ac4a49"
+[<CLIMutable>]
+type RemoveStudentRequest =
+    {
+        [<JsonPropertyName("examId")>]
+        ExamId : Guid
+        [<JsonPropertyName("studentId")>]
+        StudentId : Guid
     }
-}
-"""
 
-type RemoveStudentRequest = JsonProvider<RemoveStudentJson>
-
-let (|RemoveStudentRequest|_|) payload =
-    try
-        let req = RemoveStudentRequest.Parse(payload).RemoveStudent
-        (req.ExamId, req.StudentId) |> Some
-    with
-    | _ -> None
-
-let validateRemoveStudent getExamByExamId (examId, studentId) = async {
-    let! exam = getExamByExamId examId
-    match exam with
-    | Some _ -> return Choice1Of2 (examId, studentId)
-    | _ -> return Choice2Of2 "Invalid Exam Id"
+let validateRemoveStudent req = async {
+    return Ok (req.ExamId, req.StudentId)
 }
 
-let removeStudentCommander getExamByExamId = {
-    Validate = validateRemoveStudent getExamByExamId
+let removeStudentCommander = {
+    Validate = validateRemoveStudent
     ToCommand = RemoveStudent
 }

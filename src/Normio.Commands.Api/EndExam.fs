@@ -1,34 +1,23 @@
+[<AutoOpen>]
 module Normio.Commands.Api.EndExam
 
-open FSharp.Data
+open System
+open System.Text.Json.Serialization
 open Normio.Core.Commands
 open Normio.Commands.Api.CommandHandlers
 
-[<Literal>]
-let EndExamJson = """ {
-"endExam" : {
-    "examId" : "2a964d85-f503-40a1-8014-2c8ee5ac4a49"
+[<CLIMutable>]
+type EndExamRequest =
+    {
+        [<JsonPropertyName("examId")>]
+        ExamId : Guid
     }
-}
-"""
 
-type EndExamRequest = JsonProvider<EndExamJson>
-
-let (|EndExamRequest|_|) payload =
-    try
-        let req = EndExamRequest.Parse(payload).EndExam
-        req.ExamId |> Some
-    with
-    | _ -> None
-
-let validateEndExam getExamByExamId examId = async {
-    let! state = getExamByExamId examId
-    match state with
-    | Some _ -> return Choice1Of2 examId
-    | _ -> return Choice2Of2 "Invalid Exam Id"
+let validateEndExam req = async {
+    return req.ExamId |> Ok
 }
 
-let endExamCommander getExamByExamId = {
-    Validate = validateEndExam getExamByExamId
+let endExamCommander = {
+    Validate = validateEndExam
     ToCommand = EndExam
 }

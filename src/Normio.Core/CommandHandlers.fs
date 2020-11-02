@@ -75,10 +75,10 @@ let handleCreateQuestion file = function
     | ExamIsClose _ -> CannotCreateQuestion "Exam not opened" |> Error
     | _ -> CannotCreateQuestion "Exam already started" |> Error
 
-let handleDeleteQuestion fileId = function
+let handleDeleteQuestion questionId = function
     | ExamIsWaiting exam ->
-        if exam.Questions |> List.exists (fun f -> f.Id = fileId)
-        then [QuestionDeleted (exam.Id, fileId)] |> Ok
+        if exam.Questions |> List.exists (fun questionId' -> questionId' = questionId)
+        then [QuestionDeleted (exam.Id, questionId)] |> Ok
         else CannotDeleteQuestion "There is no such question file" |> Error
     | ExamIsClose _ -> CannotDeleteQuestion "Exam not opened" |> Error
     | _ -> CannotDeleteQuestion "Exam already started" |> Error
@@ -101,8 +101,8 @@ let execute state = function
     | AddHost (_, host) -> handleAddHost host state
     | RemoveHost (_, hostId) -> handleRemoveHost hostId state
     | CreateSubmission (_, submission) -> handleCreateSubmission submission state
-    | CreateQuestion (_, file) -> handleCreateQuestion file state
-    | DeleteQuestion (_, fileId) -> handleDeleteQuestion fileId state
+    | CreateQuestion (_, questionId) -> handleCreateQuestion questionId state
+    | DeleteQuestion (_, questionId) -> handleDeleteQuestion questionId state
     | ChangeTitle (_, title) -> handleChangeTitle title state
 
 
