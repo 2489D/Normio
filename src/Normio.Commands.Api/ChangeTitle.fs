@@ -1,38 +1,28 @@
+[<AutoOpen>]
 module Normio.Commands.Api.ChangeTitle
 
-open FSharp.Data
+open System
+open System.Text.Json.Serialization
 open Normio.Core.Domain
 open Normio.Core.Commands
 open Normio.Commands.Api.CommandHandlers
 
-[<Literal>]
-let ChangeTitleJson = """{
-    "changeTitle": {
-        "examId": "2a964d85-f503-40a1-8014-2c8ee5ac4a49",
-        "newTitle": "newTitle"
+[<CLIMutable>]
+type ChangeTitleRequest =
+    {
+        [<JsonPropertyName("examId")>]
+        ExamId : Guid
+        [<JsonPropertyName("title")>]
+        Title : string
     }
-}"""
 
-type ChangeTitleRequest = JsonProvider<ChangeTitleJson>
-
-let (|ChangeTitleRequest|_|) payload =
-    try
-        let req = ChangeTitleRequest.Parse(payload).ChangeTitle
-        (req.ExamId, req.NewTitle) |> Some
-    with
-        | _ -> None
-
-let validateChangeTitle getExamByExamId (examId, newTitle) = async {
-    let! exam = getExamByExamId examId
-    match exam with
-    | Some _ -> 
-        match ExamTitle40.create newTitle with
-        | Ok title -> return Choice1Of2 (examId, title)
-        | Error err -> return Choice2Of2 (err.ToString())
-    | _ -> return Choice2Of2 "Invalid Exam Id"
+let validateChangeTitle req = async {
+    match req.Title |> ExamTitle40.create with
+    | Ok title -> return Ok (req.ExamId, title)
+    | Error err -> return err.ToString() |> Error
 }
 
-let changeTitleCommander getExamByExamId = {
-    Validate = validateChangeTitle getExamByExamId
+let changeTitleCommander = {
+    Validate = validateChangeTitle
     ToCommand = ChangeTitle
 }

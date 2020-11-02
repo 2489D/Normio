@@ -1,25 +1,19 @@
 module Normio.Web.Dev.CommandApiHandler
 
-open System.IO
 open Microsoft.AspNetCore.Http
 open FSharp.Control.Tasks.V2.ContextInsensitive
 
 open Giraffe
 
 open Normio.Persistence.EventStore
-open Normio.Commands.Api.CommandApi
+open Normio.Commands.Api
 open Normio.Web.Dev.Hub
 
-// TODO : change to RESTful api implementation
-
 // TODO : status code
-let commandApiHandler queries (eventStore : IEventStore) : HttpHandler =
+let commandApiHandler handler (eventStore : IEventStore) request : HttpHandler =
     fun (next: HttpFunc) (ctx : HttpContext) -> task {
         let eventHub = ctx.GetService<NormioEventWorker>()
-        use stream = new StreamReader(ctx.Request.Body)
-        let! payload = stream.ReadToEndAsync()
-        let! response = handleCommandRequest queries eventStore payload
-        // TODO : better way? --> https://github.com/Tarmil/FSharp.SystemTextJson/blob/master/docs/Using.md#using-with-giraffe
+        let! response = handler eventStore request
         match response with
         | Ok (state, events) ->
             do! eventStore.SaveEvents events
@@ -29,5 +23,19 @@ let commandApiHandler queries (eventStore : IEventStore) : HttpHandler =
             return! (setStatusCode 404 >=> json msg) next ctx
     }
 
-let commandApi queries eventStore =
-    route "/command" >=> POST >=> commandApiHandler queries eventStore
+let commandApi eventStore =
+    POST >=> choose [
+        route "/openExam" >=> bindJson<OpenExamRequest> (fun req -> commandApiHandler handleOpenExamRequest eventStore req)
+        route "/startExam" >=> bindJson<StartExamRequest> (fun req -> commandApiHandler handleStartExamRequest eventStore req)
+        route "/endExam" >=> bindJson<EndExamRequest> (fun req -> commandApiHandler handleEndExamRequest eventStore req)
+        route "/closeExam" >=> bindJson<CloseExamRequest> (fun req -> commandApiHandler handleCloseExamRequest eventStore req)
+        route "/addStudent" >=> bindJson<AddStudentRequest> (fun req -> commandApiHandler handleAddStudentRequest eventStore req)
+        route "/removeStudent" >=> bindJson<RemoveStudentRequest> (fun req -> commandApiHandler handleRemoveStudentRequest eventStore req)
+        route "/addHost" >=> bindJson<AddHostRequest> (fun req -> commandApiHandler handleAddHostRequest eventStore req)
+        route "/removeHost" >=> bindJson<RemoveHostRequest> (fun req -> commandApiHandler handleRemoveHostRequest eventStore req)
+        route "/createSubmission" >=> bindJson<CreateSubmissionRequest> (fun req -> commandApiHandler handleCreateSubmissionRequest eventStore req)
+        route "/createQuestion" >=> bindJson<CreateQuestionRequest> (fun req -> commandApiHandler handleCreateQuestionRequest eventStore req)
+        route "/deleteQuestion" >=> bindJson<DeleteQuestionRequest> (fun req -> commandApiHandler handleDeleteQuestionRequest eventStore req)
+        route "/changeTitle" >=> bindJson<ChangeTitleRequest> (fun req -> commandApiHandler handleChangeTitleRequest eventStore req)
+    ]
+

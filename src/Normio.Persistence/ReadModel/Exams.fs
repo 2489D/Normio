@@ -113,18 +113,18 @@ let private createSubmission connString examId submission = async {
         |> AsyncSeq.iter ignore
 }
 
-let private createQuestion connString examId (file: File) = async {
+let private createQuestion connString examId questionId = async {
     let key = string examId
     do! getConn connString
-        |> Cosmos.update<ExamReadModel> key key (fun exam -> { exam with Questions = exam.Questions |> Array.append [| file |] })
+        |> Cosmos.update<ExamReadModel> key key (fun exam -> { exam with Questions = exam.Questions |> Array.append [| questionId |] })
         |> Cosmos.execAsync
         |> AsyncSeq.iter ignore
 }
 
-let private deleteQuestion connString examId fileId = async {
+let private deleteQuestion connString examId questionId = async {
     let key = string examId
     do! getConn connString
-        |> Cosmos.update key key (fun (exam: ExamReadModel) -> { exam with Questions = exam.Questions |> Array.filter (fun f -> f.Id <> fileId)})
+        |> Cosmos.update key key (fun (exam: ExamReadModel) -> { exam with Questions = exam.Questions |> Array.filter (fun questionId' -> questionId' <> questionId)})
         |> Cosmos.execAsync
         |> AsyncSeq.iter ignore
 }

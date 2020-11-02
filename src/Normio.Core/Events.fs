@@ -15,6 +15,6 @@ type Event =
     | HostEntered of examId:Guid * host:Host
     | HostLeft of examId:Guid * hostId:Guid
     | SubmissionCreated of examId:Guid * submission:Submission
-    | QuestionCreated of examId:Guid * file:File
-    | QuestionDeleted of examId:Guid * fileId:Guid
+    | QuestionCreated of examId:Guid * questionId:Guid
+    | QuestionDeleted of examId:Guid * questionId:Guid
     | TitleChanged of examId:Guid * title:ExamTitle40
