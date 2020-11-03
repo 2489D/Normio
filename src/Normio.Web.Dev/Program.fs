@@ -1,14 +1,12 @@
 module Normio.Web.Dev.App
 
 open System.IO
+open Microsoft.Extensions.Hosting
 open Microsoft.AspNetCore.Hosting
 open Microsoft.AspNetCore.Http
-open Microsoft.Extensions.Hosting
 
 open Giraffe
 
-open Normio.Persistence.Exams
-open Normio.Persistence.EventStore.Cosmos
 open Normio.Web.Dev.CommandApiHandler
 open Normio.Web.Dev.QueryApiHandler
 open Normio.Web.Dev.Configurations
@@ -17,18 +15,16 @@ open Microsoft.Extensions.Configuration
 
 open FSharp.Control.Tasks.V2.ContextInsensitive
 
-
 let webApp =
     fun (next : HttpFunc) (ctx : HttpContext) ->
-        let settings = ctx.GetService<IConfiguration>()
-        let conn = settings.["EventStoreConnString"]
-
-        let eventStore = cosmosEventStore conn
-        let queries = cosmosQueries conn
+        let env = ctx.GetService<IWebHostEnvironment>()
+        let config = ctx.GetService<IConfiguration>()
+        let eventStore = getEventStore config env
+        let queries = getQuerySide config env
         task {
             return! choose [
                 commandApi eventStore
-                queriesApi queries eventStore
+                queriesApi queries
                 setStatusCode 404 >=> text "Not Found"
             ] next ctx
         }

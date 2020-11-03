@@ -1,47 +1,31 @@
 module Normio.Web.Dev.QueryApiHandler
 
-open System.IO
+open System
+open System.Text.Json.Serialization
 open Microsoft.AspNetCore.Http
-
-open FSharp.Data
 open FSharp.Control.Tasks.V2.ContextInsensitive
 
 open Giraffe
 
-open Normio.Persistence.EventStore
 open Normio.Persistence.Queries
 
-[<Literal>]
-let GetExamJson = """ {
-    "getExam" : {
-        "examId": "76cd4438-f93a-4420-8aca-1ee05f7f8063"
+[<CLIMutable>]
+type GetExamRequest =
+    {
+        [<JsonPropertyName("examId")>]
+        ExamId : Guid
     }
-}
-"""
 
-type GetExamRequest = JsonProvider<GetExamJson>
-
-let (|GetExamRequest|_|) payload =
-    try
-        let req = GetExamRequest.Parse(payload).GetExam;
-        req.ExamId |> Some
-    with
-    | _ -> None
-
-let getExamByExamId examQuery =
-    fun (next : HttpFunc) (context : HttpContext) -> task {
-        use stream = new StreamReader(context.Request.Body);
-        let! payload = stream.ReadToEndAsync();
-        match payload with
-        | GetExamRequest examId ->
-            let! examReadModel = examQuery examId
+let getExamByExamId examQuery req =
+    fun (next : HttpFunc) (context : HttpContext) ->
+        task {
+            let! examReadModel = examQuery req.ExamId
             match examReadModel with
-            | Some exam' -> return! json exam' next context
-            | None -> return! text "invalid exam id" next context
-        | _ -> return! text "invalid payload" next context
-    }
+            | Some exam -> return! json exam next context
+            | None -> return! text "Exam does not exist" next context
+        }
 
-let queriesApi queries (eventStore : IEventStore) =
+let queriesApi queries =
     GET >=> choose [
-        route "/exams" >=> getExamByExamId queries.Exam.GetExamByExamId
+        route "/exams" >=> bindJson<GetExamRequest> (fun req -> getExamByExamId queries.Exam.GetExamByExamId req)
     ]

@@ -39,7 +39,7 @@ type InMemoryEventStore() =
 
 let eventStoreObj = InMemoryEventStore()
 
-let inMemoryEventStory =
+let inMemoryEventStore =
     { new IEventStore with
         member this.GetState examId = eventStoreObj.GetState examId
         member this.SaveEvents events = eventStoreObj.SaveEvents events }

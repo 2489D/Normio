@@ -1,14 +1,14 @@
-module Normio.Persistence.Exams
+module Normio.Persistence.ReadModels.Cosmos
 
 open System
 open FSharp.Control
 open FSharp.CosmosDb
 
 open Normio.Core.Domain
+open Normio.Persistence
 open Normio.Persistence.EventStore
 open Normio.Persistence.ReadModels
 open Normio.Persistence.Projections
-open Normio.Persistence.Queries
 
 let private getConn connString =
     connString
@@ -138,7 +138,7 @@ let private changeTitle connString examId title = async {
 }
 
 
-let examActions connString =
+let cosmosExamActions connString =
     { new IExamAction with
         member this.OpenExam examId title = openExam connString examId title
         member this.StartExam examId = startExam connString examId
@@ -149,18 +149,18 @@ let examActions connString =
         member this.AddHost examId host = addHost connString examId host
         member this.RemoveHost examId hostId = removeHost connString examId hostId
         member this.CreateSubmission examId submission = createSubmission connString examId submission
-        member this.CreateQuestion examId file = createQuestion connString examId file
-        member this.DeleteQuestion examId fileId = deleteQuestion connString examId fileId
+        member this.CreateQuestion examId questionId = createQuestion connString examId questionId
+        member this.DeleteQuestion examId questionId = deleteQuestion connString examId questionId
         member this.ChangeTitle examId title = changeTitle connString examId title }
 
-let examQueries connString = {
+let cosmosExamQueries connString = {
     GetExamByExamId = getExam connString
 }
 
 let cosmosQueries connString: Queries = {
-    Exam = examQueries connString
+    Exam = cosmosExamQueries connString
 }
 
 let cosmosActions connString: ProjectionActions = {
-    Exam = examActions connString
+    Exam = cosmosExamActions connString
 }

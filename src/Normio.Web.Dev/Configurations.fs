@@ -23,11 +23,11 @@ let configureCors (builder : CorsPolicyBuilder) =
 
 let configureApp webApp (app : IApplicationBuilder) =
     let env = app.ApplicationServices.GetService<IWebHostEnvironment>()
+    printfn "Environment: %A" env.EnvironmentName
     (match env.EnvironmentName with
-    | "Development" ->
-        app.UseDeveloperExceptionPage()
-    | _ -> app.UseGiraffeErrorHandler(errorHandler))
-        .UseHttpsRedirection()
+    | "Development" -> app.UseDeveloperExceptionPage()
+    | _ -> app.UseGiraffeErrorHandler(errorHandler)
+    ).UseHttpsRedirection()
         .UseCors(configureCors)
         .UseStaticFiles()
         .UseRouting()
@@ -37,13 +37,12 @@ let configureApp webApp (app : IApplicationBuilder) =
         .UseGiraffe(webApp)
 
 let configureServices (services : IServiceCollection) =
-    services.AddCors()    |> ignore
+    services.AddCors() |> ignore
     services.AddSignalR()
         .AddJsonProtocol(fun options ->
             options.PayloadSerializerOptions.Converters.Add(JsonFSharpConverter()))
     |> ignore
     
-    // TODO
     services.AddSingleton<NormioEventWorker>() |> ignore
     services.AddGiraffe() |> ignore
     services.AddSingleton<IJsonSerializer>(SystemTextJsonSerializer(fsSerializationOption)) |> ignore

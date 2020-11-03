@@ -1,3 +1,4 @@
+[<AutoOpen>]
 module Normio.Persistence.Queries
 
 open System
