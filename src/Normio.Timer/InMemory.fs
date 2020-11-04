@@ -2,9 +2,9 @@
 
 open System
 open FSharpx.Collections
-
 open Normio.Timer.Domain
 open Normio.Timer.Timer
+open Normio.Timer.Errors
 
 type InMemoryTimer() =
     let mutable timerStore: Heap<TimerData> = Heap.empty false
@@ -27,14 +27,17 @@ type InMemoryTimer() =
     do checker.Start()
 
     member this.SetTimer time task =
-        let id = Guid.NewGuid()
-        let td = {
-            Id = id
-            Time = time
-            Task = task
-        }
-        timerStore <- timerStore |> Heap.insert td
-        id
+        if time < DateTime.Now
+        then CannotSetTimer "Given time is Past" |> Error
+        else
+            let id = Guid.NewGuid()
+            let td = {
+                Id = id
+                Time = time
+                Task = task
+            }
+            timerStore <- timerStore |> Heap.insert td
+            id |> Ok
 
     member this.GetTimer id =
         timerStore
