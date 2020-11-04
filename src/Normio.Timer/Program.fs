@@ -1,33 +1,39 @@
 ﻿open System
-open System.Threading
+open FSharpx.Collections
 
+[<CustomEquality; CustomComparison>]
 type TimerData = {
     Id: Guid
     Time: DateTime
     Task: Async<unit>
-}
+} with
+    override this.Equals(other) =
+        match other with
+        | :? TimerData as td -> this.Id = td.Id
+        | _ -> false
+    override this.GetHashCode() = hash this.Id
+    interface IComparable with
+        override this.CompareTo(other) =
+            DateTime.Compare(this.Time, (other :?> TimerData).Time)
 
 type ITimer =
     abstract Set: DateTime -> Async<unit> -> Guid
 
 type InMemoryTimer() =
-    let mutable timerStore: Map<Guid, TimerData> = Map.empty
+    let mutable timerStore: Heap<TimerData> = Heap.empty false
     
-    let checker = new System.Timers.Timer(float (1000 * 1))
+    let checker = new Timers.Timer(float (1000 * 1))
 
     let handler _ =
-        let now, later =
-            timerStore
-            |> Map.partition (fun _ td -> td.Time <= DateTime.Now)
-
-        timerStore <- later
-
-        now
-        |> Map.toSeq
-        |> Seq.map (fun (_, td) -> td.Task)
-        |> Async.Parallel
-        |> Async.RunSynchronously
-        |> ignore
+        let rec loop ts =
+            match ts with
+            | Heap.Cons(h, t) ->
+                if h.Time <= DateTime.Now then
+                    h.Task |> Async.Start
+                    loop t
+                else ts
+            | Heap.Nil -> ts
+        timerStore <- timerStore |> loop
 
     do checker.Elapsed.Add handler
     do checker.AutoReset <- true
@@ -40,8 +46,7 @@ type InMemoryTimer() =
             Time = time
             Task = task
         }
-        let newStore = Map.add id td timerStore
-        timerStore <- newStore
+        timerStore <- timerStore |> Heap.insert td
         id
 
 let timerObj = InMemoryTimer()
@@ -64,6 +69,6 @@ let main argv =
         asyncPrint "timer 2"
         |> inMemoryTimer.Set (DateTime.Now.AddSeconds (float 2))
 
-    Thread.Sleep 3000
+    Threading.Thread.Sleep 3000
 
     0
