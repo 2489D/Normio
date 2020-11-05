@@ -4,8 +4,7 @@ open System
 open System.Text.Json.Serialization
 open FSharp.Control
 open FSharp.CosmosDb
-open Normio.Core.Domain
-open Normio.Core.Events
+open Normio.Core
 open Normio.Core.States
 open Normio.Persistence.EventStore
 

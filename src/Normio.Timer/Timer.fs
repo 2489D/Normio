@@ -8,9 +8,10 @@ module Timer =
     type ITimer =
         inherit IDisposable
 
-        abstract SetTimer: DateTime -> Async<unit> -> Result<Guid, TimerError>
-        abstract GetTimer: Guid -> TimerData option
+        abstract SetTimer: time:DateTime -> task:Async<unit> -> Guid
+        abstract TryGetTimer: timerId:Guid -> TimerData option
         abstract GetAllTimers: seq<TimerData>
+        abstract DeleteTimer: timerId:Guid -> Async<unit>
         // TODO : how to update element in heap?
-        // abstract UpdateTime: Guid -> DateTime -> unit
+        // abstract UpdateTimer: Guid -> DateTime -> unit
         // abstract UpdateTask: Guid -> Async<unit> -> unit

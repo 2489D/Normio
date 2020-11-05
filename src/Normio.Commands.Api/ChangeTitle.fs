@@ -1,7 +1,7 @@
 module Normio.Commands.Api.ChangeTitle
 
 open FSharp.Data
-open Normio.Core.Domain
+open Normio.Core
 open Normio.Core.Commands
 open Normio.Commands.Api.CommandHandlers
 

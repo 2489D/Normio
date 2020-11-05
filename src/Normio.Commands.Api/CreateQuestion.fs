@@ -3,7 +3,7 @@ module Normio.Commands.Api.CreateQuestion
 open System
 open FSharp.Data
 open Normio.Commands.Api
-open Normio.Core.Domain
+open Normio.Core
 open Normio.Core.Commands
 open Normio.Commands.Api.CommandHandlers
 open Normio.Persistence.ReadModels

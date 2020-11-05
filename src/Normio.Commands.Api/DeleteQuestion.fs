@@ -3,7 +3,7 @@ module Normio.Commands.Api.DeleteQuestion
 open System
 open FSharp.Data
 open Normio.Commands.Api
-open Normio.Core.Domain
+open Normio.Core
 open Normio.Core.Commands
 open Normio.Commands.Api.CommandHandlers
 

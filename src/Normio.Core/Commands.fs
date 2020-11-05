@@ -1,7 +1,7 @@
 namespace Normio.Core.Commands
 
 open System
-open Normio.Core.Domain
+open Normio.Core
 
 type Command =
     | OpenExam of examId:Guid * title:ExamTitle40

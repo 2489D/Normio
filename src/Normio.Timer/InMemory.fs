@@ -6,7 +6,8 @@ open FSharpx.Collections
 [<AutoOpen>]
 module InMemory =
     type private InMemoryTimer(secInterval) =
-        let mutable timerStore: Heap<TimerData> = Heap.empty false
+        let minHeap = false
+        let mutable timerStore: Heap<TimerData> = Heap.empty minHeap
 
         let checker = new Timers.Timer(float (secInterval * 1000))
 
@@ -19,7 +20,7 @@ module InMemory =
                         loop t
                     else ts
                 | Heap.Nil -> ts
-            timerStore <- timerStore |> loop
+            timerStore <- loop timerStore
 
         do checker.Elapsed.Add handler
         do checker.AutoReset <- true
@@ -28,18 +29,17 @@ module InMemory =
         interface ITimer with
             member _.SetTimer time task =
                 if time < DateTime.Now
-                then CannotSetTimer "Given time is Past" |> Error
+                then failwith "The given time is in the past"
                 else
                     let id = Guid.NewGuid()
-                    let td = {
-                        Id = id
-                        Time = time
-                        Task = task
-                    }
+                    let td =
+                        { Id = id
+                          Time = time
+                          Task = task }
                     timerStore <- timerStore |> Heap.insert td
                     id |> Ok
 
-            member _.GetTimer id =
+            member _.TryGetTimer id =
                 timerStore
                 |> Heap.toSeq
                 |> Seq.tryFind (fun td -> td.Id = id)
@@ -47,7 +47,7 @@ module InMemory =
             member _.GetAllTimers =
                 timerStore
                 |> Heap.toSeq
-
+            
             member _.Dispose() =
                 checker.Dispose()
                 // printfn "dispose test"

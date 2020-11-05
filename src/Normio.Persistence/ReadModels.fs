@@ -1,10 +1,10 @@
 namespace Normio.Persistence.ReadModels
 
 open System
-open System.Collections.Generic
 open System.Text.Json.Serialization
 open FSharp.CosmosDb
-open Normio.Core.Domain
+
+open Normio.Core
 
 [<JsonFSharpConverter(unionEncoding = JsonUnionEncoding.ExternalTag)>]
 type ExamStatus =

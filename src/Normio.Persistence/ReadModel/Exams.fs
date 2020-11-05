@@ -4,7 +4,7 @@ open System
 open FSharp.Control
 open FSharp.CosmosDb
 
-open Normio.Core.Domain
+open Normio.Core
 open Normio.Persistence.EventStore
 open Normio.Persistence.ReadModels
 open Normio.Persistence.Projections
