@@ -6,6 +6,8 @@ open Normio.Timer.Errors
 
 // TODO : has to select what are really needed
 type ITimer =
+    inherit IDisposable
+
     abstract SetTimer: DateTime -> Async<unit> -> Result<Guid, TimerError>
     abstract GetTimer: Guid -> TimerData option
     abstract GetAllTimers: seq<TimerData>

@@ -3,11 +3,13 @@
 open System
 open Normio.Timer.InMemory
 
+let asyncPrint s = async {
+    printfn s
+}
+
 [<EntryPoint>]
 let main argv =
-    let asyncPrint s = async {
-        printfn s
-    }
+    use inMemoryTimer = createInMemoryTimer 1
 
     let resultSet1 =
         asyncPrint "timer 1"
