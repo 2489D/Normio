@@ -4,6 +4,7 @@ open System
 open Xunit
 open Xunit.Sdk
 open FsUnit
+open FsUnit.Xunit
 
 open Normio.Timer
 
@@ -61,9 +62,9 @@ let ``timer execute task 2`` () =
     
     inMemoryTimer.SetTimer (DateTime.Now.AddSeconds(float 3)) task |> ignore
     Threading.Thread.Sleep(1000)
-    Assert.Equal(result, 0)
+    result |> should equal 0
     Threading.Thread.Sleep(3000)
-    Assert.Equal(result, 1)
+    result |> should equal 1
     
 [<Fact>]
 let ``timer execute task 3`` () =
