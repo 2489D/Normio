@@ -1,8 +1,10 @@
-﻿namespace Normio.Timer.Errors
+﻿namespace Normio.Timer
 
-type TimerError =
-    | CannotSetTimer of context:string
+[<AutoOpen>]
+module Errors =
+    type TimerError =
+        | CannotSetTimer of context:string
 
-    override this.ToString () =
-        match this with
-            | CannotSetTimer ctx -> sprintf "Cannot set timer: %A" ctx
+        override this.ToString () =
+            match this with
+                | CannotSetTimer ctx -> sprintf "Cannot set timer: %A" ctx
