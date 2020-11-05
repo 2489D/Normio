@@ -37,12 +37,15 @@ module InMemory =
                           Time = time
                           Task = task }
                     timerStore <- timerStore |> Heap.insert td
-                    id |> Ok
+                    id
 
             member _.TryGetTimer id =
                 timerStore
                 |> Heap.toSeq
                 |> Seq.tryFind (fun td -> td.Id = id)
+            
+            member _.DeleteTimer id =
+                failwith "Unimplemented"
 
             member _.GetAllTimers =
                 timerStore
