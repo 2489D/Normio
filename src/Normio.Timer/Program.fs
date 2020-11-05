@@ -1,4 +1,4 @@
-﻿module Normio.Timer
+﻿namespace Normio.Timer
 
 open System
 open Normio.Timer.InMemory

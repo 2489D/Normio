@@ -1,10 +1,7 @@
-﻿namespace Normio.Timer.InMemory
+﻿namespace Normio.Timer
 
 open System
 open FSharpx.Collections
-open Normio.Timer.Domain
-open Normio.Timer.Timer
-open Normio.Timer.Errors
 
 [<AutoOpen>]
 module InMemory =

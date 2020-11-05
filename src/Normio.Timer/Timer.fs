@@ -1,8 +1,6 @@
-﻿namespace Normio.Timer.Timer
+﻿namespace Normio.Timer
 
 open System
-open Normio.Timer.Domain
-open Normio.Timer.Errors
 
 [<AutoOpen>]
 module Timer =
