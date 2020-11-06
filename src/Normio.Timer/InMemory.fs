@@ -5,11 +5,11 @@ open FSharpx.Collections
 
 [<AutoOpen>]
 module InMemory =
-    type private InMemoryTimer(secInterval) =
+    type private InMemoryTimer(millisec) =
         let minHeap = false
         let mutable timerStore: Heap<TimerData> = Heap.empty minHeap
 
-        let checker = new Timers.Timer(float (secInterval * 1000))
+        let checker = new Timers.Timer(millisec)
 
         let handler (e: Timers.ElapsedEventArgs) =
             let rec loop ts =

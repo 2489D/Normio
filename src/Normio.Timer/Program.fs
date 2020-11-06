@@ -10,7 +10,7 @@ module App =
 
     [<EntryPoint>]
     let main argv =
-        use inMemoryTimer = createInMemoryTimer 1
+        use inMemoryTimer = createInMemoryTimer (float 1000)
 
         let timerId1 =
             asyncPrint "timer 1"

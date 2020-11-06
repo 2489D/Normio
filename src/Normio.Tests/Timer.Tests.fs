@@ -17,7 +17,7 @@ open Normio.Timer
 [<Fact>]
 let ``timer should be created`` () =
     // check tasks every 1 second
-    use inMemoryTimer = createInMemoryTimer 1
+    use inMemoryTimer = createInMemoryTimer (float 1000)
     let task = async {
         failwith "this should not be executed"
     }
@@ -31,7 +31,7 @@ let ``timer should be created`` () =
 [<Fact>]
 let ``timer should not be created`` () =
     // check tasks every 1 second
-    use inMemoryTimer = createInMemoryTimer 1
+    use inMemoryTimer = createInMemoryTimer (float 1000)
     let task = async {
         failwith "this should not be executed"
     }
@@ -42,7 +42,7 @@ let ``timer should not be created`` () =
 
 [<Fact>]
 let ``timer execute task 1`` () =
-    use inMemoryTimer = createInMemoryTimer 1
+    use inMemoryTimer = createInMemoryTimer (float 1000)
     let mutable result = 0
     let task = async {
         result <- 1
@@ -54,7 +54,7 @@ let ``timer execute task 1`` () =
 
 [<Fact>]
 let ``timer execute task 2`` () =
-    use inMemoryTimer = createInMemoryTimer 1
+    use inMemoryTimer = createInMemoryTimer (float 1000)
     let mutable result = 0
     let task = async {
         result <- 1
@@ -68,8 +68,8 @@ let ``timer execute task 2`` () =
 
 [<Fact>]
 let ``timer execute task 3`` () =
-    let interval = 1
-    use inMemoryTimer = createInMemoryTimer interval
+    let interval = 1000
+    use inMemoryTimer = createInMemoryTimer (float interval)
     let mutable result = 0
     let task amount = async {
         result <- result + amount
@@ -77,7 +77,7 @@ let ``timer execute task 3`` () =
 
     inMemoryTimer.SetTimer (DateTime.Now.AddSeconds(float 1)) (task 1) |> ignore
     inMemoryTimer.SetTimer (DateTime.Now.AddSeconds(float 2)) (task 100) |> ignore
-    Threading.Thread.Sleep((1 + interval) * 1000)
+    Threading.Thread.Sleep(1 * 1000 + interval)
     result |> should equal 1
     Threading.Thread.Sleep(1 * 1000)
     result |> should equal 101
