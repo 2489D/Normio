@@ -16,7 +16,7 @@ module InMemory =
                 match ts with
                 | Heap.Cons(h, t) ->
                     if h.Time <= e.SignalTime then
-                        h.Task |> Async.Start
+                        h.Task |> Async.StartImmediate
                         loop t
                     else ts
                 | Heap.Nil -> ts
