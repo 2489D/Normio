@@ -27,6 +27,10 @@ module InMemory =
         do checker.Start()
 
         interface ITimer with
+            member _.Dispose() =
+                checker.Dispose()
+                // printfn "dispose test"
+
             member _.SetTimer time task =
                 if time < DateTime.Now
                 then failwith "The given time is in the past"
@@ -43,16 +47,34 @@ module InMemory =
                 timerStore
                 |> Heap.toSeq
                 |> Seq.tryFind (fun td -> td.Id = id)
-            
-            member _.DeleteTimer id =
-                failwith "Unimplemented"
 
             member _.GetAllTimers =
                 timerStore
                 |> Heap.toSeq
-            
-            member _.Dispose() =
-                checker.Dispose()
-                // printfn "dispose test"
+
+            // FIXME : is this the best way?
+            // FIXME : tail rec
+            member _.DeleteTimer id = async {
+                let rec loop ts =
+                    match ts with
+                    | Heap.Cons(h, t) ->
+                        if h.Id = id then t
+                        else (loop t).Insert h
+                    | Heap.Nil -> Heap.empty minHeap
+                timerStore <- loop timerStore
+            }
+
+            // FIXME : is this the best way?
+            // FIXME : tail rec
+            member _.UpdateTimer id time = async {
+                let rec loop ts =
+                    match ts with
+                    | Heap.Cons(h, t) ->
+                        if h.Id = id
+                        then t.Insert { h with Time = time }
+                        else (loop t).Insert h
+                    | Heap.Nil -> Heap.empty minHeap
+                timerStore <- loop timerStore
+            }
 
     let createInMemoryTimer secInterval = (new InMemoryTimer(secInterval)) :> ITimer

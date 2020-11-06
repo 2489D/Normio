@@ -12,6 +12,4 @@ module Timer =
         abstract TryGetTimer: timerId:Guid -> TimerData option
         abstract GetAllTimers: seq<TimerData>
         abstract DeleteTimer: timerId:Guid -> Async<unit>
-        // TODO : how to update element in heap?
-        // abstract UpdateTimer: Guid -> DateTime -> unit
-        // abstract UpdateTask: Guid -> Async<unit> -> unit
+        abstract UpdateTimer: timerId:Guid -> time:DateTime -> Async<unit>
