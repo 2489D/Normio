@@ -1,7 +1,6 @@
 ﻿namespace Normio.Timer
 
 open System
-open Normio.Timer.InMemory
 
 [<AutoOpen>]
 module App =
@@ -13,11 +12,11 @@ module App =
     let main argv =
         use inMemoryTimer = createInMemoryTimer 1
 
-        let resultSet1 =
+        let timerId1 =
             asyncPrint "timer 1"
             |> inMemoryTimer.SetTimer (DateTime.Now.AddSeconds (float 1))
 
-        let resultSet2 =
+        let timerId2 =
             asyncPrint "timer 2"
             |> inMemoryTimer.SetTimer (DateTime.Now.AddSeconds (float 2))
 
