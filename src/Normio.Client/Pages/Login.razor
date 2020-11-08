@@ -1,0 +1,58 @@
+@page "/"
+@layout LoginLayout
+@inject NavigationManager NavigationManager
+
+
+<div>
+    <br /><br /><br /><br />
+</div>
+
+<div>
+    <h3>Normio Login</h3>    
+</div>
+<div>
+    <br/>
+</div>
+<div>
+    <input class="form-control col-12" @bind="examID" placeholder="Exam ID" />
+</div>
+<div>
+    <input class="form-control col-12" @bind="studentID" placeholder="Student ID" />
+</div>
+<div>
+    <input type="password" class="form-control col-12" @bind="password" placeholder="Password" />
+</div>
+<br/>
+<div>
+    <button class="btn btn-primary" @onclick="Validate">
+        Login
+    </button>
+</div>
+<div>
+    @LoginResultMessage
+</div>
+
+
+
+@code {
+    private string examID { get; set; }
+    private string studentID { get; set; }
+    private string password { get; set; }
+    
+    public string LoginResultMessage { get; set; }
+
+
+    private void Validate()
+    {
+        bool isValid = studentID == "123"; // FIX: replace with API call
+
+        if (isValid)
+        {
+            NavigationManager.NavigateTo("/waitingroom");
+        }
+        else
+        {
+            LoginResultMessage = "Invalid username or password";
+        }
+    }
+}
