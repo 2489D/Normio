@@ -1,9 +1,7 @@
 module Normio.Core.CommandHandlers
 
-open Normio.Core.Domain
-open Normio.Core.Events
+open Normio.Core
 open Normio.Core.Commands
-open Normio.Core.Errors
 open Normio.Core.States
 
 let handleOpenExam id title = function

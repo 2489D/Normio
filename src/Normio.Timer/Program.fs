@@ -1,8 +1,30 @@
-﻿// Learn more about F# at http://fsharp.org
+﻿namespace Normio.Timer
 
 open System
 
-[<EntryPoint>]
-let main argv =
-    printfn "Hello World from F#!"
-    0 // return an integer exit code
+[<AutoOpen>]
+module App =
+    let asyncPrint s = async {
+        printfn s
+    }
+
+    [<EntryPoint>]
+    let main argv =
+        use inMemoryTimer = createInMemoryTimer (float 1000)
+
+        let timerId1 =
+            asyncPrint "timer 1"
+            |> inMemoryTimer.SetTimer (DateTime.Now.AddSeconds (float 1))
+
+        let timerId2 =
+            asyncPrint "timer 2"
+            |> inMemoryTimer.SetTimer (DateTime.Now.AddSeconds (float 2))
+
+        (*
+        inMemoryTimer.GetAllTimers
+        |> Seq.iter (fun td -> printfn "%s" (td.Id.ToString()))
+        *)
+
+        Threading.Thread.Sleep 3000
+
+        0

@@ -2,14 +2,12 @@ module Normio.Tests.Core
 
 open System
 open FsUnit
-open Normio.Core.Domain
 open Xunit
 open Xunit.Sdk
 
-open Normio.Core.Events
+open Normio.Core
 open Normio.Core.States
 open Normio.Core.Commands
-open Normio.Core.CommandHandlers
 open Normio.Tests.DSL
 open Normio.Tests.Mocks
 

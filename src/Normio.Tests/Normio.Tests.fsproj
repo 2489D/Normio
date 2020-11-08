@@ -12,6 +12,7 @@
         <Compile Include="Mocks.fs" />
         <Compile Include="Core.Tests.fs" />
         <Compile Include="E2E.Tests.fs" />
+        <Compile Include="Timer.Tests.fs" />
         <Compile Include="Program.fs" />
     </ItemGroup>
 
@@ -25,6 +26,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Normio.Core\Normio.Core.fsproj" />
+      <ProjectReference Include="..\Normio.Timer\Normio.Timer.fsproj" />
     </ItemGroup>
 
 </Project>

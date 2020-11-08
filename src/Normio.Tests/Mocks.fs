@@ -1,7 +1,7 @@
 module Normio.Tests.Mocks
 
 open System
-open Normio.Core.Domain
+open Normio.Core
 
 let newGuid () = Guid.NewGuid ()
 

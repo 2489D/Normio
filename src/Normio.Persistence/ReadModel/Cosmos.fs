@@ -1,14 +1,14 @@
-module Normio.Persistence.ReadModels.Cosmos
+module Normio.Persistence.Exams
 
 open System
 open FSharp.Control
 open FSharp.CosmosDb
 
-open Normio.Core.Domain
-open Normio.Persistence
+open Normio.Core
 open Normio.Persistence.EventStore
 open Normio.Persistence.ReadModels
 open Normio.Persistence.Projections
+open Normio.Persistence.Queries
 
 let private getConn connString =
     connString
@@ -113,18 +113,18 @@ let private createSubmission connString examId submission = async {
         |> AsyncSeq.iter ignore
 }
 
-let private createQuestion connString examId questionId = async {
+let private createQuestion connString examId (file: File) = async {
     let key = string examId
     do! getConn connString
-        |> Cosmos.update<ExamReadModel> key key (fun exam -> { exam with Questions = exam.Questions |> Array.append [| questionId |] })
+        |> Cosmos.update<ExamReadModel> key key (fun exam -> { exam with Questions = exam.Questions |> Array.append [| file |] })
         |> Cosmos.execAsync
         |> AsyncSeq.iter ignore
 }
 
-let private deleteQuestion connString examId questionId = async {
+let private deleteQuestion connString examId fileId = async {
     let key = string examId
     do! getConn connString
-        |> Cosmos.update key key (fun (exam: ExamReadModel) -> { exam with Questions = exam.Questions |> Array.filter (fun questionId' -> questionId' <> questionId)})
+        |> Cosmos.update key key (fun (exam: ExamReadModel) -> { exam with Questions = exam.Questions |> Array.filter (fun f -> f.Id <> fileId)})
         |> Cosmos.execAsync
         |> AsyncSeq.iter ignore
 }
@@ -138,7 +138,7 @@ let private changeTitle connString examId title = async {
 }
 
 
-let cosmosExamActions connString =
+let examActions connString =
     { new IExamAction with
         member this.OpenExam examId title = openExam connString examId title
         member this.StartExam examId = startExam connString examId
@@ -149,18 +149,18 @@ let cosmosExamActions connString =
         member this.AddHost examId host = addHost connString examId host
         member this.RemoveHost examId hostId = removeHost connString examId hostId
         member this.CreateSubmission examId submission = createSubmission connString examId submission
-        member this.CreateQuestion examId questionId = createQuestion connString examId questionId
-        member this.DeleteQuestion examId questionId = deleteQuestion connString examId questionId
+        member this.CreateQuestion examId file = createQuestion connString examId file
+        member this.DeleteQuestion examId fileId = deleteQuestion connString examId fileId
         member this.ChangeTitle examId title = changeTitle connString examId title }
 
-let cosmosExamQueries connString = {
+let examQueries connString = {
     GetExamByExamId = getExam connString
 }
 
 let cosmosQueries connString: Queries = {
-    Exam = cosmosExamQueries connString
+    Exam = examQueries connString
 }
 
 let cosmosActions connString: ProjectionActions = {
-    Exam = cosmosExamActions connString
+    Exam = examActions connString
 }

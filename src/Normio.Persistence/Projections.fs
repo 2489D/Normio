@@ -1,8 +1,7 @@
 module Normio.Persistence.Projections
 
 open System
-open Normio.Core.Domain
-open Normio.Core.Events
+open Normio.Core
 
 type IExamAction =
     abstract OpenExam: Guid -> ExamTitle40 -> Async<unit>
