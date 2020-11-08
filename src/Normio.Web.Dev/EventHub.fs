@@ -8,8 +8,6 @@ open FSharp.Control.Tasks.V2.ContextInsensitive
 open Microsoft.Extensions.Configuration
 open Normio.Core.Events
 open Normio.Persistence.Projections
-open Normio.Persistence.ReadModels.Cosmos
-
 
 type INormioClient =
     abstract member ReceiveEvent : Event -> Task

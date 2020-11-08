@@ -1,4 +1,4 @@
-module Normio.Persistence.Exams
+module Normio.Persistence.ReadModels.Cosmos
 
 open System
 open FSharp.Control
@@ -113,18 +113,18 @@ let private createSubmission connString examId submission = async {
         |> AsyncSeq.iter ignore
 }
 
-let private createQuestion connString examId (file: File) = async {
+let private createQuestion connString examId questionId = async {
     let key = string examId
     do! getConn connString
-        |> Cosmos.update<ExamReadModel> key key (fun exam -> { exam with Questions = exam.Questions |> Array.append [| file |] })
+        |> Cosmos.update<ExamReadModel> key key (fun exam -> { exam with Questions = exam.Questions |> Array.append [| questionId |] })
         |> Cosmos.execAsync
         |> AsyncSeq.iter ignore
 }
 
-let private deleteQuestion connString examId fileId = async {
+let private deleteQuestion connString examId questionId = async {
     let key = string examId
     do! getConn connString
-        |> Cosmos.update key key (fun (exam: ExamReadModel) -> { exam with Questions = exam.Questions |> Array.filter (fun f -> f.Id <> fileId)})
+        |> Cosmos.update key key (fun (exam: ExamReadModel) -> { exam with Questions = exam.Questions |> Array.filter (fun questionId' -> questionId' <> questionId)})
         |> Cosmos.execAsync
         |> AsyncSeq.iter ignore
 }
@@ -149,8 +149,8 @@ let examActions connString =
         member this.AddHost examId host = addHost connString examId host
         member this.RemoveHost examId hostId = removeHost connString examId hostId
         member this.CreateSubmission examId submission = createSubmission connString examId submission
-        member this.CreateQuestion examId file = createQuestion connString examId file
-        member this.DeleteQuestion examId fileId = deleteQuestion connString examId fileId
+        member this.CreateQuestion examId questionId = createQuestion connString examId questionId
+        member this.DeleteQuestion examId questionId = deleteQuestion connString examId questionId
         member this.ChangeTitle examId title = changeTitle connString examId title }
 
 let examQueries connString = {

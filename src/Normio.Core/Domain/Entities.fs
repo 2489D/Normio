@@ -57,8 +57,8 @@ module Entities =
         Id: Guid
         [<JsonPropertyName("examId")>]
         ExamId: Guid
-        [<JsonPropertyName("student")>]
-        Student: Student
+        [<JsonPropertyName("studentId")>]
+        StudentId: Guid
         [<JsonPropertyName("file")>]
         File: File
         [<JsonPropertyName("timestamp")>]
@@ -79,7 +79,7 @@ module Entities =
         [<JsonPropertyName("title")>]
         Title: ExamTitle40
         [<JsonPropertyName("questions")>]
-        Questions: File list
+        Questions: Guid list
         [<JsonPropertyName("submissions")>]
         Submissions: Submission list
         [<JsonPropertyName("students")>]

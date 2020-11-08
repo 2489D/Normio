@@ -3,8 +3,7 @@ module Normio.Commands.Api.AddHost
 
 open System
 open System.Text.Json.Serialization
-open Normio.Commands.Api
-open Normio.Core.Domain
+open Normio.Core
 open Normio.Core.Commands
 open Normio.Commands.Api.CommandHandlers
 

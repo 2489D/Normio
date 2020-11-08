@@ -4,18 +4,18 @@ open System
 open Normio.Core
 
 type IExamAction =
-    abstract OpenExam: Guid -> ExamTitle40 -> Async<unit>
-    abstract StartExam: Guid -> Async<unit>
-    abstract EndExam: Guid -> Async<unit>
-    abstract CloseExam: Guid -> Async<unit>
-    abstract AddStudent: Guid -> Student -> Async<unit>
-    abstract RemoveStudent: Guid -> Guid -> Async<unit>
-    abstract AddHost: Guid -> Host -> Async<unit>
-    abstract RemoveHost: Guid -> Guid -> Async<unit>
-    abstract CreateSubmission: Guid -> Submission -> Async<unit>
-    abstract CreateQuestion: Guid -> Guid -> Async<unit>
-    abstract DeleteQuestion: Guid -> Guid -> Async<unit>
-    abstract ChangeTitle: Guid -> ExamTitle40 -> Async<unit>
+    abstract OpenExam: examId:Guid -> title:ExamTitle40 -> Async<unit>
+    abstract StartExam: examId:Guid -> Async<unit>
+    abstract EndExam: examId:Guid -> Async<unit>
+    abstract CloseExam: examId:Guid -> Async<unit>
+    abstract AddStudent: examId:Guid -> Student -> Async<unit>
+    abstract RemoveStudent: examId:Guid -> studentId:Guid -> Async<unit>
+    abstract AddHost: examId:Guid -> host:Host -> Async<unit>
+    abstract RemoveHost: examId:Guid -> hostId:Guid -> Async<unit>
+    abstract CreateSubmission: examId:Guid -> submission:Submission -> Async<unit>
+    abstract CreateQuestion: examId:Guid -> questionId:Guid -> Async<unit>
+    abstract DeleteQuestion: examId:Guid -> questionId:Guid -> Async<unit>
+    abstract ChangeTitle: examId:Guid -> title:ExamTitle40 -> Async<unit>
 
 
 type ProjectionActions = {

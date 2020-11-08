@@ -3,7 +3,7 @@ module Normio.Commands.Api.ChangeTitle
 
 open System
 open System.Text.Json.Serialization
-open Normio.Core.Domain
+open Normio.Core
 open Normio.Core.Commands
 open Normio.Commands.Api.CommandHandlers
 
