@@ -14,15 +14,19 @@ module InMemory =
         let checker = new Timers.Timer(millisec)
 
         let handler (e: Timers.ElapsedEventArgs) =
-            let rec loop ts =
+            let rec loop ts tl =
                 match ts with
                 | Heap.Cons(h, t) ->
                     if h.Time <= e.SignalTime then
-                        h.Task |> Async.StartImmediate
-                        loop t
-                    else ts
-                | Heap.Nil -> ts
-            timerStore <- loop timerStore
+                        loop t (h.Task :: tl)
+                    else (ts, tl)
+                | Heap.Nil -> (ts, tl)
+            let newTs, taskList = loop timerStore List.Empty
+            timerStore <- newTs
+            taskList
+            |> Async.Parallel
+            |> Async.Ignore
+            |> Async.StartImmediate
 
         do checker.Elapsed.Add handler
         do checker.AutoReset <- true
