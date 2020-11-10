@@ -1,30 +1,54 @@
-﻿namespace Normio.Timer
+﻿module Normio.Timer.App
 
 open System
 
-[<AutoOpen>]
-module App =
-    let asyncPrint s = async {
-        printfn s
+open System.Runtime.Serialization
+open FsHttp
+open Suave
+open Suave.Json
+open Suave.Filters
+open Suave.Operators
+open Suave.Successful
+
+let postStartExamCommand (examId: Guid) =
+    async {
+        let backendUrl = "https://localhost:5001/"
+        let reqBody = sprintf """{ "examId" : %A }""" examId
+        let! res = httpAsync {
+            POST (backendUrl + "startExam")
+            body
+            json reqBody
+        }
+        ()
+    }
+    
+[<DataContract>]
+type Reservation =
+    {
+        [<field: DataMember(Name = "when")>]
+        When : DateTime
+        [<field: DataMember(Name = "examId")>]
+        ExamId : Guid
     }
 
-    [<EntryPoint>]
-    let main argv =
-        use inMemoryTimer = createInMemoryTimer (float 1000)
+let handleReservation (timer: ITimer): WebPart =
+    fun (ctx : HttpContext) ->
+        async {
+            // FIXME: DateTime ser/de is fucking bad
+            let reservation = ctx.request.rawForm |> fromJson<Reservation>
+            printfn "%A" reservation
+            let taskId = timer.SetTimer reservation.When (postStartExamCommand reservation.ExamId)
+            return! CREATED (sprintf "exam %A reserved" reservation.ExamId) ctx
+        }
+    
+let app timer =
+    POST >=> choose [
+        path "/reserve" >=> handleReservation timer
+    ]
 
-        let timerId1 =
-            asyncPrint "timer 1"
-            |> inMemoryTimer.SetTimer (DateTime.Now.AddSeconds (float 1))
-
-        let timerId2 =
-            asyncPrint "timer 2"
-            |> inMemoryTimer.SetTimer (DateTime.Now.AddSeconds (float 2))
-
-        (*
-        inMemoryTimer.GetAllTimers
-        |> Seq.iter (fun td -> printfn "%s" (td.Id.ToString()))
-        *)
-
-        Threading.Thread.Sleep 3000
-
-        0
+[<EntryPoint>]
+let main argv =
+    use inMemoryTimer = createInMemoryTimer (float argv.[0])
+    printfn "InMemoryTimer is running... ticking every %A milliseconds" (float argv.[0])
+    startWebServer defaultConfig (app inMemoryTimer)
+    0

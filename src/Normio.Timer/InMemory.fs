@@ -1,9 +1,11 @@
 ﻿namespace Normio.Timer
 
 open System
+open System.Runtime.Serialization
 open FSharpx.Collections
 
 [<AutoOpen>]
+[<KnownType("timer")>]
 module InMemory =
     type private InMemoryTimer(millisec) =
         let minHeap = false
@@ -33,7 +35,7 @@ module InMemory =
 
             member _.SetTimer time task =
                 if time < DateTime.Now
-                then failwith "The given time is in the past"
+                then failwithf "The given time is in the past: %A" time
                 else
                     let id = Guid.NewGuid()
                     let td =
