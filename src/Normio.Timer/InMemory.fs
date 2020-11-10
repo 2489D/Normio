@@ -87,4 +87,4 @@ module InMemory =
                     timerStore <- loop timerStore (Heap.empty minHeap)
                 }
 
-    let createInMemoryTimer secInterval = (new InMemoryTimer(secInterval)) :> ITimer
+    let createInMemoryTimer millisec = (new InMemoryTimer(millisec)) :> ITimer
