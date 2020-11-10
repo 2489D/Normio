@@ -1,0 +1,77 @@
+@page "/"
+@layout LoginLayout
+
+@using Normio.Client.Data
+@inject NavigationManager NavigationManager
+
+
+<div>
+    <br /><br /><br /><br />
+</div>
+
+<div>
+    <h3>Normio Login (Student)</h3>    
+</div>
+<div>
+    <br/>
+</div>
+<div>
+    <input class="form-control col-12" @bind="examId" placeholder="Exam ID" />
+</div>
+<div>
+    <input class="form-control col-12" @bind="student.StudentId" placeholder="Student ID" />
+</div>
+<div>
+    <input type="password" class="form-control col-12" @bind="student.Password" placeholder="Password" />
+</div>
+<div>
+    If I am host, use
+    <a href="/host">
+        Host Login
+    </a>
+</div>
+<br/>
+<div>
+    <button class="btn btn-primary" @onclick="Validate">
+        Login
+    </button>
+</div>
+<div>
+    @LoginResultMessage
+</div>
+
+(user ID: 123, other fields: None)
+
+
+@code {
+    private string examId { get; set; }
+    private Student student = new Student();
+
+    private string LoginResultMessage { get; set; }
+
+    private void Validate()
+    {
+        bool isValid = ValidateStudent(examId, student);
+
+
+        if (isValid)
+        {
+            NavigationManager.NavigateTo("/waitingroom");
+        }
+        else
+        {
+            LoginResultMessage = "Invalid username or password";
+        }
+    }
+    
+    private bool ValidateStudent(string examId, Student student)
+    {
+        return student.StudentId == "123"; // FIX with API call
+    }
+
+    private void GotoHostLogin()
+    {
+        NavigationManager.NavigateTo("/host");
+    }
+    
+}

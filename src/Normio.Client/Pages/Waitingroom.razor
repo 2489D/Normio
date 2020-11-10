@@ -1,0 +1,53 @@
+@page "/waitingroom"
+@inject NavigationManager NavigationManager
+
+<h1>Waiting Room</h1>
+<h2>Current Time: @currentTime</h2>
+<h2>Exam Start Time: @examExamStartTime</h2>
+@code {
+    private DateTime currentTime = DateTime.Now;
+    private DateTime examExamStartTime = GetExamStartTime();
+    private bool canTakeExam = false;
+    
+
+    private static DateTime GetExamStartTime()
+    {
+        return new DateTime(2020, 11, 09, 4,26, 00); // FIX: replace with API call
+    }
+    
+    protected override Task OnInitializedAsync()
+    {
+        CurrentTimeUpdate();
+        return base.OnInitializedAsync();
+    }
+
+    async Task CurrentTimeUpdate()
+    {
+        if (currentTime < examExamStartTime)
+        {
+            canTakeExam = true;
+        }
+        while (true)
+        {
+            await Task.Delay(1000);
+            currentTime = DateTime.Now; //FIX: replace with API call
+            StateHasChanged();
+
+            bool takeExamIsAvailable = currentTime > examExamStartTime && canTakeExam || ExceptionList();
+            if (takeExamIsAvailable)
+            {
+                canTakeExam = false;
+                NavigationManager.NavigateTo("/examroom");
+            }
+        }
+        
+        
+    }
+
+    private static bool ExceptionList()
+    {
+        // Implement: Some student in the exception list can join the exam again. 
+        return false;
+    }
+
+}
