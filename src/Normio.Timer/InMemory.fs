@@ -62,28 +62,29 @@ module InMemory =
                 |> async.Return
 
             // FIXME : is this the best way?
-            // FIXME : tail rec
-            member _.DeleteTimer id = async {
-                let rec loop ts =
-                    match ts with
-                    | Heap.Cons(h, t) ->
-                        if h.Id = id then t
-                        else (loop t).Insert h
-                    | Heap.Nil -> Heap.empty minHeap
-                timerStore <- loop timerStore
-            }
-
-            // FIXME : is this the best way?
-            // FIXME : tail rec
-            member _.UpdateTimer id time = async {
-                let rec loop ts =
+            member _.DeleteTimer id =
+                let rec loop ts ns =
                     match ts with
                     | Heap.Cons(h, t) ->
                         if h.Id = id
-                        then t.Insert { h with Time = time }
-                        else (loop t).Insert h
+                        then ns |> Heap.merge t
+                        else loop t (ns |> Heap.insert h)
                     | Heap.Nil -> Heap.empty minHeap
-                timerStore <- loop timerStore
-            }
+                async {
+                    timerStore <- loop timerStore (Heap.empty minHeap)
+                }
+
+            // FIXME : is this the best way?
+            member _.UpdateTimer id time =
+                let rec loop ts ns =
+                    match ts with
+                    | Heap.Cons(h, t) ->
+                        if h.Id = id
+                        then ns |> Heap.insert { h with Time = time } |> Heap.merge t
+                        else loop t (ns |> Heap.insert h)
+                    | Heap.Nil -> Heap.empty minHeap
+                async {
+                    timerStore <- loop timerStore (Heap.empty minHeap)
+                }
 
     let createInMemoryTimer secInterval = (new InMemoryTimer(secInterval)) :> ITimer
