@@ -17,4 +17,4 @@ module Domain =
         override this.GetHashCode() = hash this.Id
         interface IComparable with
             override this.CompareTo(other) =
-                DateTime.Compare(this.Time, (other :?> TimerData).Time)
+                this.Time.CompareTo((other :?> TimerData).Time)
