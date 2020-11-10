@@ -40,23 +40,26 @@ module InMemory =
             member _.SetTimer time task =
                 if time < DateTime.Now
                 then failwithf "The given time is in the past: %A" time
-                else
+                else async {
                     let id = Guid.NewGuid()
                     let td =
                         { Id = id
                           Time = time
                           Task = task }
                     timerStore <- timerStore |> Heap.insert td
-                    id
+                    return id
+                }
 
             member _.TryGetTimer id =
                 timerStore
                 |> Heap.toSeq
                 |> Seq.tryFind (fun td -> td.Id = id)
+                |> async.Return
 
             member _.GetAllTimers =
                 timerStore
                 |> Heap.toSeq
+                |> async.Return
 
             // FIXME : is this the best way?
             // FIXME : tail rec

@@ -8,8 +8,8 @@ module Timer =
     type ITimer =
         inherit IDisposable
 
-        abstract SetTimer: time:DateTime -> task:Async<unit> -> Guid
-        abstract TryGetTimer: timerId:Guid -> TimerData option
-        abstract GetAllTimers: seq<TimerData>
+        abstract SetTimer: time:DateTime -> task:Async<unit> -> Async<Guid>
+        abstract TryGetTimer: timerId:Guid -> Async<TimerData option>
+        abstract GetAllTimers: Async<seq<TimerData>>
         abstract DeleteTimer: timerId:Guid -> Async<unit>
         abstract UpdateTimer: timerId:Guid -> time:DateTime -> Async<unit>
