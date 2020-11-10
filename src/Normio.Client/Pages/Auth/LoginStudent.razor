@@ -1,0 +1,72 @@
+@page "/auth/login/student"
+@layout LoginLayout
+@using Normio.Client.Data
+@inject NavigationManager NavigationManager
+
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <h1>Normio Login</h1>
+            <h2>Student</h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <form @onsubmit="HandleLogin">
+                <input
+                    class="form-control col m-2"
+                    @bind="ExamId"
+                    placeholder="Exam ID"/>
+                <input
+                    class="form-control col m-2"
+                    @bind="_student.StudentId"
+                    placeholder="ID"/>
+                <input
+                    type="password"
+                    class="form-control col-12 m-2"
+                    @bind="_student.Password"
+                    placeholder="Password"/>
+                <input type="submit" value="Login"/>
+            </form>
+        </div>
+    </div>
+    <div class="col ml-auto">
+        <a href="/auth/login/host"> Are you hosting an exam? </a>
+    </div>
+    <div>
+        @LoginResultMessage
+    </div>
+    (user ID: 123, other fields: None)
+</div>
+
+@code {
+    private string ExamId { get; set; }
+    private Student _student = new Student();
+
+    private string LoginResultMessage { get; set; }
+
+    private void HandleLogin()
+    {
+        var isValid = ValidateStudent(ExamId, _student);
+        if (isValid)
+        {
+            NavigationManager.NavigateTo("/waitingroom");
+        }
+        else
+        {
+            LoginResultMessage = "Invalid username or password";
+        }
+    }
+    
+    private bool ValidateStudent(string examId, Student student)
+    {
+        // FIXME
+        return true;
+    }
+
+    private void GotoHostLogin()
+    {
+        NavigationManager.NavigateTo("/host");
+    }
+    
+}

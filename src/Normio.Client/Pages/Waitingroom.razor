@@ -1,18 +1,21 @@
-@page "/waitingroom"
+@page "/"
 @inject NavigationManager NavigationManager
 
-<h1>Waiting Room</h1>
-<h2>Current Time: @currentTime</h2>
-<h2>Exam Start Time: @examExamStartTime</h2>
+<div class="container">
+    <h1>Waiting Room</h1>
+    <h2>Current Time: @currentTime.ToString()</h2>
+    <h2>Exam Start Time: @examExamStartTime.ToString()</h2>
+</div>
 @code {
     private DateTime currentTime = DateTime.Now;
     private DateTime examExamStartTime = GetExamStartTime();
     private bool canTakeExam = false;
     
 
+    // FIXME : change this into api calls
     private static DateTime GetExamStartTime()
     {
-        return new DateTime(2020, 11, 09, 4,26, 00); // FIX: replace with API call
+        return new DateTime(2020, 11, 20, 12,25, 00);
     }
     
     protected override Task OnInitializedAsync()
