@@ -37,7 +37,7 @@ let handleReservation (timer: ITimer): WebPart =
             // FIXME: DateTime ser/de is fucking bad
             let reservation = ctx.request.rawForm |> fromJson<Reservation>
             printfn "%A" reservation
-            let taskId = timer.SetTimer reservation.When (postStartExamCommand reservation.ExamId)
+            let! taskId = timer.SetTimer reservation.When (postStartExamCommand reservation.ExamId)
             return! CREATED (sprintf "exam %A reserved" reservation.ExamId) ctx
         }
     
