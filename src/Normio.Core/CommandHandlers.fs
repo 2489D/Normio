@@ -9,11 +9,12 @@ let handleOpenExam id title = function
         [ExamOpened (id, title)] |> Ok
     | _ -> CannotOpenExam "Exam already opened" |> Error
 
+// TODO
 let handleStartExam = function
     | ExamIsWaiting exam ->
-        let hasQuestion = exam.Questions |> List.isEmpty
-        let hasStudent = exam.Students |> Map.isEmpty
-        let hasHost = exam.Hosts |> Map.isEmpty
+        let hasQuestion = exam.Questions |> List.isEmpty |> not
+        let hasStudent = exam.Students |> Map.isEmpty |> not
+        let hasHost = exam.Hosts |> Map.isEmpty |> not
         if hasQuestion && hasStudent && hasHost
         then [ExamStarted exam.Id] |> Ok
         else CannotStartExam "There is no question" |> Error
