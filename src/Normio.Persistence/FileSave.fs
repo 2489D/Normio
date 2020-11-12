@@ -6,42 +6,63 @@ open System.IO
 (*
     "path"
      └─(Exam id) folders
-        ├─"Questions" folder
-        │  └─(Question id) files
-        └─"Submissions" folder
-           └─(Submission id) files
+       ├─"Questions" folder
+       │  └─(Question id) files
+       └─(Student id) folders
+          └─(Submission id) files
 *)
 
+// what to do if the file already exist?
+// currently: just overlap
 type IFileSaver =
-    // what to do if the file already exist?
-    // currently: just overlap
-    abstract SaveQuestion: examId: Guid -> qId: Guid -> question: FileStream -> Async<unit>
-    abstract SaveSubmission: examId: Guid -> sId: Guid -> submission: FileStream -> Async<unit>
+    abstract SaveQuestion:
+        examId: Guid
+        -> questionId: Guid
+        -> questionStream: FileStream
+        -> Async<unit>
+
+    abstract SaveSubmission:
+        examId: Guid
+        -> studentId: Guid
+        -> submissionId: Guid
+        -> submissionStream: FileStream
+        -> Async<unit>
+
     // both two can throw exception
 
 
-type private InMemoryFileSaver(path) =
-    do Directory.CreateDirectory path |> ignore // can throw exception
+// FIXME : indentation (readability)
+let private saveQuestion path
+    (examId: Guid)
+    (questionId: Guid)
+    (questionStream: FileStream) = async {
+    let questionPath = path + """\""" + examId.ToString() + """\Questions"""
 
-    interface IFileSaver with
-        member _.SaveQuestion eid qid q = async {
-            let qpath = path + """\""" + eid.ToString() + """\Questions"""
+    if Directory.Exists questionPath |> not
+    then Directory.CreateDirectory questionPath |> ignore
 
-            if Directory.Exists qpath |> not
-            then Directory.CreateDirectory qpath |> ignore
+    use stream = File.Create (questionPath + """\""" + questionId.ToString())
+    return! questionStream.CopyToAsync stream |> Async.AwaitTask
+}
 
-            use stream = File.Create (qpath + """\""" + qid.ToString())
-            return! q.CopyToAsync stream |> Async.AwaitTask
-        }
+let private saveSubmission path
+    (examId: Guid)
+    (studentId: Guid)
+    (submissionId: Guid)
+    (submissionStream: FileStream) = async {
+    let studentPath = path + """\""" + examId.ToString() + """\""" + studentId.ToString()
 
-        member _.SaveSubmission eid sid s = async {
-            let spath = path + """\""" + eid.ToString() + """\Submissions"""
+    if Directory.Exists studentPath |> not
+    then Directory.CreateDirectory studentPath |> ignore
 
-            if Directory.Exists spath |> not
-            then Directory.CreateDirectory spath |> ignore
+    use stream = File.Create (studentPath + """\""" + submissionId.ToString())
+    return! submissionStream.CopyToAsync stream |> Async.AwaitTask
+}
 
-            use stream = File.Create (spath + """\""" + sid.ToString())
-            return! s.CopyToAsync stream |> Async.AwaitTask
-        }
 
-let createInMemoryFileSaver path = (InMemoryFileSaver path) :> IFileSaver
+let inMemoryFileSaver path =
+    { new IFileSaver with
+        member _.SaveQuestion examId questionId questionStream
+            = saveQuestion path examId questionId questionStream
+        member _.SaveSubmission examId studentId submissionId submissionStream
+            = saveSubmission path examId studentId submissionId submissionStream }
