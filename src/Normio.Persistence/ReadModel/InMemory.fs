@@ -16,10 +16,10 @@ type private InMemoryExamsReadModel() =
                 ExamId = examId
                 Status = BeforeExam
                 Title = title
-                Students = Array.empty
-                Hosts = Array.empty
-                Questions = Array.empty
-                Submissions = Array.empty
+                Students = Seq.empty
+                Hosts = Seq.empty
+                Questions = Seq.empty
+                Submissions = Seq.empty
             }
             exams.Add(examId, exam)
         }
@@ -44,43 +44,63 @@ type private InMemoryExamsReadModel() =
     let addStudent examId student =
         async {
             let exam = exams.[examId]
-            exams.[examId] <- { exam with Students = exam.Students |> Array.append [| student |] }
+            let students =
+                seq {
+                    yield student
+                    yield! exam.Students
+                }
+            exams.[examId] <- { exam with Students = students }
         }
 
     let removeStudent examId studentId =
         async {
             let exam = exams.[examId]
-            exams.[examId] <- { exam with Students = exam.Students |> Array.filter (fun s -> s.Id <> studentId) }
+            exams.[examId] <- { exam with Students = exam.Students |> Seq.filter (fun s -> s.Id <> studentId) }
         }
 
     let addHost examId host =
         async {
             let exam = exams.[examId]
-            exams.[examId] <- { exam with Hosts = exam.Hosts |> Array.append [| host |] }
+            let hosts =
+                seq {
+                    yield host
+                    yield! exam.Hosts
+                }
+            exams.[examId] <- { exam with Hosts = hosts }
         }
 
     let removeHost examId hostId =
         async {
             let exam = exams.[examId]
-            exams.[examId] <- { exam with Hosts = exam.Hosts |> Array.filter (fun h -> h.Id <> hostId) }
+            exams.[examId] <- { exam with Hosts = exam.Hosts |> Seq.filter (fun h -> h.Id <> hostId) }
         }
 
-    let createQuestion examId questionId =
+    let createQuestion examId question =
         async {
             let exam = exams.[examId]
-            exams.[examId] <- { exam with Questions = exam.Questions |> Array.append [| questionId |] }
+            let questions =
+                seq {
+                    yield question
+                    yield! exam.Questions
+                }
+            exams.[examId] <- { exam with Questions = questions }
         }
 
     let createSubmission examId submission =
         async {
             let exam = exams.[examId]
-            exams.[examId] <- { exam with Submissions = exam.Submissions |> Array.append [| submission |] }
+            let submissions =
+                seq {
+                    yield submission
+                    yield! exam.Submissions
+                }
+            exams.[examId] <- { exam with Submissions = submissions }
         }
 
     let deleteQuestion examId questionId =
         async {
             let exam = exams.[examId]
-            exams.[examId] <- { exam with Questions = exam.Questions |> Array.filter (fun qId -> qId <> questionId)}
+            exams.[examId] <- { exam with Questions = exam.Questions |> Seq.filter (fun question -> question.Id <> questionId)}
         }
 
     let changeTitle examId title =
@@ -106,7 +126,7 @@ type private InMemoryExamsReadModel() =
         member this.AddHost examId host = addHost examId host
         member this.RemoveHost examId hostId = removeHost examId hostId
         member this.CreateSubmission examId submission = createSubmission examId submission
-        member this.CreateQuestion examId questionId = createQuestion examId questionId
+        member this.CreateQuestion examId question = createQuestion examId question
         member this.DeleteQuestion examId questionId = deleteQuestion examId questionId
         member this.ChangeTitle examId title = changeTitle examId title
 
