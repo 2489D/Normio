@@ -20,9 +20,9 @@ type IFileSaver =
     // what should return in get?
 
 
-type ValidDirectory =
-    private | ValidDirectory of string
-    member this.Value = this |> fun (ValidDirectory path) -> path
+type ValidDirectory = private ValidDirectory of string
+    with
+        member this.Value = this |> fun (ValidDirectory path) -> path
 
 module ValidDirectory =
     let create path =
