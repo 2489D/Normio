@@ -11,7 +11,6 @@ open Normio.Persistence.EventStore
 open Normio.Commands.Api
 open Normio.Web.Dev.Hub
 
-// TODO : status code
 let commandApiHandler handler (eventStore : IEventStore) request : HttpHandler =
     fun (next: HttpFunc) (ctx : HttpContext) ->
         task {
@@ -23,6 +22,7 @@ let commandApiHandler handler (eventStore : IEventStore) request : HttpHandler =
                 eventHub.Trigger events
                 return! json state next ctx
             | Error msg ->
+                // TODO : status code
                 return! (setStatusCode 404 >=> json msg) next ctx
         }
 
@@ -33,21 +33,9 @@ let fileUploadHandler =
             | false ->
                 return! next ctx
             | true ->
-                printfn "Form: %A" ctx.Request.Form.Files
+                printfn "Form: %A" (ctx.Request.Form.Files.["submission"].Length)
                 return! next ctx
         }
-
-let createSubmission eventStore =
-    fileUploadHandler
-    >=> bindJson<CreateSubmissionRequest> (fun req -> commandApiHandler handleCreateSubmissionRequest eventStore req)
-
-let createQuestion eventStore =
-    fileUploadHandler
-    >=> bindJson<CreateQuestionRequest> (fun req -> commandApiHandler handleCreateQuestionRequest eventStore req)
-
-let deleteQuestion eventStore =
-    fileUploadHandler
-    >=> bindJson<DeleteQuestionRequest> (fun req -> commandApiHandler handleDeleteQuestionRequest eventStore req)
 
 // resource names follow rpc style
 let commandApi eventStore =
@@ -62,8 +50,23 @@ let commandApi eventStore =
             route "/addHost" >=> bindJson<AddHostRequest> (fun req -> commandApiHandler handleAddHostRequest eventStore req)
             route "/removeHost" >=> bindJson<RemoveHostRequest> (fun req -> commandApiHandler handleRemoveHostRequest eventStore req)
             route "/changeTitle" >=> bindJson<ChangeTitleRequest> (fun req -> commandApiHandler handleChangeTitleRequest eventStore req)
-            route "/createSubmission" >=> createSubmission eventStore
-            route "/createQuestion" >=> createQuestion eventStore
-            route "/deleteQuestion" >=> deleteQuestion eventStore
+            subRoute "/createSubmission" (
+                choose [
+                    route "/" >=> bindJson<CreateSubmissionRequest> (fun req -> commandApiHandler handleCreateSubmissionRequest eventStore req)
+                    route "/upload" >=> fileUploadHandler
+                ]
+            )
+            subRoute "/createQuestion" (
+                choose [
+                    route "/" >=> bindJson<CreateQuestionRequest> (fun req -> commandApiHandler handleCreateQuestionRequest eventStore req)
+                    route "/upload" >=> fileUploadHandler
+                ]
+            ) 
+            subRoute "/deleteQuestion" (
+               choose [
+                   route "/" >=> bindJson<DeleteQuestionRequest> (fun req -> commandApiHandler handleDeleteQuestionRequest eventStore req)
+                   route "/upload" >=> fileUploadHandler
+               ]
+           )
         ]
     )
