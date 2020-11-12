@@ -19,6 +19,10 @@ type IFileSaver =
     abstract SaveSubmission: examId: Guid -> sId: Guid -> submission: FileStream -> Async<unit>
     // both two can throw exception
 
+type IFileGetter =
+    abstract GetQuestion: examId: Guid -> questionId: Guid -> Async<FileStream>
+    abstract GetSubmission: examId: Guid -> studentId: Guid -> submissionId: Guid -> Async<FileStream>
+
 
 type private InMemoryFileSaver(path) =
     do Directory.CreateDirectory path |> ignore // can throw exception
