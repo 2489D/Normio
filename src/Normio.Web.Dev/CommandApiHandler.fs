@@ -1,5 +1,7 @@
 module Normio.Web.Dev.CommandApiHandler
 
+open System
+open System.Text.Json.Serialization
 open Microsoft.AspNetCore.Http
 open FSharp.Control.Tasks.V2.ContextInsensitive
 
@@ -24,13 +26,38 @@ let commandApiHandler handler (eventStore : IEventStore) request : HttpHandler =
                 return! (setStatusCode 404 >=> json msg) next ctx
         }
 
-let fileUploadHandler =
+[<CLIMutable>]
+type SubmissionUpload =
+    {
+        [<JsonPropertyName("examId")>]
+        ExamId: Guid
+        [<JsonPropertyName("studentId")>]
+        StudentId: Guid
+    }
+
+[<CLIMutable>]
+type QuestionUpload =
+    {
+        [<JsonPropertyName("examId")>]
+        ExamId: Guid
+        [<JsonPropertyName("hostId")>]
+        HostId: Guid
+    }
+
+type UploadContext =
+    | Submission of SubmissionUpload
+    | Question of QuestionUpload
+
+let fileUploadHandler uploadContext =
     fun (next : HttpFunc) (ctx : HttpContext) ->
         task {
             match ctx.Request.HasFormContentType with
             | false ->
-                return! next ctx
+                return! RequestErrors.badRequest (text "No forms are found") next ctx
             | true ->
+                match uploadContext with
+                | Submission upload -> printfn "%A" (upload.ExamId, upload.StudentId)
+                | Question upload -> printfn "%A" (upload.ExamId, upload.HostId)
                 printfn "Form: %A" (ctx.Request.Form.Files.["submission"].Length)
                 return! next ctx
         }
@@ -51,20 +78,15 @@ let commandApi eventStore =
             subRoute "/createSubmission" (
                 choose [
                     route "/" >=> bindJson<CreateSubmissionRequest> (fun req -> commandApiHandler handleCreateSubmissionRequest eventStore req)
-                    route "/upload" >=> fileUploadHandler
+                    route "/upload" >=> tryBindForm<SubmissionUpload> (fun err -> RequestErrors.BAD_REQUEST err) None (fun upload -> fileUploadHandler (Submission upload))
                 ]
             )
             subRoute "/createQuestion" (
                 choose [
                     route "/" >=> bindJson<CreateQuestionRequest> (fun req -> commandApiHandler handleCreateQuestionRequest eventStore req)
-                    route "/upload" >=> fileUploadHandler
+                    route "/upload" >=> tryBindForm<QuestionUpload> (fun err -> RequestErrors.BAD_REQUEST err) None (fun upload -> fileUploadHandler (Question upload))
                 ]
             ) 
-            subRoute "/deleteQuestion" (
-               choose [
-                   route "/" >=> bindJson<DeleteQuestionRequest> (fun req -> commandApiHandler handleDeleteQuestionRequest eventStore req)
-                   route "/upload" >=> fileUploadHandler
-               ]
-           )
+            route "/deleteQuestion" >=> bindJson<DeleteQuestionRequest> (fun req -> commandApiHandler handleDeleteQuestionRequest eventStore req)
         ]
     )
