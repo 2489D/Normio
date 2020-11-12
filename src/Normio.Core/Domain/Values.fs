@@ -27,16 +27,3 @@ module Values =
             if len > 40 || len <= 0
             then StringTooLong "User Name should be less than 40 and non empty" |> Error
             else UserName40 name |> Ok
-            
-
-    [<JsonFSharpConverter>]
-    type FileString200 =
-        private | FileString200 of string
-        member this.Value = this |> fun (FileString200 s) -> s
-     
-    module FileString200 =
-        let create s =
-            let len = s |> String.length
-            if len > 200 || len <= 0
-            then StringTooLong "File String should be less than 200 and non empty" |> Error
-            else FileString200 s |> Ok
