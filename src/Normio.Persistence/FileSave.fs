@@ -6,10 +6,10 @@ open System.IO
 (*
     "path"
      └─(Exam id) folders
-        ├─"Submission" folder
-        │  └─(Submission id) files
-        └─"Question" folder
-           └─(Question id) files
+        ├─"Questions" folder
+        │  └─(Question id) files
+        └─"Submissions" folder
+           └─(Submission id) files
 *)
 
 type IFileSaver =
@@ -17,7 +17,6 @@ type IFileSaver =
     // currently: just overlap
     abstract SaveQuestion: examId: Guid -> qId: Guid -> question: FileStream -> Async<unit>
     abstract SaveSubmission: examId: Guid -> sId: Guid -> submission: FileStream -> Async<unit>
-    // what should return in get?
 
 
 type ValidDirectory = private ValidDirectory of string
@@ -37,8 +36,13 @@ module ValidDirectory =
 type private InMemoryFileSaver(path: ValidDirectory) =
     interface IFileSaver with
         member _.SaveQuestion eid qid q = async {
+            let qpath = path.Value + """\""" + eid.ToString() + """\Questions"""
+
+            if Directory.Exists qpath |> not
+            then Directory.CreateDirectory qpath |> ignore
+
             try
-                use stream = File.Create (qpath + id.ToString())
+                use stream = File.Create (qpath + """\""" + qid.ToString())
                 return! q.CopyToAsync stream |> Async.AwaitTask
             with
             | _ -> () // TODO
@@ -46,12 +50,19 @@ type private InMemoryFileSaver(path: ValidDirectory) =
             // docs.microsoft.com/ko-kr/dotnet/api/system.io.stream.copytoasync
         }
 
-        member _.SaveSubmission id s = async {
+        member _.SaveSubmission eid sid s = async {
+            let spath = path.Value + """\""" + eid.ToString() + """\Submissions"""
+
+            if Directory.Exists spath |> not
+            then Directory.CreateDirectory spath |> ignore
+
             try
-                use stream = File.Create (spath + id.ToString())
+                use stream = File.Create (spath + """\""" + sid.ToString())
                 return! s.CopyToAsync stream |> Async.AwaitTask
             with
             | _ -> () // TODO
+            // docs.microsoft.com/ko-kr/dotnet/api/system.io.file.create
+            // docs.microsoft.com/ko-kr/dotnet/api/system.io.stream.copytoasync
         }
 
 let createInMemoryFileSaver path = (InMemoryFileSaver path) :> IFileSaver
