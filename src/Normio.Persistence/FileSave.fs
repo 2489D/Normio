@@ -30,6 +30,10 @@ type IFileSaver =
 
     // both two can throw exception
 
+type IFileGetter =
+    abstract GetQuestion: examId: Guid -> questionId: Guid -> Async<FileStream>
+    abstract GetSubmission: examId: Guid -> studentId: Guid -> submissionId: Guid -> Async<FileStream>
+
 
 // FIXME : indentation (readability)
 let private saveQuestion path

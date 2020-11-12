@@ -33,6 +33,8 @@ type SubmissionUpload =
         ExamId: Guid
         [<JsonPropertyName("studentId")>]
         StudentId: Guid
+        [<JsonPropertyName("submission")>]
+        SubmissionId: Guid
     }
 
 [<CLIMutable>]
@@ -42,6 +44,8 @@ type QuestionUpload =
         ExamId: Guid
         [<JsonPropertyName("hostId")>]
         HostId: Guid
+        [<JsonPropertyName("questionId")>]
+        QuestionId: Guid
     }
 
 type UploadContext =
@@ -56,8 +60,8 @@ let fileUploadHandler uploadContext =
                 return! RequestErrors.badRequest (text "No forms are found") next ctx
             | true ->
                 match uploadContext with
-                | Submission upload -> printfn "%A" (upload.ExamId, upload.StudentId)
-                | Question upload -> printfn "%A" (upload.ExamId, upload.HostId)
+                | Submission upload -> printfn "%A" (upload.ExamId, upload.StudentId, upload.SubmissionId)
+                | Question upload -> printfn "%A" (upload.ExamId, upload.HostId, upload.QuestionId)
                 printfn "Form: %A" (ctx.Request.Form.Files.["submission"].Length)
                 return! next ctx
         }
