@@ -61,7 +61,7 @@ let ``ExamIsWaiting without a student can not start`` () =
         ExamIsWaiting {
             Id = testId
             Title = validTitle
-            Questions = [Guid.NewGuid()]
+            Questions = []
             Submissions = []
             Students = Map.empty
             Hosts = mockHosts
@@ -77,7 +77,7 @@ let ``ExamIsWaiting without a host can not start`` () =
         ExamIsWaiting {
             Id = testId
             Title = validTitle
-            Questions = [Guid.NewGuid()]
+            Questions = []
             Submissions = []
             Students = mockStudents
             Hosts = Map.empty
