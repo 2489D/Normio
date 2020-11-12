@@ -17,6 +17,7 @@
     <Compile Include="EventStore\Cosmos.fs" />
     <Compile Include="ReadModel\InMemory.fs" />
     <Compile Include="ReadModel\Cosmos.fs" />
+    <Compile Include="FileSave.fs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Azure.Core" Version="1.5.1" />
