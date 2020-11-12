@@ -1,12 +1,10 @@
 module Normio.Web.Dev.CommandApiHandler
 
-open System.Threading
 open Microsoft.AspNetCore.Http
 open FSharp.Control.Tasks.V2.ContextInsensitive
 
 open Giraffe
 
-open Microsoft.AspNetCore.Http.Features
 open Normio.Persistence.EventStore
 open Normio.Commands.Api
 open Normio.Web.Dev.Hub
@@ -37,7 +35,7 @@ let fileUploadHandler =
                 return! next ctx
         }
 
-// resource names follow rpc style
+// Naming Convention: Resource names follows RPC style (example: Slack API)
 let commandApi eventStore =
     POST >=> subRoute "/api" (
         choose [
