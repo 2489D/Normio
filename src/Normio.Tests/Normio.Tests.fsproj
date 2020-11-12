@@ -13,6 +13,7 @@
         <Compile Include="Core.Tests.fs" />
         <Compile Include="E2E.Tests.fs" />
         <Compile Include="Timer.Tests.fs" />
+        <Compile Include="FileSave.Tests.fs" />
         <Compile Include="Program.fs" />
     </ItemGroup>
 

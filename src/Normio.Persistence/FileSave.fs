@@ -3,11 +3,20 @@
 open System
 open System.IO
 
+(*
+    "path"
+     └─(Exam id) folders
+        ├─"Submission" folder
+        │  └─(Submission id) files
+        └─"Question" folder
+           └─(Question id) files
+*)
+
 type IFileSaver =
     // what to do if the file already exist?
     // currently: just overlap
-    abstract SaveQuestion: qId: Guid -> question: FileStream -> Async<unit>
-    abstract SaveSubmission: sId: Guid -> submission: FileStream -> Async<unit>
+    abstract SaveQuestion: examId: Guid -> qId: Guid -> question: FileStream -> Async<unit>
+    abstract SaveSubmission: examId: Guid -> sId: Guid -> submission: FileStream -> Async<unit>
     // what should return in get?
 
 
@@ -18,8 +27,7 @@ type ValidDirectory =
 module ValidDirectory =
     let create path =
         try
-            Directory.CreateDirectory (path + "\Question") |> ignore
-            Directory.CreateDirectory (path + "\Submission") |> ignore
+            Directory.CreateDirectory path |> ignore
             path |> Some
         with
         | _ -> None // TODO
@@ -27,11 +35,8 @@ module ValidDirectory =
 
 
 type private InMemoryFileSaver(path: ValidDirectory) =
-    let qpath = path.Value + "\Question"
-    let spath = path.Value + "\Submission"
-
     interface IFileSaver with
-        member _.SaveQuestion id q = async {
+        member _.SaveQuestion eid qid q = async {
             try
                 use stream = File.Create (qpath + id.ToString())
                 return! q.CopyToAsync stream |> Async.AwaitTask
