@@ -11,15 +11,15 @@ type IFileSaver =
     // what should return in get?
 
 
-type ValidDirectory =
-    private | ValidDirectory of string
-    member this.Value = this |> fun (ValidDirectory path) -> path
+type ValidDirectory = private ValidDirectory of string
+    with
+        member this.Value = this |> fun (ValidDirectory path) -> path
 
 module ValidDirectory =
     let create path =
         try
-            Directory.CreateDirectory (path + "\Question") |> ignore
-            Directory.CreateDirectory (path + "\Submission") |> ignore
+            Directory.CreateDirectory (path + "\Questions") |> ignore
+            Directory.CreateDirectory (path + "\Submissions") |> ignore
             path |> Some
         with
         | _ -> None // TODO
@@ -27,8 +27,8 @@ module ValidDirectory =
 
 
 type private InMemoryFileSaver(path: ValidDirectory) =
-    let qpath = path.Value + "\Question"
-    let spath = path.Value + "\Submission"
+    let qpath = path.Value + "\Questions"
+    let spath = path.Value + "\Submissions"
 
     interface IFileSaver with
         member _.SaveQuestion id q = async {
