@@ -56,10 +56,10 @@ let ``submission should be saved``() =
 
 [<Fact>]
 let ``length of question should equal with source``() =
-    let callback (stream: FileStream) = stream.Length
-    let sourceCallbackResult =
+    let streamLength (stream: FileStream) = stream.Length
+    let sourceStreamLength =
         use sourceStream = File.OpenRead sourceFilePath
-        callback sourceStream
+        streamLength sourceStream
 
     let fileSaver = inMemoryFileSaver root
 
@@ -73,16 +73,16 @@ let ``length of question should equal with source``() =
 
     let fileGetter = inMemoryFileGetter root
 
-    fileGetter.GetQuestion examId questionId callback
+    fileGetter.GetQuestion examId questionId streamLength
     |> Async.RunSynchronously
-    |> should equal sourceCallbackResult
+    |> should equal sourceStreamLength
 
 [<Fact>]
 let ``length of submission should equal with source``() =
-    let callback (stream: FileStream) = stream.Length
-    let sourceCallbackResult =
+    let streamLength (stream: FileStream) = stream.Length
+    let sourceStreamLength =
         use sourceStream = File.OpenRead sourceFilePath
-        callback sourceStream
+        streamLength sourceStream
 
     let fileSaver = inMemoryFileSaver root
 
@@ -97,6 +97,6 @@ let ``length of submission should equal with source``() =
 
     let fileGetter = inMemoryFileGetter root
 
-    fileGetter.GetSubmission examId studentId submissionId callback
+    fileGetter.GetSubmission examId studentId submissionId streamLength
     |> Async.RunSynchronously
-    |> should equal sourceCallbackResult
+    |> should equal sourceStreamLength
