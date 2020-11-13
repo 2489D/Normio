@@ -33,11 +33,18 @@ type IFileGetter =
           └─(Submission id) files
 *)
 
-let private saveFile directory filename (sourceStream: FileStream) = async {
+let (+.) directory (other: obj) =
+    match other with
+    | :? Guid as id -> id.ToString()
+    | :? string as s -> s
+    | _ -> failwith "concatenating wrong type to directory"
+    |> (+) (directory + """\""")
+
+let private saveFile directory (filename: string) (sourceStream: FileStream) = async {
     if Directory.Exists directory |> not
     then Directory.CreateDirectory directory |> ignore
 
-    use destStream = File.Create (directory + """\""" + filename)
+    use destStream = File.Create (directory +. filename)
     return! sourceStream.CopyToAsync destStream |> Async.AwaitTask
 }
 
@@ -47,28 +54,22 @@ let private getFile filePath callback = async {
 }
 
 let private saveQuestion root (examId: Guid) (questionId: Guid) (questionStream: FileStream) = async {
-    let questionDirectory = root + """\""" + examId.ToString()
-                                 + """\Questions"""
+    let questionDirectory = root +. examId +. "Questions"
     return! saveFile questionDirectory (questionId.ToString()) questionStream
 }
 
 let private saveSubmission root (examId: Guid) (studentId: Guid) (submissionId: Guid) (submissionStream: FileStream) = async {
-    let studentDirectory = root + """\""" + examId.ToString()
-                                + """\""" + studentId.ToString()
+    let studentDirectory = root +. examId +. studentId
     return! saveFile studentDirectory (submissionId.ToString()) submissionStream
 }
 
 let private getQuestion root (examId: Guid) (questionId: Guid) callback = async {
-    let questionFilePath = root + """\""" + examId.ToString()
-                                + """\Questions"""
-                                + """\""" + questionId.ToString()
+    let questionFilePath = root +. examId +. "Questions" +. questionId
     return! getFile questionFilePath callback
 }
 
 let private getSubmission root (examId: Guid) (studentId: Guid) (submissionId: Guid) callback = async {
-    let submissionFilePath = root + """\""" + examId.ToString()
-                                  + """\""" + studentId.ToString()
-                                  + """\""" + submissionId.ToString()
+    let submissionFilePath = root +. examId +. studentId +. submissionId
     return! getFile submissionFilePath callback
 }
 
