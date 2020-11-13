@@ -1,11 +1,12 @@
 import React from 'react';
 import {BrowserRouter, Switch, Route} from "react-router-dom";
 
-import Exams from './Exams';
+import NavBar from './Components/Navbar';
 import Login from './Login';
 import Home from './Home';
-import ExamRoom from './ExamRoom';
-import ExamInspection from './ExamInspection';
+import Exams from './Components/Exams';
+import ExamRoom from './Components/ExamRoom';
+import ExamInspection from './Components/ExamInspection';
 
 const NotFound = () => (
     <h1>Not Found</h1>
@@ -27,6 +28,7 @@ const Root: React.FC = () => (
 function App() {
     return (
         <div className={"container"}>
+            <NavBar />
             <Root />
         </div>
     );
