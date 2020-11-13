@@ -7,6 +7,7 @@ open Microsoft.AspNetCore.Http
 
 open Giraffe
 
+open Normio.Persistence.FileSave
 open Normio.Web.Dev.CommandApiHandler
 open Normio.Web.Dev.QueryApiHandler
 open Normio.Web.Dev.Configurations
@@ -21,9 +22,10 @@ let webApp =
         let config = ctx.GetService<IConfiguration>()
         let eventStore = getEventStore config env
         let queries = getQuerySide config env
+        let fileSaver = inMemoryFileSaver """/Users/bonjune/2489D/Normio/src"""
         task {
             return! choose [
-                commandApi eventStore
+                commandApi eventStore fileSaver
                 queriesApi queries
                 setStatusCode 404 >=> text "Not Found"
             ] next ctx

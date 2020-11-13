@@ -16,7 +16,7 @@ open Normio.Web.Dev.Serialization
 open Normio.Web.Dev.ErrorHandler
 
 let configureCors (builder : CorsPolicyBuilder) =
-    builder.WithOrigins("http://localhost:8080")
+    builder.WithOrigins("http://localhost:3000")
            .AllowAnyMethod()
            .AllowAnyHeader()
            |> ignore

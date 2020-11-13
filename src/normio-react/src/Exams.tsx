@@ -9,7 +9,7 @@ const CurrentTime: React.FC = () => {
             setCurrentTime(Date.now())
         }, 1000)
     }, [])
- 
+
     return (
         <div>
             <h3> CurrentTime </h3>

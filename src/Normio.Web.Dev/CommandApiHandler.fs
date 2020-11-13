@@ -1,6 +1,7 @@
 module Normio.Web.Dev.CommandApiHandler
 
 open System
+open System.IO
 open System.Text.Json.Serialization
 open Microsoft.AspNetCore.Http
 open FSharp.Control.Tasks.V2.ContextInsensitive
@@ -9,6 +10,7 @@ open Giraffe
 
 open Normio.Persistence.EventStore
 open Normio.Commands.Api
+open Normio.Persistence.FileSave
 open Normio.Web.Dev.Hub
 
 let commandApiHandler handler (eventStore : IEventStore) request : HttpHandler =
@@ -33,7 +35,7 @@ type SubmissionUpload =
         ExamId: Guid
         [<JsonPropertyName("studentId")>]
         StudentId: Guid
-        [<JsonPropertyName("submission")>]
+        [<JsonPropertyName("submissionId")>]
         SubmissionId: Guid
     }
 
@@ -52,22 +54,29 @@ type UploadContext =
     | Submission of SubmissionUpload
     | Question of QuestionUpload
 
-let fileUploadHandler uploadContext =
+let fileUploadHandler uploadContext (fileSaver: IFileSaver) =
     fun (next : HttpFunc) (ctx : HttpContext) ->
         task {
             match ctx.Request.HasFormContentType with
             | false ->
-                return! RequestErrors.badRequest (text "No forms are found") next ctx
+                return! RequestErrors.BAD_REQUEST "No forms are found" next ctx
             | true ->
                 match uploadContext with
-                | Submission upload -> printfn "%A" (upload.ExamId, upload.StudentId, upload.SubmissionId)
-                | Question upload -> printfn "%A" (upload.ExamId, upload.HostId, upload.QuestionId)
+                | Submission upload ->
+                    use stream = ctx.Request.Form.Files.["submission"].OpenReadStream()
+                    let uploadCtx = (upload.ExamId, upload.StudentId, upload.SubmissionId)
+                    do! fileSaver.SaveSubmission uploadCtx stream.CopyTo
+                | Question upload ->
+                    use stream = ctx.Request.Form.Files.["submission"].OpenReadStream()
+                    printfn "%A" (upload.ExamId, upload.HostId, upload.QuestionId)
+                    let uploadCtx = (upload.ExamId, upload.QuestionId)
+                    do! fileSaver.SaveQuestion uploadCtx stream.CopyTo
                 printfn "Form: %A" (ctx.Request.Form.Files.["submission"].Length)
                 return! next ctx
         }
 
 // Naming Convention: Resource names follows RPC style (example: Slack API)
-let commandApi eventStore =
+let commandApi eventStore fileSaver =
     POST >=> subRoute "/api" (
         choose [
             route "/openExam" >=> bindJson<OpenExamRequest> (fun req -> commandApiHandler handleOpenExamRequest eventStore req)
@@ -82,13 +91,15 @@ let commandApi eventStore =
             subRoute "/createSubmission" (
                 choose [
                     route "/" >=> bindJson<CreateSubmissionRequest> (fun req -> commandApiHandler handleCreateSubmissionRequest eventStore req)
-                    route "/upload" >=> tryBindForm<SubmissionUpload> (fun err -> RequestErrors.BAD_REQUEST err) None (fun upload -> fileUploadHandler (Submission upload))
+                    // TODO : validate upload information
+                    route "/upload" >=> tryBindForm<SubmissionUpload> (fun err -> RequestErrors.BAD_REQUEST err) None (fun upload -> fileUploadHandler (Submission upload) fileSaver)
                 ]
             )
             subRoute "/createQuestion" (
                 choose [
                     route "/" >=> bindJson<CreateQuestionRequest> (fun req -> commandApiHandler handleCreateQuestionRequest eventStore req)
-                    route "/upload" >=> tryBindForm<QuestionUpload> (fun err -> RequestErrors.BAD_REQUEST err) None (fun upload -> fileUploadHandler (Question upload))
+                    // TODO : validate upload information
+                    route "/upload" >=> tryBindForm<QuestionUpload> (fun err -> RequestErrors.BAD_REQUEST err) None (fun upload -> fileUploadHandler (Question upload) fileSaver)
                 ]
             ) 
             route "/deleteQuestion" >=> bindJson<DeleteQuestionRequest> (fun req -> commandApiHandler handleDeleteQuestionRequest eventStore req)
