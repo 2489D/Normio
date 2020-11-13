@@ -37,7 +37,7 @@ let ``question should be saved``() =
     fileSaver.SaveQuestion examId questionId questionStream
     |> Async.RunSynchronously
 
-    File.Exists (root + """\""" + examId.ToString() + """\Questions\""" + questionId.ToString())
+    File.Exists (root +. examId + "Questions" +. questionId)
     |> should equal true
 
     if autoClean then Directory.Delete(root, true)
@@ -55,7 +55,7 @@ let ``submission should be saved``() =
     fileSaver.SaveSubmission examId studentId submissionId submissionStream
     |> Async.RunSynchronously
 
-    File.Exists (root + """\""" + examId.ToString() + """\""" + studentId.ToString() + """\""" + submissionId.ToString())
+    File.Exists (root +. examId +. studentId +. submissionId)
     |> should equal true
 
     if autoClean then Directory.Delete(root, true)
