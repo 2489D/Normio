@@ -18,12 +18,12 @@ open Normio.Persistence.FileSave
 /// 3. exam id, student id, submission id, callback function -> get submission -> gets question and calls callback fucntion
 
 // these should be changed in other computers
-let root = """D:\root"""
-let sourceFilePath = """D:\sample.txt"""
+let root = """/Users/bonjune/2489D/Normio/src"""
+let sourceFilePath = root + """/sample.txt"""
 
 // if this flag is false, should delete created directories & files manually
 // if this flag is true, root should differ with application's current working directory
-let autoClean = true
+let autoClean = false
 
 [<Fact>]
 let ``question should be saved``() =

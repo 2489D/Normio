@@ -21,7 +21,7 @@ let getExamByExamId examQuery req =
         task {
             let! examReadModel = examQuery req.ExamId
             match examReadModel with
-            | Some exam -> return! json exam next context
+            | Some exam -> return! (req.ToString() |> text) next context
             | None -> return! text "Exam does not exist" next context
         }
 

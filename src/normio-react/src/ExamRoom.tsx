@@ -1,14 +1,31 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import axios from 'axios';
+
+const baseUrl = "http://localhost:6546/"
 
 const ExamRoom: React.FC = () => {
+    const [exam, setExam] = useState(null)
     const peers = [
         "peer 1",
         "peer 2",
     ]
-    const questions = [
-        "Question 1",
-        "Question 2",
-    ]
+
+    const questions = useState([])
+
+    useEffect(() => {
+        axios({
+            baseURL: baseUrl,
+            url: 'exams',
+            data: {
+                examId: "c9fc09c7-a2cc-44b3-84cd-a808579e25dc"
+            }
+        }).then(res => {
+            console.log(res)
+        }).catch(err => {
+            console.error(err)
+        })
+    }, [])
+
     return (
         <div className={"container"}>
             <h1>Exam Room</h1>

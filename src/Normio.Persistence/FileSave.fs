@@ -6,8 +6,8 @@ open System.IO
 // what to do if the file already exist?
 // currently: just overlap
 type IFileSaver =
-    abstract SaveQuestion: examId: Guid -> questionId: Guid -> questionStream: FileStream -> Async<unit>
-    abstract SaveSubmission: examId: Guid -> studentId: Guid -> submissionId: Guid -> submissionStream: FileStream -> Async<unit>
+    abstract SaveQuestion: (Guid * Guid) -> callback:(FileStream -> 'a) -> Async<'a>
+    abstract SaveSubmission: (Guid * Guid * Guid) -> callback:(FileStream -> 'a) -> Async<'a>
     // both two can throw exception
 
 (*
@@ -18,8 +18,8 @@ type IFileSaver =
     3. return Task<byte[]> (return value from File.ReadAllBytesAsync)
 *)
 type IFileGetter =
-    abstract GetQuestion: examId: Guid -> questionId: Guid -> callback: (FileStream -> 'a) -> Async<'a>
-    abstract GetSubmission: examId: Guid -> studentId: Guid -> submissionId: Guid -> callback: (FileStream -> 'a) -> Async<'a>
+    abstract GetQuestion: (Guid * Guid) -> callback: (FileStream -> 'a) -> Async<'a>
+    abstract GetSubmission: (Guid * Guid * Guid) -> callback: (FileStream -> 'a) -> Async<'a>
     // both two can throw exception
 
 
@@ -34,18 +34,19 @@ type IFileGetter =
 *)
 
 let (+.) directory (other: obj) =
-    match other with
-    | :? Guid as id -> id.ToString()
-    | :? string as s -> s
-    | _ -> failwith "concatenating wrong type to directory"
-    |> (+) (directory + """\""")
+    let otherDir =
+        match other with
+        | :? Guid as id -> id.ToString()
+        | :? string as s -> s
+        | _ -> failwith "concatenating wrong type to directory"
+    Path.Combine(directory, otherDir)
 
-let private saveFile directory (filename: string) (sourceStream: FileStream) = async {
+let private saveFile directory (filename: string) callback = async {
     if Directory.Exists directory |> not
     then Directory.CreateDirectory directory |> ignore
 
     use destStream = File.Create (directory +. filename)
-    return! sourceStream.CopyToAsync destStream |> Async.AwaitTask
+    return callback destStream
 }
 
 let private getFile filePath callback = async {
@@ -53,22 +54,22 @@ let private getFile filePath callback = async {
     return callback stream
 }
 
-let private saveQuestion root (examId: Guid) (questionId: Guid) (questionStream: FileStream) = async {
+let private saveQuestion root ((examId, questionId): Guid * Guid) callback = async {
     let questionDirectory = root +. examId +. "Questions"
-    return! saveFile questionDirectory (questionId.ToString()) questionStream
+    return! saveFile questionDirectory (questionId.ToString()) callback
 }
 
-let private saveSubmission root (examId: Guid) (studentId: Guid) (submissionId: Guid) (submissionStream: FileStream) = async {
+let private saveSubmission root ((examId, studentId, submissionId): Guid * Guid * Guid) callback = async {
     let studentDirectory = root +. examId +. studentId
-    return! saveFile studentDirectory (submissionId.ToString()) submissionStream
+    return! saveFile studentDirectory (submissionId.ToString()) callback
 }
 
-let private getQuestion root (examId: Guid) (questionId: Guid) callback = async {
+let private getQuestion root ((examId, questionId): Guid * Guid) callback = async {
     let questionFilePath = root +. examId +. "Questions" +. questionId
     return! getFile questionFilePath callback
 }
 
-let private getSubmission root (examId: Guid) (studentId: Guid) (submissionId: Guid) callback = async {
+let private getSubmission root ((examId, studentId, submissionId): Guid * Guid * Guid) callback = async {
     let submissionFilePath = root +. examId +. studentId +. submissionId
     return! getFile submissionFilePath callback
 }
@@ -79,17 +80,15 @@ let inMemoryFileSaver root =
     if Directory.Exists root |> not
     then Directory.CreateDirectory root |> ignore
     { new IFileSaver with
-        member _.SaveQuestion examId questionId questionStream
-            = saveQuestion root examId questionId questionStream
-        member _.SaveSubmission examId studentId submissionId submissionStream
-            = saveSubmission root examId studentId submissionId submissionStream }
+        member _.SaveQuestion ctx callback = saveQuestion root ctx callback
+        member _.SaveSubmission ctx callback = saveSubmission root ctx callback }
 
 // can throw exception
 let inMemoryFileGetter root =
     if Directory.Exists root |> not
     then failwith "Invalid root"
     { new IFileGetter with
-        member _.GetQuestion examId questionId callback
-            = getQuestion root examId questionId callback
-        member _.GetSubmission examId studentId submissionId callback
-            = getSubmission root examId studentId submissionId callback }
+        member _.GetQuestion ctx callback
+            = getQuestion root ctx callback
+        member _.GetSubmission ctx callback
+            = getSubmission root ctx callback }
