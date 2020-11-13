@@ -76,7 +76,7 @@ let private closeExam connString examId = async {
 let private addStudent connString examId (student: Student) = async {
     let key = string examId
     do! getConn connString
-        |> Cosmos.update key key (fun (exam: ExamReadModel) -> { exam with Students = exam.Students |> Array.append [| student |] })
+        |> Cosmos.update key key (fun (exam: ExamReadModel) -> { exam with Students = seq { yield student; yield! exam.Students }})
         |> Cosmos.execAsync
         |> AsyncSeq.iter ignore
 }
@@ -84,7 +84,7 @@ let private addStudent connString examId (student: Student) = async {
 let private removeStudent connString examId studentId = async {
     let key = string examId
     do! getConn connString
-        |> Cosmos.update key key (fun (exam: ExamReadModel) -> { exam with Students = exam.Students |> Array.filter (fun s -> s.Id <> studentId) })
+        |> Cosmos.update key key (fun (exam: ExamReadModel) -> { exam with Students = exam.Students |> Seq.filter (fun student -> student.Id <> studentId) })
         |> Cosmos.execAsync
         |> AsyncSeq.iter ignore
 }
@@ -92,7 +92,7 @@ let private removeStudent connString examId studentId = async {
 let private addHost connString examId (host: Host) = async {
     let key = string examId
     do! getConn connString
-        |> Cosmos.update key key (fun (exam: ExamReadModel) -> { exam with Hosts = exam.Hosts |> Array.append [| host |] })
+        |> Cosmos.update key key (fun (exam: ExamReadModel) -> { exam with Hosts = seq { yield host; yield! exam.Hosts }})
         |> Cosmos.execAsync
         |> AsyncSeq.iter ignore
 }
@@ -100,7 +100,7 @@ let private addHost connString examId (host: Host) = async {
 let private removeHost connString examId hostId = async {
     let key = string examId
     do! getConn connString
-        |> Cosmos.update key key (fun (exam: ExamReadModel) -> { exam with Hosts = exam.Hosts |> Array.filter (fun h -> h.Id <> hostId) })
+        |> Cosmos.update key key (fun (exam: ExamReadModel) -> { exam with Hosts = exam.Hosts |> Seq.filter (fun h -> h.Id <> hostId) })
         |> Cosmos.execAsync
         |> AsyncSeq.iter ignore
 }
@@ -108,15 +108,15 @@ let private removeHost connString examId hostId = async {
 let private createSubmission connString examId submission = async {
     let key = string examId
     do! getConn connString
-        |> Cosmos.update<ExamReadModel> key key (fun exam -> { exam with Submissions = exam.Submissions |> Array.append [| submission |] })
+        |> Cosmos.update<ExamReadModel> key key (fun exam -> { exam with Submissions = seq { yield submission; yield! exam.Submissions }})
         |> Cosmos.execAsync
         |> AsyncSeq.iter ignore
 }
 
-let private createQuestion connString examId questionId = async {
+let private createQuestion connString examId question = async {
     let key = string examId
     do! getConn connString
-        |> Cosmos.update<ExamReadModel> key key (fun exam -> { exam with Questions = exam.Questions |> Array.append [| questionId |] })
+        |> Cosmos.update<ExamReadModel> key key (fun exam -> { exam with Questions = seq { yield question; yield! exam.Questions }})
         |> Cosmos.execAsync
         |> AsyncSeq.iter ignore
 }
@@ -124,7 +124,7 @@ let private createQuestion connString examId questionId = async {
 let private deleteQuestion connString examId questionId = async {
     let key = string examId
     do! getConn connString
-        |> Cosmos.update key key (fun (exam: ExamReadModel) -> { exam with Questions = exam.Questions |> Array.filter (fun questionId' -> questionId' <> questionId)})
+        |> Cosmos.update key key (fun (exam: ExamReadModel) -> { exam with Questions = exam.Questions |> Seq.filter (fun question -> question.Id <> questionId)})
         |> Cosmos.execAsync
         |> AsyncSeq.iter ignore
 }

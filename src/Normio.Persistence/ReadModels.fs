@@ -20,8 +20,8 @@ type ExamReadModel = {
     ExamId: Guid
     Status: ExamStatus
     Title: ExamTitle40
-    Questions: Guid array
-    Submissions: Submission array
-    Hosts: Host array
-    Students: Student array
+    Questions: Question seq
+    Submissions: Submission seq
+    Hosts: Host seq
+    Students: Student seq
 }

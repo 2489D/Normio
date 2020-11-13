@@ -17,6 +17,6 @@ module Events =
         | HostEntered of examId:Guid * host:Host
         | HostLeft of examId:Guid * hostId:Guid
         | SubmissionCreated of examId:Guid * submission:Submission
-        | QuestionCreated of examId:Guid * questionId:Guid
+        | QuestionCreated of examId:Guid * question:Question
         | QuestionDeleted of examId:Guid * questionId:Guid
         | TitleChanged of examId:Guid * title:ExamTitle40

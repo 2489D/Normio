@@ -3,6 +3,7 @@ module Normio.Core.States
 open System
 open Normio.Core
 
+/// State flow
 /// 1. ExamIsClose None
 /// 2. ExamIsWaiting Exam
 /// 3. ExamIsRunning Exam
@@ -39,11 +40,11 @@ let apply state event =
     | ExamIsWaiting exam, HostLeft (_, hostId) ->
         { exam with Hosts = Map.remove hostId exam.Hosts }
         |> ExamIsWaiting
-    | ExamIsWaiting exam, QuestionCreated (_, questionId) ->
-        { exam with Questions = questionId :: exam.Questions  }
+    | ExamIsWaiting exam, QuestionCreated (_, question) ->
+        { exam with Questions = question :: exam.Questions  }
         |> ExamIsWaiting
     | ExamIsWaiting exam, QuestionDeleted (_, questionId) ->
-        { exam with Questions = exam.Questions |> List.filter (fun questionId' -> questionId' <> questionId )}
+        { exam with Questions = exam.Questions |> List.filter (fun question -> question.Id <> questionId )}
         |> ExamIsWaiting
     | ExamIsWaiting exam, TitleChanged (_, newTitle) ->
         { exam with Title = newTitle }

@@ -37,15 +37,19 @@ module Entities =
 
     [<CustomEquality; NoComparison>]
     [<JsonFSharpConverter>]
-    type File = {
+    type Question = {
         [<JsonPropertyName("id")>]
         Id: Guid
-        [<JsonPropertyName("name")>]
-        FileName: FileString200
+        [<JsonPropertyName("examId")>]
+        ExamId: Guid
+        [<JsonPropertyName("hostId")>]
+        HostId: Guid
+        [<JsonPropertyName("timestamp")>]
+        TimeStamp: DateTime
     } with
         override this.Equals(other) =
             match other with
-            | :? File as f -> this.Id = f.Id
+            | :? Question as sbms -> this.Id = sbms.Id
             | _ -> false
         override this.GetHashCode() =
             hash this.Id
@@ -59,8 +63,6 @@ module Entities =
         ExamId: Guid
         [<JsonPropertyName("studentId")>]
         StudentId: Guid
-        [<JsonPropertyName("file")>]
-        File: File
         [<JsonPropertyName("timestamp")>]
         TimeStamp: DateTime
     } with
@@ -71,6 +73,7 @@ module Entities =
         override this.GetHashCode() =
             hash this.Id
 
+    // TODO : Make Question Entity
     [<CustomEquality; NoComparison>]
     [<JsonFSharpConverter>]
     type Exam = {
@@ -79,7 +82,7 @@ module Entities =
         [<JsonPropertyName("title")>]
         Title: ExamTitle40
         [<JsonPropertyName("questions")>]
-        Questions: Guid list
+        Questions: Question list
         [<JsonPropertyName("submissions")>]
         Submissions: Submission list
         [<JsonPropertyName("students")>]
@@ -93,3 +96,4 @@ module Entities =
             | _ -> false
         override this.GetHashCode() =
             hash this.Id
+            
