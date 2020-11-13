@@ -73,14 +73,20 @@ let private getSubmission root (examId: Guid) (studentId: Guid) (submissionId: G
 }
 
 
+// can throw exception
 let inMemoryFileSaver root =
+    if Directory.Exists root |> not
+    then Directory.CreateDirectory root |> ignore
     { new IFileSaver with
         member _.SaveQuestion examId questionId questionStream
             = saveQuestion root examId questionId questionStream
         member _.SaveSubmission examId studentId submissionId submissionStream
             = saveSubmission root examId studentId submissionId submissionStream }
 
+// can throw exception
 let inMemoryFileGetter root =
+    if Directory.Exists root |> not
+    then failwith "Invalid root"
     { new IFileGetter with
         member _.GetQuestion examId questionId callback
             = getQuestion root examId questionId callback
