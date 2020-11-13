@@ -20,10 +20,16 @@ open Normio.Persistence.FileSave
 // these should be changed in other computers
 let root = """/Users/bonjune/2489D/Normio/src"""
 let sourceFilePath = root + """/sample.txt"""
+let extension = """.txt"""
+(*
+let root = """D:\root"""
+let sourceFilePath = """D:\sample.txt"""
+let extension = """.txt"""
+*)
 
 // if this flag is false, should delete created directories & files manually
 // if this flag is true, root should differ with application's current working directory
-let autoClean = false
+let autoClean = true
 
 [<Fact>]
 let ``question should be saved``() =
@@ -34,10 +40,11 @@ let ``question should be saved``() =
 
     use questionStream = File.OpenRead sourceFilePath
 
-    fileSaver.SaveQuestion examId questionId questionStream
+    let questionCtx = (examId, questionId)
+    fileSaver.SaveQuestion questionCtx extension questionStream.CopyTo
     |> Async.RunSynchronously
 
-    File.Exists (root +. examId + "Questions" +. questionId)
+    File.Exists (root +. examId +. "Questions" +. questionId + extension)
     |> should equal true
 
     if autoClean then Directory.Delete(root, true)
@@ -52,10 +59,11 @@ let ``submission should be saved``() =
 
     use submissionStream = File.OpenRead sourceFilePath
 
-    fileSaver.SaveSubmission examId studentId submissionId submissionStream
+    let submissionCtx = (examId, studentId, submissionId)
+    fileSaver.SaveSubmission submissionCtx extension submissionStream.CopyTo
     |> Async.RunSynchronously
 
-    File.Exists (root +. examId +. studentId +. submissionId)
+    File.Exists (root +. examId +. studentId +. submissionId + extension)
     |> should equal true
 
     if autoClean then Directory.Delete(root, true)
@@ -74,12 +82,13 @@ let ``length of question should equal with source``() =
 
     use questionStream = File.OpenRead sourceFilePath
 
-    fileSaver.SaveQuestion examId questionId questionStream
+    let questionCtx = (examId, questionId)
+    fileSaver.SaveQuestion questionCtx extension questionStream.CopyTo
     |> Async.RunSynchronously
 
     let fileGetter = inMemoryFileGetter root
 
-    fileGetter.GetQuestion examId questionId streamLength
+    fileGetter.GetQuestion questionCtx extension streamLength
     |> Async.RunSynchronously
     |> should equal sourceStreamLength
 
@@ -99,13 +108,14 @@ let ``length of submission should equal with source``() =
     let submissionId = Guid.NewGuid()
 
     use submissionStream = File.OpenRead sourceFilePath
-
-    fileSaver.SaveSubmission examId studentId submissionId submissionStream
+    
+    let submissionCtx = (examId, studentId, submissionId)
+    fileSaver.SaveSubmission submissionCtx extension submissionStream.CopyTo
     |> Async.RunSynchronously
 
     let fileGetter = inMemoryFileGetter root
 
-    fileGetter.GetSubmission examId studentId submissionId streamLength
+    fileGetter.GetSubmission submissionCtx extension streamLength
     |> Async.RunSynchronously
     |> should equal sourceStreamLength
 

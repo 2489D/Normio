@@ -65,12 +65,12 @@ let fileUploadHandler uploadContext (fileSaver: IFileSaver) =
                 | Submission upload ->
                     use stream = ctx.Request.Form.Files.["submission"].OpenReadStream()
                     let uploadCtx = (upload.ExamId, upload.StudentId, upload.SubmissionId)
-                    do! fileSaver.SaveSubmission uploadCtx stream.CopyTo
+                    do! fileSaver.SaveSubmission uploadCtx ".extension" stream.CopyTo // TODO : extension
                 | Question upload ->
                     use stream = ctx.Request.Form.Files.["submission"].OpenReadStream()
                     printfn "%A" (upload.ExamId, upload.HostId, upload.QuestionId)
                     let uploadCtx = (upload.ExamId, upload.QuestionId)
-                    do! fileSaver.SaveQuestion uploadCtx stream.CopyTo
+                    do! fileSaver.SaveQuestion uploadCtx ".extension" stream.CopyTo // TODO : extension
                 printfn "Form: %A" (ctx.Request.Form.Files.["submission"].Length)
                 return! next ctx
         }
