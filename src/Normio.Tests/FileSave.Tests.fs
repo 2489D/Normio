@@ -18,10 +18,12 @@ open Normio.Persistence.FileSave
 /// 3. exam id, student id, submission id, callback function -> get submission -> gets question and calls callback fucntion
 
 // these should be changed in other computers
-let root = """D:"""
+let root = """D:\root"""
 let sourceFilePath = """D:\sample.txt"""
 
-// should delete created directories & files manually
+// if this flag is false, should delete created directories & files manually
+// if this flag is true, root should differ with application's current working directory
+let autoClean = true
 
 [<Fact>]
 let ``question should be saved``() =
@@ -38,6 +40,8 @@ let ``question should be saved``() =
     File.Exists (root + """\""" + examId.ToString() + """\Questions\""" + questionId.ToString())
     |> should equal true
 
+    if autoClean then Directory.Delete(root, true)
+
 [<Fact>]
 let ``submission should be saved``() =
     let fileSaver = inMemoryFileSaver root
@@ -53,6 +57,8 @@ let ``submission should be saved``() =
 
     File.Exists (root + """\""" + examId.ToString() + """\""" + studentId.ToString() + """\""" + submissionId.ToString())
     |> should equal true
+
+    if autoClean then Directory.Delete(root, true)
 
 [<Fact>]
 let ``length of question should equal with source``() =
@@ -77,6 +83,8 @@ let ``length of question should equal with source``() =
     |> Async.RunSynchronously
     |> should equal sourceStreamLength
 
+    if autoClean then Directory.Delete(root, true)
+
 [<Fact>]
 let ``length of submission should equal with source``() =
     let streamLength (stream: FileStream) = stream.Length
@@ -100,3 +108,5 @@ let ``length of submission should equal with source``() =
     fileGetter.GetSubmission examId studentId submissionId streamLength
     |> Async.RunSynchronously
     |> should equal sourceStreamLength
+
+    if autoClean then Directory.Delete(root, true)
