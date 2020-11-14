@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react'
 
-const CurrentTime: React.FC = () => {
+type CurrentTimeProps = {
+    variant?: string
+}
+
+const CurrentTime: React.FC<CurrentTimeProps> = props => {
     const [currentTime, setCurrentTime] = useState(new Date().toLocaleTimeString());
 
     useEffect(() => {
@@ -10,7 +14,9 @@ const CurrentTime: React.FC = () => {
     }, [])
 
     return (
-        <div>{currentTime} </div>
+        <div className={props.variant}>
+            {currentTime}
+        </div>
     )
 }
 

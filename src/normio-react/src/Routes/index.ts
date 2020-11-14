@@ -1,4 +1,7 @@
-const routes = [
+import Root from './Root';
+import NavBar from './Navbar';
+
+export const routes = [
     {
         name: "Home",
         route: "/",
@@ -13,4 +16,7 @@ const routes = [
     }
 ]
 
-export default routes
+export {
+    Root,
+    NavBar,
+}
