@@ -1,67 +1,123 @@
-import React, { useEffect, useState } from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import axios from 'axios';
+import AttendanceCheck from "../Components/AttendanceCheck";
 
 const baseUrl = "http://localhost:6546/"
 
-const ExamRoom: React.FC = () => {
-    const [exam, setExam] = useState(null)
-    const peers = [
-        "peer 1",
-        "peer 2",
-    ]
+const ExamRoom: React.FC = props => {
+    const [checked, setChecked] = useState(false);
 
-    const questions = useState([])
-
-    useEffect(() => {
-        axios({
-            baseURL: baseUrl,
-            url: 'exams',
-            data: {
-                examId: "c9fc09c7-a2cc-44b3-84cd-a808579e25dc"
-            }
-        }).then(res => {
-            console.log(res)
-        }).catch(err => {
-            console.error(err)
-        })
-    }, [])
+    const handleCheck = useCallback(() => {
+        setChecked(true)
+    }, []);
 
     return (
         <div className={"container"}>
-            <h1>Exam Room</h1>
-            <div>
-                <div>Exam Id : 123</div>
-                <div>Hosts: Kang, Joo</div>
-            </div>
-            <h2>Video Chat</h2>
-            <div>
-                {peers.map((peer, index) => (
-                    <div key={`${peer}-${index}`} className={"m-1"}>
-                        {peer}
+            {!checked &&
+            <div className={"row my-5"}>
+                <div className={"col"}>
+                    <div className={"row"}>
+                        <div className={"col d-flex"}>
+                            <h1 className={"mx-auto my-5"}>환영합니다!</h1>
+                        </div>
                     </div>
-                ))}
-            </div>
-            <h2>Exam Questions</h2>
-            <div>
-                {questions.map((q, index) => (
-                    <div key={`${q}-${index}`} className={"p-1"}>
-                        <button>{q}</button>
+                    <div className={"row"}>
+                        <div className={"col d-flex"}>
+                            <h2 className={"mx-auto my-2"}>CS320 Final</h2>
+                        </div>
                     </div>
-                ))}
+                    <div className={"row"}>
+                        <div className={"col d-flex"}>
+                            <h2 className={"mx-auto my-2"}>시험이 아직 시작하지 않았습니다.</h2>
+                        </div>
+                    </div>
+                    <div className={"row"}>
+                        <div className={"col d-flex"}>
+                            <p className={"font-weight-light mx-auto my-1"}>시작까지 37분 28초 남았습니다.</p>
+                        </div>
+                    </div>
+                    <div className={"row"}>
+                        <div className={"col d-flex"}>
+                            <p className={"font-weight-light mx-auto my-1"}>27분 38초 후에 입장이 종료됩니다.</p>
+                        </div>
+                    </div>
+                </div>
+                <div className={"col"}>
+                    <div className={"row"}>
+                        <div className={"col d-flex"}>
+                            <div className={"mx-auto"}>
+                                <AttendanceCheck handleCheck={handleCheck}/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <h2>Submit</h2>
-            <div>
-                <form onSubmit={e => alert(JSON.stringify(e))}>
-                    <input type={"file"} />
-                    <input type={"submit"} />
-                </form>
-            </div>
-            <h2>Ask</h2>
-            <div>
-                <form>
-
-                </form>
-            </div>
+            }
+            {checked &&
+            <React.Fragment>
+                <div className={"row"}>
+                    <div className={"col d-flex"}>
+                        <h1 className={"mx-auto mt-3 mb-0"}>시험이 진행중입니다</h1>
+                    </div>
+                </div>
+                <div className={"row"}>
+                    <div className={"col d-flex"}>
+                        <p className={"font-weight-light mx-auto my-3"}>1시간 12분 36초 뒤에 종료됩니다</p>
+                    </div>
+                </div>
+                <div className={"row"}>
+                    <div className={"col"}>
+                        <div className={"container"}>
+                            <div className={"row"}>
+                                <div className={"col"}>
+                                    <div className={"card"}>
+                                        <div className={"card-body"}>
+                                            <p className={"card-text"}>
+                                                학생 1
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className={"col"}>
+                                    <div className={"card"}>
+                                        <div className={"card-body"}>
+                                            학생 1
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className={"col"}>
+                        <h2>시험 문제</h2>
+                        <h2>답안 제출</h2>
+                        <div>
+                            <form className={"form-group"} onSubmit={e => alert(JSON.stringify(e))}>
+                                <div className="input-group">
+                                    <div className="custom-file">
+                                        <input type="file" className="custom-file-input" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04" />
+                                        <label className="custom-file-label" htmlFor="inputGroupFile04">답안 선택</label>
+                                    </div>
+                                    <div className="input-group-append">
+                                        <button className="btn btn-outline-secondary" type="button" id="inputGroupFileAddon04">제출</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div className={"col-2"}>
+                        <h2>질문</h2>
+                        <div className={"list-group"}>
+                            <div className={"list-group-item list-group-item-action"}>호</div>
+                            <div className={"list-group-item list-group-item-action"}>옹</div>
+                            <div className={"list-group-item list-group-item-action"}>이</div>
+                            <div className={"list-group-item list-group-item-action"}>이</div>
+                            <div className={"list-group-item list-group-item-action"}>이</div>
+                        </div>
+                    </div>
+                </div>
+            </React.Fragment>
+            }
         </div>
     );
 }

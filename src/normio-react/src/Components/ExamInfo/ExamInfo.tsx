@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import {Link} from "react-router-dom";
 
 type ExamInfoProps = {
     id: string,
@@ -12,8 +13,8 @@ const ExamInfo: React.FC<ExamInfoProps> = props => {
     const [mouse, setMouse] = useState(false);
     return (
         <div className="card shadow-lg">
-            <div className="card-header">
-                시험 정보
+            <div className="font-weight-bold card-header">
+                시험을 찾았습니다!
             </div>
             <div className="card-body">
                 <h5 className="card-title">
@@ -26,17 +27,14 @@ const ExamInfo: React.FC<ExamInfoProps> = props => {
                     <p className="card-text">
                         {props.description}
                     </p> : null}
-                <div className="card-text my-1 d-flex">
-                    <div className="font-weight-light mx-auto">
-                        찾던 시험이 맞나요?
-                    </div>
-                </div>
-                <button className={`btn btn-block btn-${mouse ? "primary" : "success"}`}
-                    onMouseOver={() => setMouse(true)}
-                    onMouseLeave={() => setMouse(false)}
-                >
-                    네
-                </button>
+                <Link to={"/exams/123"}>
+                    <button className={`btn btn-block btn-${mouse ? "primary" : "success"} font-weight-light`}
+                            onMouseOver={() => setMouse(true)}
+                            onMouseLeave={() => setMouse(false)}
+                    >
+                        {mouse ? "네" : "찾던 시험이 맞나요?"}
+                    </button>
+                </Link>
             </div>
         </div>
     )

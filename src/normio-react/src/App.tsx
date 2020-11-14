@@ -7,8 +7,8 @@ import { BrowserRouter } from 'react-router-dom';
 function App() {
     return (
         <BrowserRouter>
+            <NavBar />
             <div className={"container"}>
-                <NavBar />
                 <Root />
             </div>
         </BrowserRouter>

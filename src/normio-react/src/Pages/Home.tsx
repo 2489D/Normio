@@ -10,9 +10,9 @@ type HomeCardProps = {
 
 const Card: React.FC<HomeCardProps> = props => {
     return (
-        <div className="card shadow-lg" style={{ width: "18rem" }}>
+        <div className="card shadow-lg m-2" style={{ width: "18rem" }}>
             <div className="card-header d-flex">
-                <span className="mx-auto">
+                <span className="font-weight-bold mx-auto">
                     {props.title}
                 </span>
             </div>
@@ -21,9 +21,16 @@ const Card: React.FC<HomeCardProps> = props => {
                     {props.children}
                 </p>
                 {props.action && props.actionRoute
-                    ? <Link to={props.actionRoute}> <button className="btn btn-light btn-block">{props.action}</button> </Link>
+                    ? 
+                    <div className={"my-2"}>
+                        <Link to={props.actionRoute}>
+                            <button className="btn btn-light btn-block">{props.action}</button>
+                        </Link>
+                    </div>
                     : null}
-                <a href="#" className="btn btn-sm btn-info btn-block">방법 살펴보기</a>
+                <div className={"my-2"}>
+                    <a href="#" className="btn btn-sm btn-info btn-block">방법 살펴보기</a>
+                </div>
             </div>
         </div>
     )
@@ -36,7 +43,7 @@ const Home: React.FC = props => {
                 <div className="col">
                     <div className="row my-3">
                         <div className="col d-flex">
-                            <h1 className="mx-auto">Welcome to Normio!</h1>
+                            <h1 className="font-weight-bold mx-auto">Welcome to Normio!</h1>
                         </div>
                     </div>
                     <div className="row my-1">
@@ -63,9 +70,9 @@ const Home: React.FC = props => {
                     </div>
                 </div>
             </div>
-            <div className="row my-5">
+            <div className="row">
                 <div className="col">
-                    <Card title="시험을 구성하시나요?" action="시험을 구성합니다" actionRoute="/exams">
+                    <Card title="시험을 진행하시나요?" action="시험을 구성합니다" actionRoute="/exams">
                         <p>시험을 구성하고, 진행하는 방법을 살펴보세요.</p>
                         <p>시험을 운영하는 데 필요한 모든 방법에 대해 설명해드립니다.</p>
                     </Card>
