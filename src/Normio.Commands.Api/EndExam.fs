@@ -1,23 +1,23 @@
-[<AutoOpen>]
-module Normio.Commands.Api.EndExam
+namespace Normio.Commands.Api
 
 open System
 open System.Text.Json.Serialization
 open Normio.Core.Commands
-open Normio.Commands.Api.CommandHandlers
 
-[<CLIMutable>]
-type EndExamRequest =
-    {
-        [<JsonPropertyName("examId")>]
-        ExamId : Guid
+[<AutoOpen>]
+module EndExam = 
+    [<CLIMutable>]
+    type EndExamRequest =
+        {
+            [<JsonPropertyName("examId")>]
+            ExamId : Guid
+        }
+
+    let validateEndExam req = async {
+        return req.ExamId |> Ok
     }
 
-let validateEndExam req = async {
-    return req.ExamId |> Ok
-}
-
-let endExamCommander = {
-    Validate = validateEndExam
-    ToCommand = EndExam
-}
+    let endExamCommander = {
+        Validate = validateEndExam
+        ToCommand = EndExam
+    }
