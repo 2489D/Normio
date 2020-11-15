@@ -1,6 +1,7 @@
 import React, {useCallback, useState} from "react";
 
 type CreateExamCardProps = {
+    hostId?: string,
     handleSubmit: () => void,
 }
 
@@ -19,7 +20,7 @@ const CreateExamCard: React.FC<CreateExamCardProps> = props => {
             <div className={"card-text p-3"}>
                 <form onSubmit={onSubmit}>
                     <div className={"form-group"}>
-                        <input className={"form-control"} placeholder={"Host ID"} />
+                        <input className={"form-control"} placeholder={"Host ID"} defaultValue={props.hostId} />
                     </div>
                     <div className={"form-group"}>
                         <input className={"form-control"} placeholder={"시험 명"} />

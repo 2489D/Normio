@@ -1,9 +1,15 @@
 import React, {useCallback, useState} from "react";
 import CreateExamCard from "../Components/CreateExam";
+import HostLogin from "../Components/HostLogin";
+import { nanoid } from 'nanoid';
 
 const CreateExamPage: React.FC = props => {
+    const [hostId, setHostId] = useState<string>()
     const [examCreated, setExamCreated] = useState(false);
     
+    const handleHostLogin = useCallback(() => {
+        setHostId(nanoid(12))
+    }, [])
     const handleCreateExam = useCallback(() => {
         setExamCreated(true)
     }, [])
@@ -15,31 +21,12 @@ const CreateExamPage: React.FC = props => {
                 <div className={"col"}>
                     <div className={"row"}>
                         <div className={"col my-3"}>
-                            <div className={"card shadow-lg"}>
-                                <div className={"card-header font-weight-bold text-center"}>
-                                    호스트 계정으로 로그인하세요
-                                </div>
-                                <div className={"card-text p-3"}>
-                                    <form>
-                                        <div className={"form-group"}>
-                                            <input className={"form-control"} placeholder={"Email"} />
-                                        </div>
-                                        <div className={"form-group"}>
-                                            <input className={"form-control"} placeholder={"Password"} />
-                                        </div>
-                                        <input type="submit" className={`btn btn-primary btn-block`} value={"로그인"} />
-                                    </form>
-                                </div>
-                                <div className={"text-center"}>
-                                    <p className={"font-weight-light"}> 비밀번호를 잊으셨나요? </p>
-                                    <p className={"font-weight-light"}> 호스트 계정이 없으신가요? </p>
-                                </div>
-                            </div>
+                            <HostLogin hostId={hostId} handleSubmit={handleHostLogin} />
                         </div>
                     </div>
                     <div className={"row"}>
                         <div className={"col my-3"}>
-                            <CreateExamCard handleSubmit={handleCreateExam} />
+                            <CreateExamCard hostId={hostId} handleSubmit={handleCreateExam} />
                         </div>
                     </div>
                 </div>
