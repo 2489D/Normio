@@ -64,9 +64,16 @@ let handleRemoveHost hostId = function
         else CannotFindHost |> Error
     | _ -> ExamNotOpened |> Error
 
-let handleCreateSubmission submission = function
+let handleCreateSubmission (submission: Submission) = function
     | ExamIsRunning exam ->
-        [SubmissionCreated (exam.Id, submission)] |> Ok
+        let isSubmissionDuplicated = exam.Submissions |> List.exists (fun subm -> subm.Id = submission.Id)
+        let areIDsDifferent = submission.ExamId <> exam.Id
+        let doesExamHasTheStudent = exam.Students |> Map.containsKey submission.StudentId
+        match (isSubmissionDuplicated, areIDsDifferent, doesExamHasTheStudent) with
+        | true, _, _ -> SubmissionDuplicated |> Error
+        | _, true, _ -> IDNotMatched "The exam id of the submission is different from the exam id provided" |> Error
+        | _, _, true -> IDNotMatched "The exam does not have the student id of the submission" |> Error
+        | _ -> [SubmissionCreated (exam.Id, submission)] |> Ok
     | _ -> ExamNotStarted |> Error
 
 let handleCreateQuestion question = function

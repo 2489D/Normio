@@ -18,6 +18,9 @@ module CommandErrors =
         | CannotFindStudent
         | CannotFindHost
         | CannotFindQuestion
+        
+        | SubmissionDuplicated
+        | IDNotMatched of ctx:string
  
         override this.ToString () =
             match this with
@@ -33,3 +36,5 @@ module CommandErrors =
             | CannotFindStudent -> "The exam does not have the student"
             | CannotFindHost -> "The exam does not have the host"
             | CannotFindQuestion -> "The exam does not have the question"
+            | SubmissionDuplicated -> "The exam already has the submission id"
+            | IDNotMatched ctx -> sprintf "Two IDs are not matched: %s" ctx
