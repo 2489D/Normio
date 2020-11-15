@@ -68,8 +68,8 @@ let handleCreateSubmission (submission: Submission) = function
     | ExamIsRunning exam ->
         let isSubmissionDuplicated = exam.Submissions |> List.exists (fun subm -> subm.Id = submission.Id)
         let areIDsDifferent = submission.ExamId <> exam.Id
-        let doesExamHasTheStudent = exam.Students |> Map.containsKey submission.StudentId
-        match (isSubmissionDuplicated, areIDsDifferent, doesExamHasTheStudent) with
+        let doesNotExamHasTheStudent = exam.Students |> Map.containsKey submission.StudentId |> not
+        match (isSubmissionDuplicated, areIDsDifferent, doesNotExamHasTheStudent) with
         | true, _, _ -> SubmissionDuplicated |> Error
         | _, true, _ -> IDNotMatched "The exam id of the submission is different from the exam id provided" |> Error
         | _, _, true -> IDNotMatched "The exam does not have the student id of the submission" |> Error
