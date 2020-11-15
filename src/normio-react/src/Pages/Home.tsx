@@ -72,7 +72,7 @@ const Home: React.FC = props => {
             </div>
             <div className="row">
                 <div className="col">
-                    <Card title="시험을 진행하시나요?" action="시험을 구성합니다" actionRoute="/exams">
+                    <Card title="시험을 진행하시나요?" action="시험을 구성합니다" actionRoute="/exams/create">
                         <p>시험을 구성하고, 진행하는 방법을 살펴보세요.</p>
                         <p>시험을 운영하는 데 필요한 모든 방법에 대해 설명해드립니다.</p>
                     </Card>

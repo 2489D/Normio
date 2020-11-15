@@ -73,7 +73,7 @@ const ExamRoom: React.FC = props => {
                                     <div className={"card"}>
                                         <div className={"card-body"}>
                                             <p className={"card-text"}>
-                                                학생 1
+                                                시험 감독 홍길동
                                             </p>
                                         </div>
                                     </div>
@@ -81,7 +81,7 @@ const ExamRoom: React.FC = props => {
                                 <div className={"col"}>
                                     <div className={"card"}>
                                         <div className={"card-body"}>
-                                            학생 1
+                                            시험 감독 홍길동
                                         </div>
                                     </div>
                                 </div>
@@ -105,14 +105,106 @@ const ExamRoom: React.FC = props => {
                             </form>
                         </div>
                     </div>
-                    <div className={"col-2"}>
-                        <h2>질문</h2>
-                        <div className={"list-group"}>
-                            <div className={"list-group-item list-group-item-action"}>호</div>
-                            <div className={"list-group-item list-group-item-action"}>옹</div>
-                            <div className={"list-group-item list-group-item-action"}>이</div>
-                            <div className={"list-group-item list-group-item-action"}>이</div>
-                            <div className={"list-group-item list-group-item-action"}>이</div>
+                </div>
+                <div className={"row"}>
+                    <div className={"col-xs-6 col-md-4 col-lg-3"}>
+                        <div className={"card shadow-lg m-3"}>
+                            <div className={"card-header font-weight-bold"}>문제 2번 예외 조건...</div>
+                            <div className={"card-body"}>
+                                <div className={"card-text font-weight-light"}>
+                                    2번 문항의 A 조건에 대해서
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className={"col-xs-6 col-md-4 col-lg-3"}>
+                        <div className={"card shadow-lg m-3"}>
+                            <div className={"card-header"}>문제 2번 예외 조건...</div>
+                            <div className={"card-body"}>
+                                <div className={"card-text"}>
+                                    2번 문항의 A 조건에 대해서
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className={"col-xs-6 col-md-4 col-lg-3"}>
+                        <div className={"card shadow-lg m-3"}>
+                            <div className={"card-header"}>문제 2번 예외 조건...</div>
+                            <div className={"card-body"}>
+                                <div className={"card-text"}>
+                                    2번 문항의 A 조건에 대해서
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className={"col-xs-6 col-md-4 col-lg-3"}>
+                        <div className={"card shadow-lg m-3"}>
+                            <div className={"card-header"}>문제 2번 예외 조건...</div>
+                            <div className={"card-body"}>
+                                <div className={"card-text"}>
+                                    2번 문항의 A 조건에 대해서
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className={"col-xs-6 col-md-4 col-lg-3"}>
+                        <div className={"card shadow-lg m-3"}>
+                            <div className={"card-header"}>문제 2번 예외 조건...</div>
+                            <div className={"card-body"}>
+                                <div className={"card-text"}>
+                                    2번 문항의 A 조건에 대해서
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className={"col-xs-6 col-md-4 col-lg-3"}>
+                        <div className={"card shadow-lg m-3"}>
+                            <div className={"card-header"}>문제 2번 예외 조건...</div>
+                            <div className={"card-body"}>
+                                <div className={"card-text"}>
+                                    2번 문항의 A 조건에 대해서
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className={"col-xs-6 col-md-4 col-lg-3"}>
+                        <div className={"card shadow-lg m-3"}>
+                            <div className={"card-header"}>문제 2번 예외 조건...</div>
+                            <div className={"card-body"}>
+                                <div className={"card-text"}>
+                                    2번 문항의 A 조건에 대해서
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className={"col-xs-6 col-md-4 col-lg-3"}>
+                        <div className={"card shadow-lg m-3"}>
+                            <div className={"card-header"}>문제 2번 예외 조건...</div>
+                            <div className={"card-body"}>
+                                <div className={"card-text"}>
+                                    2번 문항의 A 조건에 대해서
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className={"col-xs-6 col-md-4 col-lg-3"}>
+                        <div className={"card shadow-lg m-3"}>
+                            <div className={"card-header"}>문제 2번 예외 조건...</div>
+                            <div className={"card-body"}>
+                                <div className={"card-text"}>
+                                    2번 문항의 A 조건에 대해서
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className={"col-xs-6 col-md-4 col-lg-3"}>
+                        <div className={"card shadow-lg m-3"}>
+                            <div className={"card-header"}>문제 2번 예외 조건...</div>
+                            <div className={"card-body"}>
+                                <div className={"card-text"}>
+                                    2번 문항의 A 조건에 대해서
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

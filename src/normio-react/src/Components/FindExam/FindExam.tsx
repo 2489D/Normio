@@ -13,19 +13,26 @@ const FindExam: React.FC = props => {
                 <div className="row">
                     <div className="col"></div>
                     <div className="col">
-                        <form className="card shadow-lg p-3" onSubmit={handleSubmit}>
-                            <div className="form-group">
-                                <label>시험 ID를 입력하세요</label>
-                                <input className="form-control" type={"text"} placeholder={"Exam Id"} />
+                        <div className={"card shadow-lg p-3"}>
+                            <form onSubmit={handleSubmit}>
+                                <div className="form-group">
+                                    <label>시험 ID를 입력하세요</label>
+                                    <input className="form-control" type={"text"} placeholder={"Exam Id"} />
+                                </div>
+                                <div className="form-group">
+                                    <label>암호를 입력하세요</label>
+                                    <input className="form-control" type={"password"} placeholder={"Exam Password"} />
+                                </div>
+                                <div className="form-group">
+                                    <input className="from-control btn btn-primary btn-block" type={"submit"} value={"시험을 찾습니다"} />
+                                </div>
+                            </form>
+                            <div className={"d-flex"}>
+                                <div className={"font-weight-light mx-auto"}>
+                                    또는, 시험 주소를 직접 입력하세요.
+                                </div>
                             </div>
-                            <div className="form-group">
-                                <label>암호를 입력하세요</label>
-                                <input className="form-control" type={"password"} placeholder={"Exam Password"} />
-                            </div>
-                            <div className="form-group">
-                                <input className="from-control btn btn-primary btn-block" type={"submit"} value={"시험을 찾습니다"} />
-                            </div>
-                        </form>
+                        </div>
                     </div>
                     <div className="col"></div>
                 </div>
