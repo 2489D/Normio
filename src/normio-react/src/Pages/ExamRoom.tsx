@@ -6,6 +6,14 @@ const baseUrl = "http://localhost:6546/"
 
 const ExamRoom: React.FC = props => {
     const [checked, setChecked] = useState(false);
+    
+    useEffect(() => {
+        axios.get("http://localhost:6546/exam", {
+            params: {
+                examId: "61b284e962-a988-f5e8d0258fa8"
+            }
+        }).then(res => console.log(res))
+    })
 
     const handleCheck = useCallback(() => {
         setChecked(true)

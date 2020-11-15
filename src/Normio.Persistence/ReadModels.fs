@@ -17,11 +17,18 @@ type ExamReadModel = {
     [<JsonPropertyName("id")>]
     Id: Guid
     [<PartitionKey>]
+    [<JsonPropertyName("examId")>]
     ExamId: Guid
+    [<JsonPropertyName("status")>]
     Status: ExamStatus
+    [<JsonPropertyName("title")>]
     Title: ExamTitle40
+    [<JsonPropertyName("questions")>]
     Questions: Question seq
+    [<JsonPropertyName("submission")>]
     Submissions: Submission seq
+    [<JsonPropertyName("hosts")>]
     Hosts: Host seq
+    [<JsonPropertyName("students")>]
     Students: Student seq
 }

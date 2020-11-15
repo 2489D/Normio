@@ -26,7 +26,7 @@ let commandApiHandler handler (eventStore : IEventStore) request : HttpHandler =
                 return! json state next ctx
             | Error msg ->
                 // TODO : status code
-                return! (setStatusCode 404 >=> json msg) next ctx
+                return! (setStatusCode 400 >=> json msg) next ctx
         }
 
 [<CLIMutable>]

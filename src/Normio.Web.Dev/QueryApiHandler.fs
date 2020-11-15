@@ -16,16 +16,21 @@ type GetExamRequest =
         ExamId : Guid
     }
 
-let getExamByExamId examQuery req =
-    fun (next : HttpFunc) (context : HttpContext) ->
+// TODO: elaborate read model
+// FIXME
+let getExamByExamId examQuery =
+    fun (next : HttpFunc) (ctx : HttpContext) ->
         task {
-            let! examReadModel = examQuery req.ExamId
-            match examReadModel with
-            | Some exam -> return! (req.ToString() |> text) next context
-            | None -> return! text "Exam does not exist" next context
+            match ctx.TryBindQueryString<GetExamRequest>() with
+            | Ok getExam -> 
+                let! examReadModel = examQuery getExam.ExamId
+                match examReadModel with
+                | Some exam -> return! (json exam) next ctx
+                | None -> return! RequestErrors.NOT_FOUND "Exam does not exist" next ctx
+            | Error _ -> return! RequestErrors.BAD_REQUEST "Exam Id should be a GUID" next ctx
         }
 
 let queriesApi queries =
     GET >=> choose [
-        route "/exams" >=> bindJson<GetExamRequest> (fun req -> getExamByExamId queries.Exam.GetExamByExamId req)
+        route "/exam" >=> getExamByExamId queries.Exam.GetExamByExamId
     ]
