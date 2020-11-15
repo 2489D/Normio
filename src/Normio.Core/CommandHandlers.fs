@@ -76,9 +76,16 @@ let handleCreateSubmission (submission: Submission) = function
         | _ -> [SubmissionCreated (exam.Id, submission)] |> Ok
     | _ -> ExamNotStarted |> Error
 
-let handleCreateQuestion question = function
+let handleCreateQuestion (question: Question) = function
     | ExamIsWaiting exam ->
-        [QuestionCreated (exam.Id, question)] |> Ok
+        let isQuestionDuplicated = exam.Questions |> List.exists (fun que -> que.Id = question.Id)
+        let areIDsDifferent = question.ExamId <> exam.Id
+        let doesNotExamHasTheHost = exam.Hosts |> Map.containsKey question.HostId |> not
+        match (isQuestionDuplicated, areIDsDifferent, doesNotExamHasTheHost) with
+        | true, _, _ -> QuestionDuplicated |> Error
+        | _, true, _ -> IDNotMatched "The exam id of the question is different from the exam id provided" |> Error
+        | _, _, true -> IDNotMatched "The exam does not have the host id of the question" |> Error
+        | _ -> [QuestionCreated (exam.Id, question)] |> Ok
     | ExamIsClose _ -> ExamNotOpened |> Error
     | _ -> ExamAlreadyStarted |> Error
 

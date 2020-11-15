@@ -20,6 +20,7 @@ module CommandErrors =
         | CannotFindQuestion
         
         | SubmissionDuplicated
+        | QuestionDuplicated
         | IDNotMatched of ctx:string
  
         override this.ToString () =
