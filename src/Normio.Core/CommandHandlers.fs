@@ -97,6 +97,12 @@ let handleDeleteQuestion questionId = function
     | ExamIsClose _ -> ExamNotOpened |> Error
     | _ -> ExamAlreadyStarted |> Error
 
+let handleSendMessage message = function
+    | ExamIsWaiting exam
+    | ExamIsRunning exam
+    | ExamIsFinished exam -> [MessageSent (exam.Id, message)] |> Ok
+    | ExamIsClose _ -> ExamNotOpened |> Error
+
 let handleChangeTitle title = function
     | ExamIsWaiting exam ->
         [TitleChanged (exam.Id, title)] |> Ok
@@ -104,7 +110,7 @@ let handleChangeTitle title = function
     | _ -> ExamAlreadyStarted |> Error
 
 
-/// Produces a list of events as a consequence of a command into a state
+/// Produces a list of event results as a consequence of a command into a state
 let execute state = function
     | OpenExam (id, title) -> handleOpenExam id title state
     | StartExam _ -> handleStartExam state
@@ -117,6 +123,7 @@ let execute state = function
     | CreateSubmission (_, submission) -> handleCreateSubmission submission state
     | CreateQuestion (_, questionId) -> handleCreateQuestion questionId state
     | DeleteQuestion (_, questionId) -> handleDeleteQuestion questionId state
+    | SendMessage (_, message) -> handleSendMessage message state
     | ChangeTitle (_, title) -> handleChangeTitle title state
 
 

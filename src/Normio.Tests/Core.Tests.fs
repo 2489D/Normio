@@ -29,27 +29,16 @@ let ``ExamIsClose -> OpenExam -> ExamIsWaiting`` () =
 
 let createWaitingExam () =
     let testId = newGuid ()
-    let exam = { Id = testId
-                 Title = validTitle
-                 Questions = []
-                 Submissions = []
-                 Students = mockStudents
-                 Hosts = mockHosts }
-                |> ExamIsWaiting
+    let exam =
+        Exam.Initial testId validTitle
+        |> ExamIsWaiting
     (exam, testId)
     
 [<Fact>]
 let ``ExamIsWaiting without a question can not start`` () =
     let testId = newGuid ()
     let waitingExam =
-        ExamIsWaiting {
-            Id = testId
-            Title = validTitle
-            Questions = []
-            Submissions = []
-            Students = mockStudents
-            Hosts = mockHosts
-        }
+        ExamIsWaiting (Exam.Initial testId validTitle)
     given waitingExam
     |> applied (StartExam testId)
     |> thenShouldBeError
@@ -58,14 +47,7 @@ let ``ExamIsWaiting without a question can not start`` () =
 let ``ExamIsWaiting without a student can not start`` () =
     let testId = newGuid ()
     let waitingExam =
-        ExamIsWaiting {
-            Id = testId
-            Title = validTitle
-            Questions = []
-            Submissions = []
-            Students = Map.empty
-            Hosts = mockHosts
-        }
+        ExamIsWaiting (Exam.Initial testId validTitle)
     given waitingExam
     |> applied (StartExam testId)
     |> thenShouldBeError
@@ -74,14 +56,7 @@ let ``ExamIsWaiting without a student can not start`` () =
 let ``ExamIsWaiting without a host can not start`` () =
     let testId = newGuid ()
     let waitingExam =
-        ExamIsWaiting {
-            Id = testId
-            Title = validTitle
-            Questions = []
-            Submissions = []
-            Students = mockStudents
-            Hosts = Map.empty
-        }
+        ExamIsWaiting (Exam.Initial testId validTitle)
     given waitingExam
     |> applied (StartExam testId)
     |> thenShouldBeError

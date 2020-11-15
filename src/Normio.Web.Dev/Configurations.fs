@@ -16,14 +16,13 @@ open Normio.Web.Dev.Serialization
 open Normio.Web.Dev.ErrorHandler
 
 let configureCors (builder : CorsPolicyBuilder) =
-    builder.WithOrigins("http://localhost:3000")
+    builder.WithOrigins("http://localhost")
            .AllowAnyMethod()
            .AllowAnyHeader()
            |> ignore
 
 let configureApp webApp (app : IApplicationBuilder) =
     let env = app.ApplicationServices.GetService<IWebHostEnvironment>()
-    printfn "Environment: %A" env.EnvironmentName
     (match env.EnvironmentName with
     | "Development" -> app.UseDeveloperExceptionPage()
     | _ -> app.UseGiraffeErrorHandler(errorHandler)

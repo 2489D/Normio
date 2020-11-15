@@ -38,4 +38,5 @@ module CommandErrors =
             | CannotFindHost -> "The exam does not have the host"
             | CannotFindQuestion -> "The exam does not have the question"
             | SubmissionDuplicated -> "The exam already has the submission id"
+            | QuestionDuplicated -> "The exam already has the question id"
             | IDNotMatched ctx -> sprintf "Two IDs are not matched: %s" ctx

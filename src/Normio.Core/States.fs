@@ -15,19 +15,27 @@ type State =
     | ExamIsRunning of Exam
     | ExamIsFinished of Exam
 
+
+(**
+Style Guide:
+1. Group (state, event) values by the state value. And separate them with empty lines.
+2. The last (state, event) value grouped by (1) should be the one changing the state
+
+3. Left to be improved:
+How to make this `apply` function type-safe?
+i.e.
+All the (state, event) values here should be represented in the F# type system
+so that whenever we miss to add or delete a (state, event) value,
+the compiler can help us by issuing compilation error.
+
+Now, this function is breaking the
+'Make the illegal states unrepresentable' Principle.
+**)
 let apply state event =
     match state, event with
     | ExamIsClose None, ExamOpened (id, title) ->
-        ExamIsWaiting {
-            Id = id
-            Title = title
-            Questions = []
-            Submissions = []
-            Students = Map.empty
-            Hosts = Map.empty
-        }
-    | ExamIsWaiting exam, ExamStarted _ ->
-        ExamIsRunning exam
+        ExamIsWaiting (Exam.Initial id title)
+
     | ExamIsWaiting exam, StudentEntered (_, student) ->
         { exam with Students = Map.add student.Id student exam.Students }
         |> ExamIsWaiting
@@ -46,15 +54,27 @@ let apply state event =
     | ExamIsWaiting exam, QuestionDeleted (_, questionId) ->
         { exam with Questions = exam.Questions |> List.filter (fun question -> question.Id <> questionId )}
         |> ExamIsWaiting
+    | ExamIsWaiting exam, MessageSent (_, message) ->
+        { exam with Messages = message :: exam.Messages }
+        |> ExamIsWaiting
     | ExamIsWaiting exam, TitleChanged (_, newTitle) ->
         { exam with Title = newTitle }
         |> ExamIsWaiting
+    | ExamIsWaiting exam, ExamStarted _ ->
+        ExamIsRunning exam
+
     | ExamIsRunning exam, SubmissionCreated (_, submission) ->
         { exam with Submissions = submission :: exam.Submissions }
         |> ExamIsRunning
+    | ExamIsRunning exam, MessageSent (_, message) ->
+        { exam with Messages = message :: exam.Messages }
+        |> ExamIsRunning
     | ExamIsRunning exam, ExamEnded _ ->
         ExamIsFinished exam
+    
+    | ExamIsFinished exam, MessageSent (_, message) ->
+        { exam with Messages = message :: exam.Messages }
+        |> ExamIsFinished
     | ExamIsFinished exam, ExamClosed _ ->
         ExamIsClose (Some exam.Id)
-    | _ -> state
 
