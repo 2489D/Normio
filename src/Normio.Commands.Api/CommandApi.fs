@@ -1,6 +1,6 @@
 namespace Normio.Commands.Api
 
-module CommandApi =
+module Compositions =
     let handleOpenExamRequest eventStore req =
         openExamCommander
         |> handleCommand eventStore req

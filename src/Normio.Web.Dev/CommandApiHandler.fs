@@ -10,6 +10,7 @@ open Giraffe
 
 open Normio.Persistence.EventStore
 open Normio.Commands.Api
+open Normio.Commands.Api.Compositions
 open Normio.Persistence.FileSave
 open Normio.Web.Dev.Hub
 
