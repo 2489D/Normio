@@ -6,7 +6,7 @@ open FSharp.CosmosDb
 
 open Normio.Core
 
-[<JsonFSharpConverter(unionEncoding = JsonUnionEncoding.ExternalTag)>]
+[<JsonFSharpConverter(unionEncoding = JsonUnionEncoding.Untagged)>]
 type ExamStatus =
     | BeforeExam
     | DuringExam
@@ -33,6 +33,10 @@ type ExamReadModel = {
     Messages: Message seq
     [<JsonPropertyName("students")>]
     Students: Student seq
+    [<JsonPropertyName("startDateTime")>]
+    StartDateTime: DateTime option
+    [<JsonPropertyName("duration")>]
+    Duration: TimeSpan option
 } with
     static member Initial examId title =
         { Id = examId
@@ -43,4 +47,6 @@ type ExamReadModel = {
           Hosts = Seq.empty
           Questions = Seq.empty
           Messages = Seq.empty
-          Submissions = Seq.empty }
+          Submissions = Seq.empty
+          StartDateTime = None
+          Duration = None }
