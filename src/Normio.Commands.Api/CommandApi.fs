@@ -44,6 +44,10 @@ module Compositions =
     let handleDeleteQuestionRequest eventStore req =
         deleteQuestionCommander
         |> handleCommand eventStore req
+    
+    let handleSendMessageRequest eventStore req =
+        sendMessageCommander
+        |> handleCommand eventStore req
 
     let handleChangeTitleRequest eventStore req =
         changeTitleCommander
