@@ -1,32 +1,60 @@
 import React, {useCallback, useState} from "react";
+import {useForm} from "react-hook-form";
+import axios from 'axios';
+import {config} from "../../config/development";
 
 type CreateExamCardProps = {
     hostId?: string,
-    handleSubmit: () => void,
+    handleSubmitCreateExam: () => void,
 }
 
-const CreateExamCard: React.FC<CreateExamCardProps> = props => {
-    const [created, setCreated] = useState(false);
-    const onSubmit = useCallback(event => {
-        event.preventDefault()
+const CreateExamCard: React.FC<CreateExamCardProps> = ({ hostId, handleSubmitCreateExam }) => {
+    const [created, setCreated] = useState(false)
+    const { register, handleSubmit } = useForm()
+ 
+    const onSubmit = useCallback(async data => {
+        console.debug(data)
+        const response = await axios.post(config.backendUrl + "/api/openExam", {
+            title: data.title
+        })
+        console.debug(response)
         setCreated(true)
-        props.handleSubmit()
-    }, [])
+        handleSubmitCreateExam()
+    }, [setCreated])
+
     return (
         <div className={"card shadow-lg"}>
             <div className={"card-header font-weight-bold"}>
                 시험 구성하기
             </div>
             <div className={"card-text p-3"}>
-                <form onSubmit={onSubmit}>
+                <form onSubmit={handleSubmit(onSubmit)}>
                     <div className={"form-group"}>
-                        <input className={"form-control"} placeholder={"Host ID"} defaultValue={props.hostId} />
+                        <input
+                            name={"hostId"}
+                            ref={register(
+                                
+                            )}
+                            className={"form-control"}
+                            placeholder={"Host ID"} 
+                            defaultValue={hostId}
+                        />
                     </div>
                     <div className={"form-group"}>
-                        <input className={"form-control"} placeholder={"시험 명"} />
+                        <input 
+                            name={"title"}
+                            ref={register}
+                            className={"form-control"}
+                            placeholder={"시험 명"}
+                        />
                     </div>
                     <div className={"form-group"}>
-                        <input className={"form-control"} placeholder={"시험 시작 시간"} />
+                        <input 
+                            name={"startDateTime"}
+                            ref={register}
+                            className={"form-control"}
+                            placeholder={"시험 시작 시간"}
+                        />
                     </div>
                     <input type="submit" className={`btn btn-${ created ? "success"  : "primary"} btn-block`} value={`${created ? "시험이 생성 되었습니다!"  : "시험을 생성합니다"}`} />
                 </form>

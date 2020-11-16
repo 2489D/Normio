@@ -26,7 +26,7 @@ const CreateExamPage: React.FC = props => {
                     </div>
                     <div className={"row"}>
                         <div className={"col my-3"}>
-                            <CreateExamCard hostId={hostId} handleSubmit={handleCreateExam} />
+                            <CreateExamCard hostId={hostId} handleSubmitCreateExam={handleCreateExam} />
                         </div>
                     </div>
                 </div>

@@ -2,14 +2,10 @@ import React, { useState } from 'react';
 import {Link} from "react-router-dom";
 
 type ExamInfoProps = {
-    id: string,
-    title: string,
-    host: string,
-    start: string,
-    description?: string,
+    exam : any
 }
 
-const ExamInfo: React.FC<ExamInfoProps> = props => {
+const ExamInfo: React.FC<ExamInfoProps> = ({ exam, ...props }) => {
     const [mouse, setMouse] = useState(false);
     return (
         <div className="card shadow-lg">
@@ -18,20 +14,15 @@ const ExamInfo: React.FC<ExamInfoProps> = props => {
             </div>
             <div className="card-body">
                 <h5 className="card-title">
-                    {props.title}
+                    {exam.title}
                 </h5>
                 <p className="card-text">
-                    시작: {props.start}
+                    {exam.startDateTime ? exam.startDateTime + "에 시작합니다." : "아직 시작 시간이 정해지지 않았습니다"}
                 </p>
-                {props.description ?
-                    <p className="card-text">
-                        {props.description}
-                    </p> : null}
                 <Link to={"/exams/123"}>
                     <button className={`btn btn-block btn-${mouse ? "primary" : "success"} font-weight-light`}
                             onMouseOver={() => setMouse(true)}
-                            onMouseLeave={() => setMouse(false)}
-                    >
+                            onMouseLeave={() => setMouse(false)} >
                         {mouse ? "네" : "찾던 시험이 맞나요?"}
                     </button>
                 </Link>
