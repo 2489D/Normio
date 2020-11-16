@@ -106,7 +106,8 @@ let commandApi eventStore fileSaver =
                     // TODO : validate upload information
                     route "/upload" >=> tryBindForm<QuestionUpload> (fun err -> RequestErrors.BAD_REQUEST err) None (fun upload -> fileUploadHandler (Question upload) fileSaver)
                 ]
-            ) 
+            )
+            route "/sendMessage" >=> bindJson<SendMessageRequest> (fun req -> commandApiHandler handleSendMessageRequest eventStore req)
             route "/deleteQuestion" >=> bindJson<DeleteQuestionRequest> (fun req -> commandApiHandler handleDeleteQuestionRequest eventStore req)
         ]
     )
