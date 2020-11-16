@@ -166,10 +166,10 @@ let ``get all timers should return correctly`` () =
     let task2 = () |> async.Return
     let id2 = inMemoryTimer.SetTimer time2 task2 |> Async.RunSynchronously
 
-    let expectedSeq =
-        [{Id = id1; Time = time1; Task = task1};
-        {Id = id2; Time = time2; Task = task2}]
-        |> Seq.ofList
+    let expectedSeq = seq {
+        {Id = id1; Time = time1; Task = task1}
+        {Id = id2; Time = time2; Task = task2}
+    }
 
     inMemoryTimer.GetAllTimers
     |> Async.RunSynchronously
