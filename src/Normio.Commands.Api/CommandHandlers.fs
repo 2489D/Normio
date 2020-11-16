@@ -21,9 +21,9 @@ module CommandHandlers =
     | SendMessage (examId, _) -> examId
     | ChangeTitle (examId, _) -> examId
 
-    type Commander<'a, 'b> = {
-        Validate: 'a -> Async<Result<'b, string>>
-        ToCommand: 'b -> Command
+    type Commander<'TRaw, 'TValidated> = {
+        Validate: 'TRaw -> Async<Result<'TValidated, string>>
+        ToCommand: 'TValidated -> Command
     }
 
     /// 1. Validate the input data
