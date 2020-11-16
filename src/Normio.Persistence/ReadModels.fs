@@ -12,6 +12,7 @@ type ExamStatus =
     | DuringExam
     | AfterExam
 
+// missing created date time (on purpose?)
 [<JsonFSharpConverter>]
 type ExamReadModel = {
     [<JsonPropertyName("id")>]
@@ -27,12 +28,12 @@ type ExamReadModel = {
     Questions: Question seq
     [<JsonPropertyName("submission")>]
     Submissions: Submission seq
-    [<JsonPropertyName("hosts")>]
-    Hosts: Host seq
     [<JsonPropertyName("messages")>]
     Messages: Message seq
     [<JsonPropertyName("students")>]
     Students: Student seq
+    [<JsonPropertyName("hosts")>]
+    Hosts: Host seq
     [<JsonPropertyName("startDateTime")>]
     StartDateTime: DateTime option
     [<JsonPropertyName("duration")>]
@@ -43,10 +44,10 @@ type ExamReadModel = {
           ExamId = examId
           Status = BeforeExam
           Title = title
+          Questions = Seq.empty
+          Submissions = Seq.empty
+          Messages = Seq.empty
           Students = Seq.empty
           Hosts = Seq.empty
-          Questions = Seq.empty
-          Messages = Seq.empty
-          Submissions = Seq.empty
           StartDateTime = None
           Duration = None }
