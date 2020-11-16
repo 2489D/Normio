@@ -4,7 +4,7 @@ open System
 open Normio.Core
 
 type Command =
-    | OpenExam of examId:Guid * title:ExamTitle40
+    | OpenExam of examId:Guid * title:ExamTitle40 * startTime:DateTime * duration:TimeSpan
     | StartExam of examId:Guid
     | EndExam of examId:Guid
     | CloseExam of examId:Guid

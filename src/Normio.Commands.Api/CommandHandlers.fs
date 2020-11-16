@@ -7,7 +7,7 @@ open Normio.Persistence.EventStore
 [<AutoOpen>]
 module CommandHandlers =
     let getExamIdFromCommand = function
-    | OpenExam (examId, _) -> examId
+    | OpenExam (examId, _, _, _) -> examId
     | StartExam examId -> examId
     | EndExam examId -> examId
     | CloseExam examId -> examId

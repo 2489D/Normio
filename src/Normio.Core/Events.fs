@@ -8,7 +8,7 @@ open Normio.Core
 module Events =
     [<JsonFSharpConverter(unionEncoding = (JsonUnionEncoding.ExternalTag ||| JsonUnionEncoding.NamedFields))>]
     type Event =
-        | ExamOpened of examId:Guid * title:ExamTitle40
+        | ExamOpened of examId:Guid * title:ExamTitle40 * startTime:DateTime * duration: TimeSpan
         | ExamStarted of examId:Guid
         | ExamEnded of examId:Guid
         | ExamClosed of examId:Guid

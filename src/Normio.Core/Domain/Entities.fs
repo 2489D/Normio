@@ -177,9 +177,9 @@ module Entities =
         [<JsonPropertyName("createdDateTime")>]
         CreatedDateTime: DateTime
         [<JsonPropertyName("startDateTime")>]
-        StartDateTime: DateTime option
+        StartDateTime: DateTime
         [<JsonPropertyName("duration")>]
-        Duration: TimeSpan option
+        Duration: TimeSpan
     } with
         override this.Equals(other) =
             match other with
@@ -188,7 +188,7 @@ module Entities =
         override this.GetHashCode() =
             hash this.Id
 
-        static member Initial id title =
+        static member Initial id title startTime duration =
             { Id = id
               Title = title
               Questions = []
@@ -197,5 +197,5 @@ module Entities =
               Students = Map.empty
               Hosts = Map.empty
               CreatedDateTime = DateTime.Now
-              StartDateTime = None
-              Duration = None }
+              StartDateTime = startTime
+              Duration = duration }

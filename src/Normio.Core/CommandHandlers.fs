@@ -4,9 +4,9 @@ open Normio.Core
 open Normio.Core.Commands
 open Normio.Core.States
 
-let handleOpenExam id title = function
+let handleOpenExam id title startTime duration = function
     | ExamIsClose None ->
-        [ExamOpened (id, title)] |> Ok
+        [ExamOpened (id, title, startTime, duration)] |> Ok
     | _ -> ExamAlreadyOpened |> Error
 
 let handleStartExam = function
@@ -140,7 +140,7 @@ let handleChangeTitle title = function
 
 /// Produces a list of event results as a consequence of a command into a state
 let execute state = function
-    | OpenExam (id, title) -> handleOpenExam id title state
+    | OpenExam (id, title, startTime, duration) -> handleOpenExam id title startTime duration state
     | StartExam _ -> handleStartExam state
     | EndExam _ -> handleEndExam state
     | CloseExam _ -> handleCloseExam state

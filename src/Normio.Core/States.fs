@@ -33,8 +33,8 @@ Now, this function is breaking the
 **)
 let apply state event =
     match state, event with
-    | ExamIsClose None, ExamOpened (id, title) ->
-        ExamIsWaiting (Exam.Initial id title)
+    | ExamIsClose None, ExamOpened (id, title, startTime, duration) ->
+        ExamIsWaiting (Exam.Initial id title startTime duration)
 
     | ExamIsWaiting exam, StudentEntered (_, student) ->
         { exam with Students = Map.add student.Id student exam.Students }
