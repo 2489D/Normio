@@ -7,22 +7,22 @@ module CommandErrors =
         | ExamAlreadyOpened
         | ExamAlreadyStarted
         | ExamAlreadyEnded
-        
+
         | ExamNotOpened
         | ExamNotStarted
         | ExamNotEnded
-        
+
         // Errors: empty fields
         | NoQuestions
         | NoStudents
         | NoHosts
-        
+
         | CannotFindSender
         | CannotFindReceiver
         | CannotFindStudent
         | CannotFindHost
         | CannotFindQuestion
-        
+
         | SubmissionDuplicated
         | QuestionDuplicated
         | IDNotMatched of ctx:string
