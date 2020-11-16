@@ -12,6 +12,8 @@ module OpenExam =
         {
             [<JsonPropertyName("title")>]
             Title : string
+            [<JsonPropertyName("startDateTime")>]
+            StartDateTime : DateTime option
         }
 
     let validateOpenExam req = async {
