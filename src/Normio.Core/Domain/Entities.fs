@@ -19,7 +19,7 @@ module Entities =
             | _ -> false
         override this.GetHashCode() =
             hash this.Id
-        
+
     [<CustomEquality; NoComparison>]
     [<JsonFSharpConverter>]
     type Host = {
@@ -87,21 +87,21 @@ module Entities =
                 | MessageFromHostToStudents msg -> msg.ExamId
                 | MessageFromHostToHosts msg -> msg.ExamId
                 | Notice msg -> msg.ExamId
-            
+
             member this.Sender =
                 match this with
                 | MessageFromStudentToHost msg -> msg.SenderStudent
                 | MessageFromHostToStudents msg -> msg.SenderHost
                 | MessageFromHostToHosts msg -> msg.SenderHost
                 | Notice msg -> msg.SenderHost
-            
+
             member this.Content =
                 match this with
                 | MessageFromStudentToHost msg -> msg.Content
                 | MessageFromHostToStudents msg -> msg.Content
                 | MessageFromHostToHosts msg -> msg.Content
                 | Notice msg -> msg.Content
-            
+
             override this.Equals(other) =
                 match other with
                 | :? Message as otherMsg -> 
@@ -111,7 +111,7 @@ module Entities =
                     | MessageFromHostToHosts msg -> msg.Id = otherMsg.Id
                     | Notice msg -> msg.Id = otherMsg.Id
                 | _ -> false
-            
+
             override this.GetHashCode() =
                 hash this.Id
 
@@ -191,7 +191,7 @@ module Entities =
             | _ -> false
         override this.GetHashCode() =
             hash this.Id
-        
+
         static member Initial id title =
             { Id = id
               Title = title
@@ -203,5 +203,3 @@ module Entities =
               CreatedDateTime = DateTime.Now
               StartDateTime = None
               Duration = None }
-            
-            
