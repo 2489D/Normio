@@ -74,6 +74,7 @@ let handleCreateSubmission (submission: Submission) = function
         | _, true, _ -> IDNotMatched "The exam id of the submission is different from the exam id provided" |> Error
         | _, _, true -> IDNotMatched "The exam does not have the student id of the submission" |> Error
         | _ -> [SubmissionCreated (exam.Id, submission)] |> Ok
+    | ExamIsFinished _ -> ExamAlreadyEnded |> Error
     | _ -> ExamNotStarted |> Error
 
 let handleCreateQuestion (question: Question) = function
