@@ -94,7 +94,7 @@ module Entities =
                 | MessageFromHostToStudents msg -> msg.SenderHost
                 | MessageFromHostToHosts msg -> msg.SenderHost
                 | Notice msg -> msg.SenderHost
-
+            
             member this.Content =
                 match this with
                 | MessageFromStudentToHost msg -> msg.Content

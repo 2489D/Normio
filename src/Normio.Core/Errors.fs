@@ -18,6 +18,7 @@ module CommandErrors =
         | NoHosts
         
         | CannotFindSender
+        | CannotFindReceiver
         | CannotFindStudent
         | CannotFindHost
         | CannotFindQuestion
@@ -37,6 +38,8 @@ module CommandErrors =
             | NoQuestions -> "The exam has no questions"
             | NoStudents -> "The exam has no students"
             | NoHosts -> "The exam has no hosts"
+            | CannotFindSender -> "The exam does not have the sender"
+            | CannotFindReceiver -> "The exam does not have the receiver"
             | CannotFindStudent -> "The exam does not have the student"
             | CannotFindHost -> "The exam does not have the host"
             | CannotFindQuestion -> "The exam does not have the question"

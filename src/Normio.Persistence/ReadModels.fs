@@ -29,6 +29,18 @@ type ExamReadModel = {
     Submissions: Submission seq
     [<JsonPropertyName("hosts")>]
     Hosts: Host seq
+    [<JsonPropertyName("messages")>]
+    Messages: Message seq
     [<JsonPropertyName("students")>]
     Students: Student seq
-}
+} with
+    static member Initial examId title =
+        { Id = examId
+          ExamId = examId
+          Status = BeforeExam
+          Title = title
+          Students = Seq.empty
+          Hosts = Seq.empty
+          Questions = Seq.empty
+          Messages = Seq.empty
+          Submissions = Seq.empty }

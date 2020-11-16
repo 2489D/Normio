@@ -101,13 +101,32 @@ let handleSendMessage (message: Message) = function
     | ExamIsWaiting exam
     | ExamIsRunning exam
     | ExamIsFinished exam ->
-        let doesExamHaveSender =
+        let doesNotExamHaveSender =
             exam.Students |> Map.containsKey message.Sender
             || exam.Hosts |> Map.containsKey message.Sender
+            |> not
+        let doesNotExamHaveReceiver =
+            match message with
+            | MessageFromStudentToHost msg ->
+                exam.Hosts |> Map.containsKey msg.ReceiverHost
+            | MessageFromHostToStudents msg ->
+                let mutable invalid = false
+                for studentId in msg.ReceiverStudents do
+                    if exam.Students |> Map.containsKey studentId |> not
+                    then invalid <- true
+                invalid
+            | MessageFromHostToHosts msg ->
+                let mutable invalid = false
+                for hostId in msg.ReceiverHosts do
+                    if exam.Hosts |> Map.containsKey hostId |> not
+                    then invalid <- true
+                invalid
+            | Notice _ -> false // Notice does not have context related to the receivers. It's always valid.
         let areIDsDifferent = exam.Id <> message.ExamId
-        match (doesExamHaveSender, areIDsDifferent) with
-        | true, _ -> Error <| CannotFindSender
-        | _, true -> Error <| IDNotMatched "The exam id of the message if different from the exam id provided"
+        match (doesNotExamHaveSender, doesNotExamHaveReceiver, areIDsDifferent) with
+        | true, _, _ -> Error <| CannotFindSender
+        |  _, true, _ -> Error <| CannotFindReceiver
+        | _, _, true -> Error <| IDNotMatched "The exam id of the message if different from the exam id provided"
         | _ -> [MessageSent (exam.Id, message)] |> Ok
     | ExamIsClose _ -> ExamNotOpened |> Error
 

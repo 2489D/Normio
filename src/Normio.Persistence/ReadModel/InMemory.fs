@@ -11,16 +11,7 @@ type private InMemoryExamsReadModel() =
 
     let openExam examId title =
         async {
-            let exam = {
-                Id = examId
-                ExamId = examId
-                Status = BeforeExam
-                Title = title
-                Students = Seq.empty
-                Hosts = Seq.empty
-                Questions = Seq.empty
-                Submissions = Seq.empty
-            }
+            let exam = ExamReadModel.Initial examId title
             exams.Add(examId, exam)
         }
 
@@ -103,6 +94,12 @@ type private InMemoryExamsReadModel() =
             exams.[examId] <- { exam with Questions = exam.Questions |> Seq.filter (fun question -> question.Id <> questionId)}
         }
 
+    let sendMessage examId message =
+        async {
+            let exam = exams.[examId]
+            exams.[examId] <- { exam with Messages = seq { yield message; yield! exam.Messages }}
+        }
+
     let changeTitle examId title =
         async {
             let exam = exams.[examId]
@@ -128,6 +125,7 @@ type private InMemoryExamsReadModel() =
         member this.CreateSubmission examId submission = createSubmission examId submission
         member this.CreateQuestion examId question = createQuestion examId question
         member this.DeleteQuestion examId questionId = deleteQuestion examId questionId
+        member this.SendMessage examId message = sendMessage examId message
         member this.ChangeTitle examId title = changeTitle examId title
 
 let private inMemoryExamsReadModelInstance = InMemoryExamsReadModel()

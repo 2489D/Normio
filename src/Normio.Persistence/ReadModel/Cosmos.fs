@@ -33,16 +33,7 @@ let private getExam connString (examId: Guid) =
     }
 
 let private openExam connString examId title = async {
-    let exam =
-        { Id = examId
-          ExamId = examId
-          Status = BeforeExam
-          Title = title
-          Questions = Array.empty
-          Submissions = Array.empty
-          Students = Array.empty
-          Hosts = Array.empty }
-    
+    let exam = ExamReadModel.Initial examId title
     try
         do! getConn connString
             |> Cosmos.insert exam
@@ -129,6 +120,15 @@ let private deleteQuestion connString examId questionId = async {
         |> AsyncSeq.iter ignore
 }
 
+let private sendMessage connString examId message =
+    async {
+        let key = string examId
+        do! getConn connString
+            |> Cosmos.update key key (fun (exam: ExamReadModel) -> { exam with Messages = seq { yield message; yield! exam.Messages }})
+            |> Cosmos.execAsync
+            |> AsyncSeq.iter ignore
+    }
+
 let private changeTitle connString examId title = async {
     let key = string examId
     do! getConn connString
@@ -151,6 +151,7 @@ let examActions connString =
         member this.CreateSubmission examId submission = createSubmission connString examId submission
         member this.CreateQuestion examId questionId = createQuestion connString examId questionId
         member this.DeleteQuestion examId questionId = deleteQuestion connString examId questionId
+        member this.SendMessage examId message = sendMessage connString examId message
         member this.ChangeTitle examId title = changeTitle connString examId title }
 
 let examQueries connString = {

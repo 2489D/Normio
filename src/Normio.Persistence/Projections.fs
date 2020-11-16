@@ -15,6 +15,7 @@ type IExamAction =
     abstract CreateSubmission: examId:Guid -> submission:Submission -> Async<unit>
     abstract CreateQuestion: examId:Guid -> question:Question -> Async<unit>
     abstract DeleteQuestion: examId:Guid -> questionId:Guid -> Async<unit>
+    abstract SendMessage: examId:Guid -> message:Message -> Async<unit>
     abstract ChangeTitle: examId:Guid -> title:ExamTitle40 -> Async<unit>
 
 
@@ -45,5 +46,7 @@ let projectReadModel actions = function
     [actions.Exam.CreateQuestion examId question] |> Async.Parallel
 | QuestionDeleted (examId, questionId) ->
     [actions.Exam.DeleteQuestion examId questionId] |> Async.Parallel
+| MessageSent (examId, message) ->
+    [actions.Exam.SendMessage examId message] |> Async.Parallel
 | TitleChanged (examId, title) ->
     [actions.Exam.ChangeTitle examId title] |> Async.Parallel

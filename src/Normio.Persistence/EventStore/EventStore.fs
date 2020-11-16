@@ -18,6 +18,7 @@ module Helper =
         | SubmissionCreated (id, _) -> id
         | QuestionCreated (id, _) -> id
         | QuestionDeleted (id, _) -> id
+        | MessageSent (id, _) -> id
         | TitleChanged (id, _) -> id
 
 type IEventStore =
