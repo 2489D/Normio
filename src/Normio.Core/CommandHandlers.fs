@@ -97,10 +97,18 @@ let handleDeleteQuestion questionId = function
     | ExamIsClose _ -> ExamNotOpened |> Error
     | _ -> ExamAlreadyStarted |> Error
 
-let handleSendMessage message = function
+let handleSendMessage (message: Message) = function
     | ExamIsWaiting exam
     | ExamIsRunning exam
-    | ExamIsFinished exam -> [MessageSent (exam.Id, message)] |> Ok
+    | ExamIsFinished exam ->
+        let doesExamHaveSender =
+            exam.Students |> Map.containsKey message.Sender
+            || exam.Hosts |> Map.containsKey message.Sender
+        let areIDsDifferent = exam.Id <> message.ExamId
+        match (doesExamHaveSender, areIDsDifferent) with
+        | true, _ -> Error <| CannotFindSender
+        | _, true -> Error <| IDNotMatched "The exam id of the message if different from the exam id provided"
+        | _ -> [MessageSent (exam.Id, message)] |> Ok
     | ExamIsClose _ -> ExamNotOpened |> Error
 
 let handleChangeTitle title = function

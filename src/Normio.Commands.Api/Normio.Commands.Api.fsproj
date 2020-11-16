@@ -20,6 +20,7 @@
     <Compile Include="CreateSubmission.fs" />
     <Compile Include="CreateQuestion.fs" />
     <Compile Include="DeleteQuestion.fs" />
+    <Compile Include="SendMessage.fs" />
     <Compile Include="ChangeTitle.fs" />
     <Compile Include="CommandApi.fs" />
   </ItemGroup>

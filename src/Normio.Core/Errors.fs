@@ -3,6 +3,7 @@ namespace Normio.Core
 [<AutoOpen>]
 module CommandErrors =
     type CommandError =
+        // State related errors
         | ExamAlreadyOpened
         | ExamAlreadyStarted
         | ExamAlreadyEnded
@@ -11,10 +12,12 @@ module CommandErrors =
         | ExamNotStarted
         | ExamNotEnded
         
+        // Errors: empty fields
         | NoQuestions
         | NoStudents
         | NoHosts
         
+        | CannotFindSender
         | CannotFindStudent
         | CannotFindHost
         | CannotFindQuestion

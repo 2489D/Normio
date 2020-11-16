@@ -101,7 +101,7 @@ module Entities =
                 | MessageFromHostToStudents msg -> msg.Content
                 | MessageFromHostToHosts msg -> msg.Content
                 | Notice msg -> msg.Content
-
+            
             override this.Equals(other) =
                 match other with
                 | :? Message as otherMsg -> 
