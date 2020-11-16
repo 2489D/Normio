@@ -63,6 +63,12 @@ let apply state event =
     | ExamIsWaiting exam, ExamStarted _ ->
         ExamIsRunning exam
 
+    | ExamIsRunning exam, HostEntered (_, host) ->
+        { exam with Hosts = Map.add host.Id host exam.Hosts }
+        |> ExamIsRunning
+    | ExamIsRunning exam, HostLeft (_, hostId) ->
+        { exam with Hosts = Map.remove hostId exam.Hosts }
+        |> ExamIsRunning
     | ExamIsRunning exam, SubmissionCreated (_, submission) ->
         { exam with Submissions = submission :: exam.Submissions }
         |> ExamIsRunning
@@ -71,7 +77,16 @@ let apply state event =
         |> ExamIsRunning
     | ExamIsRunning exam, ExamEnded _ ->
         ExamIsFinished exam
-    
+
+    | ExamIsFinished exam, StudentLeft (_, studentId) ->
+        { exam with Students = Map.remove studentId exam.Students }
+        |> ExamIsFinished
+    | ExamIsFinished exam, HostEntered (_, host) ->
+        { exam with Hosts = Map.add host.Id host exam.Hosts }
+        |> ExamIsFinished
+    | ExamIsFinished exam, HostLeft (_, hostId) ->
+        { exam with Hosts = Map.remove hostId exam.Hosts }
+        |> ExamIsFinished
     | ExamIsFinished exam, MessageSent (_, message) ->
         { exam with Messages = message :: exam.Messages }
         |> ExamIsFinished
