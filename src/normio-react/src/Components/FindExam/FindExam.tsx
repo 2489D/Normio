@@ -3,6 +3,7 @@ import ExamInfo from '../ExamInfo/ExamInfo';
 import {useForm} from "react-hook-form";
 import axios from 'axios';
 import {config} from "../../config/development";
+import NormioApi from "../../API";
 
 type FindExamResult = "initial" | "ok" | "bad_request" | "not_found"
 
@@ -13,11 +14,7 @@ const FindExam: React.FC = props => {
     const onSubmit = useCallback(async (data, e) => {
         e.preventDefault()
         try {
-            const response = await axios.get(config.backendUrl + '/exam', {
-                params: {
-                    examId: data.examId,
-                }
-            })
+            const response = await NormioApi.getExam(data.examId)
             setFindResult("ok")
             setExam(response.data)
         } catch (error) {
@@ -48,11 +45,11 @@ const FindExam: React.FC = props => {
     const Centered:React.FC = props => {
         return (
             <div className={"row my-2"}>
-                <div className="col-1 col-xs-2 col-md-3"></div>
+                <div className="col-1 col-xs-2 col-md-3" />
                 <div className="col-10 col-xs-8 col-md-6">
                     {props.children}
                 </div>
-                <div className="col-1 col-xs-2 col-md-3"></div>
+                <div className="col-1 col-xs-2 col-md-3" />
             </div>
         )
     }

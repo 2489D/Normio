@@ -2,6 +2,7 @@ import React, {useCallback, useState} from "react";
 import {useForm} from "react-hook-form";
 import axios from 'axios';
 import {config} from "../../config/development";
+import NormioApi from "../../API";
 
 type CreateExamCardProps = {
     hostId?: string,
@@ -12,12 +13,9 @@ const CreateExamCard: React.FC<CreateExamCardProps> = ({ hostId, handleSubmitCre
     const [created, setCreated] = useState(false)
     const { register, handleSubmit } = useForm()
  
+    // FIXME: error handling
     const onSubmit = useCallback(async data => {
-        console.debug(data)
-        const response = await axios.post(config.backendUrl + "/api/openExam", {
-            title: data.title
-        })
-        console.debug(response)
+        const response = await NormioApi.openExam(data.title, data.startDateTime)
         setCreated(true)
         handleSubmitCreateExam()
     }, [setCreated])
