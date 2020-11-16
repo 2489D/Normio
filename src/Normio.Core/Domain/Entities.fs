@@ -103,13 +103,9 @@ module Entities =
                 | Notice msg -> msg.Content
 
             override this.Equals(other) =
+                // do not need to check the type of messages
                 match other with
-                | :? Message as otherMsg -> 
-                    match this with
-                    | MessageFromStudentToHost msg -> msg.Id = otherMsg.Id
-                    | MessageFromHostToStudents msg -> msg.Id = otherMsg.Id
-                    | MessageFromHostToHosts msg -> msg.Id = otherMsg.Id
-                    | Notice msg -> msg.Id = otherMsg.Id
+                | :? Message as otherMsg -> this.Id = otherMsg.Id
                 | _ -> false
 
             override this.GetHashCode() =
