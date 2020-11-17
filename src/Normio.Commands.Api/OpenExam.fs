@@ -15,19 +15,20 @@ module OpenExam =
             // TODO : json
             [<JsonPropertyName("startDateTime")>]
             StartDateTime : DateTime
-            [<JsonPropertyName("duration")>]
-            Duration : TimeSpan
+            [<JsonPropertyName("durationMins")>]
+            DurationMins : float
         }
 
     let validateOpenExam req = async {
         let titleRes = req.Title |> ExamTitle40.create
         let isStartTimePast = req.StartDateTime <= DateTime.UtcNow
-        let isDurationNegative = req.Duration <= TimeSpan ()
+        let duration = TimeSpan.FromMinutes req.DurationMins
+        let isDurationNegative = duration <= TimeSpan.Zero
         match (titleRes, isStartTimePast, isDurationNegative) with
         | (Error err, _, _) -> return Error (err.ToString())
         | (_, true, _) -> return Error "The start time is past"
         | (_, _, true) -> return Error "The duration is not positive"
-        | (Ok title, _, _) -> return Ok (title, req.StartDateTime, req.Duration)
+        | (Ok title, _, _) -> return Ok (title, req.StartDateTime, duration)
     }
 
     let toOpenExamCommand (title, startTime, duration) =
