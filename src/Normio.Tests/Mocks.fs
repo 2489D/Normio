@@ -15,6 +15,9 @@ let validName =
     | Ok name -> name
     | Error _ -> failwith "this should be valid name"
 
+let validStartTime = DateTime.MaxValue
+let validDuration = TimeSpan.MaxValue
+
 let aStudent: Student =
     { Id = newGuid ()
       Name = validName }

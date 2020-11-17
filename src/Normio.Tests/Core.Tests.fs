@@ -24,13 +24,13 @@ let result = ResultBuilder()
 [<Fact>]
 let ``ExamIsClose -> OpenExam -> ExamIsWaiting`` () =
     given (ExamIsClose None)
-    |> applied (OpenExam(newGuid(), validTitle))
+    |> applied (OpenExam(newGuid(), validTitle, validStartTime, validDuration))
     |> thenShouldBeOk
 
 let createWaitingExam () =
     let testId = newGuid ()
     let exam =
-        Exam.Initial testId validTitle
+        Exam.Initial testId validTitle validStartTime validDuration
         |> ExamIsWaiting
     (exam, testId)
     
@@ -38,7 +38,7 @@ let createWaitingExam () =
 let ``ExamIsWaiting without a question can not start`` () =
     let testId = newGuid ()
     let waitingExam =
-        ExamIsWaiting (Exam.Initial testId validTitle)
+        ExamIsWaiting (Exam.Initial testId validTitle validStartTime validDuration)
     given waitingExam
     |> applied (StartExam testId)
     |> thenShouldBeError
@@ -47,7 +47,7 @@ let ``ExamIsWaiting without a question can not start`` () =
 let ``ExamIsWaiting without a student can not start`` () =
     let testId = newGuid ()
     let waitingExam =
-        ExamIsWaiting (Exam.Initial testId validTitle)
+        ExamIsWaiting (Exam.Initial testId validTitle validStartTime validDuration)
     given waitingExam
     |> applied (StartExam testId)
     |> thenShouldBeError
@@ -56,7 +56,7 @@ let ``ExamIsWaiting without a student can not start`` () =
 let ``ExamIsWaiting without a host can not start`` () =
     let testId = newGuid ()
     let waitingExam =
-        ExamIsWaiting (Exam.Initial testId validTitle)
+        ExamIsWaiting (Exam.Initial testId validTitle validStartTime validDuration)
     given waitingExam
     |> applied (StartExam testId)
     |> thenShouldBeError
