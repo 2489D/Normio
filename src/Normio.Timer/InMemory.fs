@@ -3,11 +3,12 @@
 open System
 open System.Runtime.Serialization
 open FSharpx.Collections
+open Normio.Core.Commands
 
 [<AutoOpen>]
 [<KnownType("timer")>]
 module InMemory =
-    type private InMemoryTimer(millisec) =
+    type private InMemoryTimer(millisec, postCommand: Command -> Async<unit>) =
         let minHeap = false
         let mutable timerStore: Heap<TimerData> = Heap.empty minHeap
 
@@ -18,12 +19,14 @@ module InMemory =
                 match ts with
                 | Heap.Cons(h, t) ->
                     if h.Time <= e.SignalTime then
-                        loop t (h.Task :: tl)
+                        loop t (h.TaskCommand :: tl)
                     else (ts, tl)
                 | Heap.Nil -> (ts, tl)
+
             let newTs, taskList = loop timerStore List.Empty
             timerStore <- newTs
             taskList
+            |> List.map postCommand
             |> Async.Parallel
             |> Async.Ignore
             |> Async.StartImmediate
@@ -32,59 +35,45 @@ module InMemory =
         do checker.AutoReset <- true
         do checker.Start()
 
+        let validateTime time =
+            if time < DateTime.Now
+            then failwithf "The given time is in the past: %A" time
+
+        let setTimer timerData =
+            timerStore <- timerStore |> Heap.insert timerData
+
+        let deleteTimer timerData =
+            let rec loop ts ns =
+                match ts with
+                | Heap.Cons(h, t) ->
+                    if h = timerData
+                    then ns |> Heap.merge t
+                    else loop t (ns |> Heap.insert h)
+                | Heap.Nil -> Heap.empty minHeap
+            timerStore <- loop timerStore (Heap.empty minHeap)
+
         interface ITimer with
             member _.Dispose() =
                 checker.Dispose()
-                // printfn "dispose test"
 
-            member _.SetTimer time task =
-                if time < DateTime.Now
-                then failwithf "The given time is in the past: %A" time
-                else async {
-                    let id = Guid.NewGuid()
-                    let td =
-                        { Id = id
-                          Time = time
-                          Task = task }
-                    timerStore <- timerStore |> Heap.insert td
-                    return id
-                }
+            member _.SetTimer timerData =
+                validateTime timerData.Time
+                async { setTimer timerData }
 
-            member _.TryGetTimer id =
-                timerStore
-                |> Heap.toSeq
-                |> Seq.tryFind (fun td -> td.Id = id)
-                |> async.Return
+            member _.GetAllTimers = async {
+                return timerStore |> Heap.toSeq
+            }
 
-            member _.GetAllTimers =
-                timerStore
-                |> Heap.toSeq
-                |> async.Return
+            member _.DeleteTimer timerData = async {
+                deleteTimer timerData
+            }
 
-            // FIXME : is this the best way?
-            member _.DeleteTimer id =
-                let rec loop ts ns =
-                    match ts with
-                    | Heap.Cons(h, t) ->
-                        if h.Id = id
-                        then ns |> Heap.merge t
-                        else loop t (ns |> Heap.insert h)
-                    | Heap.Nil -> Heap.empty minHeap
+            member _.UpdateTimer prev newData =
+                validateTime newData.Time
                 async {
-                    timerStore <- loop timerStore (Heap.empty minHeap)
+                    deleteTimer prev
+                    setTimer newData
                 }
 
-            // FIXME : is this the best way?
-            member _.UpdateTimer id time =
-                let rec loop ts ns =
-                    match ts with
-                    | Heap.Cons(h, t) ->
-                        if h.Id = id
-                        then ns |> Heap.insert { h with Time = time } |> Heap.merge t
-                        else loop t (ns |> Heap.insert h)
-                    | Heap.Nil -> Heap.empty minHeap
-                async {
-                    timerStore <- loop timerStore (Heap.empty minHeap)
-                }
-
-    let createInMemoryTimer millisec = (new InMemoryTimer(millisec)) :> ITimer
+    let createInMemoryTimer millisec postCommand =
+        new InMemoryTimer(millisec, postCommand) :> ITimer
