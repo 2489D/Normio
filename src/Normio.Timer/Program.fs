@@ -10,6 +10,8 @@ open Suave.Filters
 open Suave.Operators
 open Suave.Successful
 
+// TODO
+(*
 let postStartExamCommand (examId: Guid) =
     async {
         let backendUrl = "https://localhost:5001/"
@@ -52,3 +54,4 @@ let main argv =
     printfn "InMemoryTimer is running... ticking every %A milliseconds" (float argv.[0])
     startWebServer defaultConfig (app inMemoryTimer)
     0
+*)
