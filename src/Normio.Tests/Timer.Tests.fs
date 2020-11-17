@@ -4,6 +4,7 @@ open System
 open Xunit
 open FsUnit.Xunit
 
+open Normio.Core.Commands
 open Normio.Timer
 
 /// Timer Functionality
@@ -18,15 +19,13 @@ open Normio.Timer
 [<Fact>]
 let ``timer data should be compared correctly`` () =
     let timerData1 = {
-        Id = Guid.NewGuid()
         Time = DateTime.Now.AddSeconds(float 10)
-        Task = () |> async.Return
+        TaskCommand = StartExam(Guid.NewGuid())
     }
 
     let timerData2 = {
-        Id = Guid.NewGuid()
         Time = DateTime.Now.AddSeconds(float 20)
-        Task = () |> async.Return
+        TaskCommand = StartExam(Guid.NewGuid())
     }
 
     timerData1 = timerData2 |> should equal false
@@ -36,77 +35,111 @@ let ``timer data should be compared correctly`` () =
 
 [<Fact>]
 let ``timer should be created`` () =
-    // check tasks every 1 second
-    use inMemoryTimer = createInMemoryTimer (float 1000)
-    let task = async {
+    let postCommand _ = async {
         failwith "this should not be executed"
+    }
+    // check tasks every 1 second
+    use inMemoryTimer = createInMemoryTimer (float 1000) postCommand
+
+    let timerData = {
+        Time = DateTime.Now.AddSeconds(float 3)
+        TaskCommand = StartExam(Guid.NewGuid())
     }
 
     try
-        inMemoryTimer.SetTimer (DateTime.Now.AddSeconds(float 3)) task |> Async.RunSynchronously |> ignore
+        inMemoryTimer.SetTimer timerData |> Async.RunSynchronously
     with
     | _ ->
         failwith "This should not fail"
 
 [<Fact>]
 let ``timer should not be created`` () =
-    // check tasks every 1 second
-    use inMemoryTimer = createInMemoryTimer (float 1000)
-    let task = async {
+    let postCommand _ = async {
         failwith "this should not be executed"
     }
+    // check tasks every 1 second
+    use inMemoryTimer = createInMemoryTimer (float 1000) postCommand
 
     let past_3sec = DateTime.Now.AddSeconds(float -3)
 
-    (fun () -> inMemoryTimer.SetTimer past_3sec task |> Async.RunSynchronously |> ignore)
+    let timerData = {
+        Time = past_3sec
+        TaskCommand = StartExam(Guid.NewGuid())
+    }
+
+    fun () -> inMemoryTimer.SetTimer timerData |> Async.RunSynchronously
     |> should (throwWithMessage (sprintf "The given time is in the past: %A" past_3sec)) typeof<System.Exception>
 
 
 [<Fact>]
 let ``timer execute task 1`` () =
-    use inMemoryTimer = createInMemoryTimer (float 100)
-    let mutable result = 0
-    let task = async {
-        result <- 1
+    let mutable result: Command list = List.Empty
+    let postCommand command = async {
+        result <- command :: result
+    }
+    use inMemoryTimer = createInMemoryTimer (float 100) postCommand
+
+    let examId = Guid.NewGuid()
+    let timerData = {
+        Time = DateTime.Now.AddMilliseconds(float 300)
+        TaskCommand = StartExam examId
     }
 
-    inMemoryTimer.SetTimer (DateTime.Now.AddMilliseconds(float 300)) task |> Async.RunSynchronously |> ignore
+    inMemoryTimer.SetTimer timerData |> Async.RunSynchronously
 
     Threading.Thread.Sleep(400)
-    result |> should equal 1
+    result |> should equal [StartExam examId]
 
 [<Fact>]
 let ``timer execute task 2`` () =
-    use inMemoryTimer = createInMemoryTimer (float 100)
-    let mutable result = 0
-    let task = async {
-        result <- 1
+    let mutable result: Command list = List.Empty
+    let postCommand command = async {
+        result <- command :: result
+    }
+    use inMemoryTimer = createInMemoryTimer (float 100) postCommand
+    
+    let examId = Guid.NewGuid()
+    let timerData = {
+        Time = DateTime.Now.AddMilliseconds(float 300)
+        TaskCommand = StartExam examId
     }
 
-    inMemoryTimer.SetTimer (DateTime.Now.AddMilliseconds(float 300)) task |> Async.RunSynchronously |> ignore
+    inMemoryTimer.SetTimer timerData |> Async.RunSynchronously |> ignore
 
     Threading.Thread.Sleep(100)
-    result |> should equal 0
+    result |> should be Empty
     Threading.Thread.Sleep(300)
-    result |> should equal 1
+    result |> should equal [StartExam examId]
 
 // some time fails
 [<Fact>]
 let ``timer execute task 3`` () =
     let interval = 100
-    use inMemoryTimer = createInMemoryTimer (float interval)
-    let mutable result = 0
-    let task amount = async {
-        result <- result + amount
+    let mutable result: Command list = List.Empty
+    let postCommand command = async {
+        result <- command :: result
+    }
+    use inMemoryTimer = createInMemoryTimer (float interval) postCommand
+
+    let examId1 = Guid.NewGuid()
+    let timerData1 = {
+        Time = DateTime.Now.AddMilliseconds(float 100)
+        TaskCommand = StartExam examId1
     }
 
-    inMemoryTimer.SetTimer (DateTime.Now.AddMilliseconds(float 100)) (task 1) |> Async.RunSynchronously |> ignore
-    inMemoryTimer.SetTimer (DateTime.Now.AddMilliseconds(float 200)) (task 100) |> Async.RunSynchronously |> ignore
+    let examId2 = Guid.NewGuid()
+    let timerData2 = {
+        Time = DateTime.Now.AddMilliseconds(float 200)
+        TaskCommand = StartExam examId2
+    }
+
+    inMemoryTimer.SetTimer timerData1 |> Async.RunSynchronously
+    inMemoryTimer.SetTimer timerData2 |> Async.RunSynchronously
 
     Threading.Thread.Sleep(interval + 100)
-    result |> should equal 1    // some time 0 (need to sleep longer?)
+    result |> should equal [StartExam examId1] // some time Empty (need to sleep longer?)
     Threading.Thread.Sleep(100)
-    result |> should equal 101
+    result |> should equal [StartExam examId2; StartExam examId1]
 
 // FIXME : concurrency problem
 // do we need MailboxProcessor in timer?
@@ -133,43 +166,26 @@ let ``timers should be set correctly even if more than one SetTimer called at th
 *)
 
 [<Fact>]
-let ``try get timer should get timer data`` () =
-    use inMemoryTimer = createInMemoryTimer (float 1000)
-
-    let time = DateTime.Now.AddSeconds(float 10)
-    let task = () |> async.Return
-    let timerId =
-        inMemoryTimer.SetTimer time task
-        |> Async.RunSynchronously
-
-    inMemoryTimer.TryGetTimer timerId
-    |> Async.RunSynchronously
-    |> should equal ({Id = timerId; Time = time; Task = task} |> Some)
-
-[<Fact>]
-let ``try get timer should return None`` () =
-    use inMemoryTimer = createInMemoryTimer (float 1000)
-
-    inMemoryTimer.TryGetTimer (Guid.NewGuid())
-    |> Async.RunSynchronously
-    |> should equal None
-
-[<Fact>]
 let ``get all timers should return correctly`` () =
-    use inMemoryTimer = createInMemoryTimer (float 1000)
+    let postCommand _ = () |> async.Return
+    use inMemoryTimer = createInMemoryTimer (float 1000) postCommand
 
-    let time1 = DateTime.Now.AddSeconds(float 10)
-    let task1 = () |> async.Return
-    let id1 = inMemoryTimer.SetTimer time1 task1 |> Async.RunSynchronously
+    let timerData1 = {
+        Time = DateTime.Now.AddMilliseconds(float 100)
+        TaskCommand = StartExam(Guid.NewGuid())
+    }
 
-    let time2 = DateTime.Now.AddSeconds(float 20)
-    let task2 = () |> async.Return
-    let id2 = inMemoryTimer.SetTimer time2 task2 |> Async.RunSynchronously
+    let timerData2 = {
+        Time = DateTime.Now.AddMilliseconds(float 100)
+        TaskCommand = StartExam(Guid.NewGuid())
+    }
+
+    inMemoryTimer.SetTimer timerData1 |> Async.RunSynchronously
+    inMemoryTimer.SetTimer timerData2 |> Async.RunSynchronously
 
     let expectedSeq = seq {
-        {Id = id1; Time = time1; Task = task1}
-        {Id = id2; Time = time2; Task = task2}
-    }
+        timerData1
+        timerData2 }
 
     inMemoryTimer.GetAllTimers
     |> Async.RunSynchronously
@@ -178,34 +194,44 @@ let ``get all timers should return correctly`` () =
 
 [<Fact>]
 let ``delete timer should delete timer`` () =
-    let task = async {
+    let postCommand _ = async {
         failwith "this should not be executed"
     }
-    use inMemoryTimer = createInMemoryTimer (float 100)
+    use inMemoryTimer = createInMemoryTimer (float 100) postCommand
 
-    let timerId =
-        inMemoryTimer.SetTimer (DateTime.Now.AddSeconds(float 1)) task
-        |> Async.RunSynchronously
+    let timerData = {
+        Time = DateTime.Now.AddMilliseconds(float 100)
+        TaskCommand = StartExam(Guid.NewGuid())
+    }
 
-    inMemoryTimer.DeleteTimer timerId
-    |> Async.RunSynchronously
+    inMemoryTimer.SetTimer timerData |> Async.RunSynchronously
+
+    inMemoryTimer.DeleteTimer timerData |> Async.RunSynchronously
 
     Threading.Thread.Sleep(2000);
 
 [<Fact>]
-let ``update timer should update time`` () =
-    use inMemoryTimer = createInMemoryTimer (float 100)
-    let mutable result = 0
-    let task = async {
-        result <- 1
+let ``update timer should update timer`` () =
+    let mutable result: Command list = List.Empty
+    let postCommand command = async {
+        result <- command :: result
+    }
+    use inMemoryTimer = createInMemoryTimer (float 100) postCommand
+
+    let examId = Guid.NewGuid()
+    let pastTimerData = {
+        Time = DateTime.MaxValue
+        TaskCommand = StartExam examId
     }
 
-    let timerId =
-        inMemoryTimer.SetTimer (DateTime.MaxValue) task
-        |> Async.RunSynchronously
+    let newTimerData = {
+        Time = DateTime.Now.AddMilliseconds(float 100)
+        TaskCommand = StartExam examId
+    }
 
-    inMemoryTimer.UpdateTimer timerId (DateTime.Now.AddSeconds(float 1))
-    |> Async.RunSynchronously
+    inMemoryTimer.SetTimer pastTimerData |> Async.RunSynchronously
 
-    Threading.Thread.Sleep(2000);
-    result |> should equal 1
+    inMemoryTimer.UpdateTimer pastTimerData newTimerData |> Async.RunSynchronously
+
+    Threading.Thread.Sleep(200);
+    result |> should equal [StartExam examId]
