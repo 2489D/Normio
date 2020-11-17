@@ -25,24 +25,30 @@ type InMemoryTimersReadModel internal (timerUri: string) =
             if timers |> Seq.map (fun t -> t.Command) |> Seq.contains command |> not
             then
                 // TODO: this is forget and fire
-                http {
-                    POST (timerUri + "/api/create")
-                    CacheControl "no-cache"
-                    body
-                    json (sprintf """{ "command" : %s, "time" : %s }""" (string command) (string time))
-                } |> ignore
+                try
+                    http {
+                        POST (timerUri + "/api/create")
+                        CacheControl "no-cache"
+                        body
+                        json (sprintf """{ "command" : %s, "time" : %s }""" (string command) (string time))
+                    } |> ignore
+                with
+                | _ -> () // TODO -> timer creation failed
                 do timers <- timer :: timers
         }
     
     let removeCommand (command: Command) =
         async {
             do timers <- timers |> List.filter (fun timer -> timer.Command <> command)
-            http {
-                POST (timerUri + "/api/delete")
-                CacheControl "no-cache"
-                body
-                json (sprintf """{ "command" : %s }""" (string command))
-            } |> ignore
+            try
+                http {
+                    POST (timerUri + "/api/delete")
+                    CacheControl "no-cache"
+                    body
+                    json (sprintf """{ "command" : %s }""" (string command))
+                } |> ignore
+            with
+            | _ -> ()
         }
     
     member _.GetCommandsById (id: Guid) =
