@@ -21,3 +21,23 @@ type Command =
     | SendMessage of examId: Guid * message:Message
 
     | ChangeTitle of examId:Guid * title:ExamTitle40
+    with
+        member this.ExamId =
+            match this with
+            | OpenExam (examId, _, _, _) -> examId
+            | StartExam examId -> examId
+            | EndExam examId -> examId
+            | CloseExam examId -> examId
+
+            | AddStudent (examId, _) -> examId
+            | RemoveStudent (examId, _) -> examId
+            | AddHost (examId, _) -> examId
+            | RemoveHost (examId, _) -> examId
+
+            | CreateSubmission (examId, _) -> examId
+            | CreateQuestion (examId, _) -> examId
+            | DeleteQuestion (examId, _) -> examId
+            
+            | SendMessage (examId, _) -> examId
+
+            | ChangeTitle (examId, _) -> examId

@@ -2,11 +2,59 @@ module Normio.Persistence.ReadModels.InMemory
 
 open System
 open System.Collections.Generic
+
+open FsHttp
+open FsHttp.DslCE
+
+open Normio.Core.Commands
 open Normio.Persistence.Projections
 open Normio.Persistence.Queries
 open Normio.Persistence.ReadModels
 
-type private InMemoryExamsReadModel() =
+// FIXME: let entry point configure this
+let timerServiceUri = "https://localhost:8083"
+
+type InMemoryTimersReadModel internal (timerUri: string) =
+    let mutable timers: TimerReadModel list = List.empty
+    
+    let registerCommand (command: Command) (time: DateTime) =
+        async {
+            let timer =
+                { Command = command
+                  Time = time }
+            if timers |> Seq.map (fun t -> t.Command) |> Seq.contains command |> not
+            then
+                // TODO: this is forget and fire
+                http {
+                    POST (timerUri + "/api/create")
+                    CacheControl "no-cache"
+                    body
+                    json (sprintf """{ "command" : %s, "time" : %s }""" (string command) (string time))
+                } |> ignore
+                do timers <- timer :: timers
+        }
+    
+    let removeCommand (command: Command) =
+        async {
+            do timers <- timers |> List.filter (fun timer -> timer.Command <> command)
+            http {
+                POST (timerUri + "/api/delete")
+                CacheControl "no-cache"
+                body
+                json (sprintf """{ "command" : %s }""" (string command))
+            } |> ignore
+        }
+    
+    member _.GetCommandsById (id: Guid) =
+        async {
+            return timers |> List.filter (fun timer -> timer.Command.ExamId = id)
+        }
+
+    interface ITimerAction with
+        member _.CreateTimer command time = registerCommand command time
+        member _.RemoveTimer command = removeCommand command
+
+type InMemoryExamsReadModel internal () =
     let exams = Dictionary<Guid, ExamReadModel>()
 
     let openExam examId title startTime duration =
@@ -129,8 +177,14 @@ type private InMemoryExamsReadModel() =
         member this.ChangeTitle examId title = changeTitle examId title
 
 let private inMemoryExamsReadModelInstance = InMemoryExamsReadModel()
+let private inMemoryTimersReadModelInstance = InMemoryTimersReadModel(timerServiceUri)
  
 let examActions = inMemoryExamsReadModelInstance :> IExamAction
+let timerActions = inMemoryTimersReadModelInstance :> ITimerAction
+
+let inMemoryTimerQueries = {
+    GetCommandsById = inMemoryTimersReadModelInstance.GetCommandsById
+}
 
 let inMemoryExamQueries = {
     GetExamByExamId = inMemoryExamsReadModelInstance.GetExam
@@ -138,8 +192,10 @@ let inMemoryExamQueries = {
 
 let inMemoryQueries = {
     Exam = inMemoryExamQueries
+    Timer = inMemoryTimerQueries
 }
 
 let inMemoryActions: ProjectionActions = {
     Exam = examActions
+    Timer = timerActions
 }

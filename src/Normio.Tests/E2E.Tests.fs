@@ -8,6 +8,7 @@ open Xunit
 open FsUnit
 open FsUnit.Xunit
 open FsHttp
+open FsHttp.DslCE
 
 let testUrl = "http://localhost:6546/"
 

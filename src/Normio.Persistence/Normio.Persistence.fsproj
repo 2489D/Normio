@@ -14,9 +14,7 @@
     <Compile Include="Queries.fs" />
     <Compile Include="EventStore\EventStore.fs" />
     <Compile Include="EventStore\InMemory.fs" />
-    <Compile Include="EventStore\Cosmos.fs" />
     <Compile Include="ReadModel\InMemory.fs" />
-    <Compile Include="ReadModel\Cosmos.fs" />
     <Compile Include="FileSave.fs" />
   </ItemGroup>
   <ItemGroup>
@@ -24,5 +22,6 @@
     <PackageReference Include="FSharp.Control.AsyncSeq" Version="3.0.2" />
     <PackageReference Include="FSharp.CosmosDb" Version="0.2.0" />
     <PackageReference Include="FSharp.SystemTextJson" Version="0.14.8" />
+    <PackageReference Include="SchlenkR.FsHttp" Version="4.0.3" />
   </ItemGroup>
 </Project>

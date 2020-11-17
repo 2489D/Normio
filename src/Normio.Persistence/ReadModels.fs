@@ -5,12 +5,17 @@ open System.Text.Json.Serialization
 open FSharp.CosmosDb
 
 open Normio.Core
+open Normio.Core.Commands
 
 [<JsonFSharpConverter(unionEncoding = JsonUnionEncoding.Untagged)>]
 type ExamStatus =
     | BeforeExam
     | DuringExam
     | AfterExam
+
+type TimerReadModel =
+    { Command: Command
+      Time: DateTime }
 
 // missing created date time (on purpose?)
 [<JsonFSharpConverter>]

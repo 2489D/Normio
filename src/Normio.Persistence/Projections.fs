@@ -2,6 +2,11 @@ module Normio.Persistence.Projections
 
 open System
 open Normio.Core
+open Normio.Core.Commands
+
+type ITimerAction =
+    abstract CreateTimer: command:Command -> time:DateTime -> Async<unit>
+    abstract RemoveTimer: command:Command -> Async<unit>
 
 type IExamAction =
     abstract OpenExam: examId:Guid -> title:ExamTitle40 -> startTime:DateTime -> duration:TimeSpan -> Async<unit>
@@ -21,15 +26,20 @@ type IExamAction =
 
 type ProjectionActions = {
     Exam: IExamAction
+    Timer: ITimerAction
 }
 
 let projectReadModel actions = function
 | ExamOpened (examId, title, startTime, duration) ->
-    [actions.Exam.OpenExam examId title startTime duration] |> Async.Parallel
+    [actions.Exam.OpenExam examId title startTime duration
+     actions.Timer.CreateTimer (StartExam(examId)) startTime
+     actions.Timer.CreateTimer (EndExam(examId)) (startTime + duration)] |> Async.Parallel
 | ExamStarted examId ->
-    [actions.Exam.StartExam examId] |> Async.Parallel
+    [actions.Exam.StartExam examId
+     actions.Timer.RemoveTimer <| StartExam(examId)] |> Async.Parallel
 | ExamEnded examId ->
-    [actions.Exam.EndExam examId] |> Async.Parallel
+    [actions.Exam.EndExam examId
+     actions.Timer.RemoveTimer <| EndExam(examId) ] |> Async.Parallel
 | ExamClosed examId ->
     [actions.Exam.CloseExam examId] |> Async.Parallel
 | StudentEntered (examId, student) ->

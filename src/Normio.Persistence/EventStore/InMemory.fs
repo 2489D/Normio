@@ -9,7 +9,7 @@ type InMemoryEventStore() =
     let mutable eventStore: Map<Guid, Event list> = Map.empty
 
     let storeWithNewEvent store event =
-        let examId = Helper.getExamIdFromEvent event
+        let examId = getExamIdFromEvent event
         match Map.tryFind examId store with
         | Some es -> Map.add examId (event :: es) store
         | None -> Map.add examId [event] store

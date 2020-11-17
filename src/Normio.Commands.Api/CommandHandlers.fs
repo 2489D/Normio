@@ -6,21 +6,6 @@ open Normio.Persistence.EventStore
 
 [<AutoOpen>]
 module CommandHandlers =
-    let getExamIdFromCommand = function
-    | OpenExam (examId, _, _, _) -> examId
-    | StartExam examId -> examId
-    | EndExam examId -> examId
-    | CloseExam examId -> examId
-    | AddStudent (examId, _) -> examId
-    | RemoveStudent (examId, _) -> examId
-    | AddHost (examId, _) -> examId
-    | RemoveHost (examId, _) -> examId
-    | CreateSubmission (examId, _) -> examId
-    | CreateQuestion (examId, _) -> examId
-    | DeleteQuestion (examId, _) -> examId
-    | SendMessage (examId, _) -> examId
-    | ChangeTitle (examId, _) -> examId
-
     type Commander<'TRaw, 'TValidated> = {
         Validate: 'TRaw -> Async<Result<'TValidated, string>>
         ToCommand: 'TValidated -> Command
@@ -35,7 +20,7 @@ module CommandHandlers =
         match validatedData with
         | Ok validatedCommandData ->
             let command = commander.ToCommand validatedCommandData
-            let! state = eventStore.GetState (getExamIdFromCommand command)
+            let! state = eventStore.GetState (command.ExamId)
             match evolve state command with
             | Ok (newState, events) ->
                 return (newState, events) |> Ok
