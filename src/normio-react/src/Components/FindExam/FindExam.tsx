@@ -1,32 +1,31 @@
-import React, {useCallback, useMemo, useState} from 'react'
+import React, {useCallback, useContext, useMemo, useState} from 'react'
 import ExamInfo from '../ExamInfo/ExamInfo';
 import {useForm} from "react-hook-form";
-import axios from 'axios';
-import {config} from "../../config/development";
 import NormioApi from "../../API";
+import {ExamContext} from "../../Context/ExamContext";
 
 type FindExamResult = "initial" | "ok" | "bad_request" | "not_found"
 
 const FindExam: React.FC = props => {
-    const [exam, setExam] = useState<any>(null)
+    const { exam, updateExam } = useContext(ExamContext);
     const [findResult, setFindResult] = useState<FindExamResult>("initial")
     const { register, handleSubmit } = useForm()
-    const onSubmit = useCallback(async (data, e) => {
-        e.preventDefault()
+
+    const onSubmit = useCallback(async ({ examId }) => {
         try {
-            const response = await NormioApi.getExam(data.examId)
+            const response = await NormioApi.getExam(examId)
             setFindResult("ok")
-            setExam(response.data)
+            updateExam(response.data)
         } catch (error) {
-            if (error.response.status === 400) {
+            if (error.response?.status === 400) {
                 setFindResult("bad_request")
             }
-            if (error.response.status === 404) {
+            if (error.response?.status === 404) {
                 setFindResult("not_found")
             }
         } finally {
         }
-    }, []);
+    }, [setFindResult, updateExam]);
     
     const interactiveBtn = useCallback(() => {
         switch (findResult) {
@@ -67,6 +66,7 @@ const FindExam: React.FC = props => {
                                         ref={register}
                                         className="form-control"
                                         type={"text"}
+                                        autoComplete={"off"}
                                         placeholder={"Exam Id"}
                                     />
                                 </div>
@@ -78,6 +78,7 @@ const FindExam: React.FC = props => {
                                         className="form-control"
                                         type={"password"}
                                         placeholder={"Exam Password"}
+                                        current-password
                                     />
                                 </div>
                                 <div className="form-group">

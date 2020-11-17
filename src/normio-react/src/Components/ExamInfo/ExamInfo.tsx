@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import {Link} from "react-router-dom";
+import {ExamReadModel} from "../../Context/ExamContext";
 
 type ExamInfoProps = {
-    exam : any
+    exam : ExamReadModel,
 }
 
 const ExamInfo: React.FC<ExamInfoProps> = ({ exam, ...props }) => {

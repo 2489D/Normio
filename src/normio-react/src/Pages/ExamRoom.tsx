@@ -1,23 +1,46 @@
-import React, {useCallback, useEffect, useState} from "react";
-import axios from 'axios';
+import React, {useCallback, useContext, useEffect, useState} from "react";
 import AttendanceCheck from "../Components/AttendanceCheck";
+import {ExamContext} from "../Context/ExamContext";
+import {Link} from "react-router-dom";
 
-const baseUrl = "http://localhost:6546/"
-
-const ExamRoom: React.FC = props => {
+const ExamRoom: React.FC = () => {
+    const { exam, updateExam } = useContext(ExamContext);
     const [checked, setChecked] = useState(false);
+    const [leftTime, setLeftTime] = useState(0);
+    
+    const formatTime = useCallback((seconds: number) => {
+        const hours = Math.trunc(seconds / 3600)
+        const minutes = Math.trunc((seconds - hours * 3600) / 60)
+        const secs = Math.trunc(seconds - hours * 3600 - minutes * 60)
+        return `${hours}시간 ${minutes}분 ${secs}초`
+    }, [])
     
     useEffect(() => {
-        axios.get("http://localhost:6546/exam", {
-            params: {
-                examId: "61b284e962-a988-f5e8d0258fa8"
-            }
-        }).then(res => console.log(res))
-    })
-
+        if (exam) {
+            const startTime =  Date.parse(exam.startDateTime) / 1000
+            const endTime = startTime + exam.durationMins * 60
+            const leftTime = Math.trunc(endTime - Date.now() / 1000)
+            setLeftTime(leftTime)
+            setInterval(() => {
+                const leftTime = Math.trunc(endTime - Date.now() / 1000)
+                setLeftTime(leftTime)
+            }, 1000)
+        }
+    }, [])
+    
     const handleCheck = useCallback(() => {
         setChecked(true)
     }, []);
+    
+    if (exam === null) {
+        return (
+            <div className={"container"}>
+                <Link to={"/"}>
+                    시험 로드 실패! 다시 입장해주세요.
+                </Link>
+            </div>
+        )
+    }
 
     return (
         <div className={"container"}>
@@ -36,7 +59,11 @@ const ExamRoom: React.FC = props => {
                     </div>
                     <div className={"row"}>
                         <div className={"col d-flex"}>
-                            <h2 className={"mx-auto my-2"}>시험이 아직 시작하지 않았습니다.</h2>
+                            <h2 className={"mx-auto my-2"}>
+                                { exam?.status.BeforeExam ?
+                                    "시험이 아직 시작하지 않았습니다." : null
+                                }
+                            </h2>
                         </div>
                     </div>
                     <div className={"row"}>
@@ -65,12 +92,16 @@ const ExamRoom: React.FC = props => {
             <React.Fragment>
                 <div className={"row"}>
                     <div className={"col d-flex"}>
-                        <h1 className={"mx-auto mt-3 mb-0"}>시험이 진행중입니다</h1>
+                        <h1 className={"mx-auto mt-3 mb-0"}>
+                            { exam?.status.BeforeExam ?
+                                "시험이 아직 시작하지 않았습니다." : null
+                            }
+                        </h1>
                     </div>
                 </div>
                 <div className={"row"}>
                     <div className={"col d-flex"}>
-                        <p className={"font-weight-light mx-auto my-3"}>1시간 12분 36초 뒤에 종료됩니다</p>
+                        <p className={"font-weight-light mx-auto my-3"}>{formatTime(leftTime)} 뒤에 종료됩니다</p>
                     </div>
                 </div>
                 <div className={"row"}>
