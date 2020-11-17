@@ -109,7 +109,7 @@ let ``timer execute task 2`` () =
     Threading.Thread.Sleep(100)
     result |> should be Empty
     Threading.Thread.Sleep(300)
-    result |> should equal [StartExam examId]
+    result |> should equal [StartExam examId] // some time Empty
 
 // some time fails
 [<Fact>]
