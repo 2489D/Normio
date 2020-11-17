@@ -9,9 +9,9 @@ open Normio.Persistence.ReadModels
 type private InMemoryExamsReadModel() =
     let exams = Dictionary<Guid, ExamReadModel>()
 
-    let openExam examId title =
+    let openExam examId title startTime duration =
         async {
-            let exam = ExamReadModel.Initial examId title
+            let exam = ExamReadModel.Initial examId title startTime duration
             exams.Add(examId, exam)
         }
 
@@ -114,7 +114,7 @@ type private InMemoryExamsReadModel() =
         }
     
     interface IExamAction with
-        member this.OpenExam examId title = openExam examId title
+        member this.OpenExam examId title startTime duration = openExam examId title startTime duration
         member this.StartExam examId = startExam examId
         member this.EndExam examId = endExam examId
         member this.CloseExam examId = closeExam examId

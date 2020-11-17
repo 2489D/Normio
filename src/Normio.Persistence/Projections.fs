@@ -4,7 +4,7 @@ open System
 open Normio.Core
 
 type IExamAction =
-    abstract OpenExam: examId:Guid -> title:ExamTitle40 -> Async<unit>
+    abstract OpenExam: examId:Guid -> title:ExamTitle40 -> startTime:DateTime -> duration:TimeSpan -> Async<unit>
     abstract StartExam: examId:Guid -> Async<unit>
     abstract EndExam: examId:Guid -> Async<unit>
     abstract CloseExam: examId:Guid -> Async<unit>
@@ -24,8 +24,8 @@ type ProjectionActions = {
 }
 
 let projectReadModel actions = function
-| ExamOpened (examId, title) ->
-    [actions.Exam.OpenExam examId title] |> Async.Parallel
+| ExamOpened (examId, title, startTime, duration) ->
+    [actions.Exam.OpenExam examId title startTime duration] |> Async.Parallel
 | ExamStarted examId ->
     [actions.Exam.StartExam examId] |> Async.Parallel
 | ExamEnded examId ->

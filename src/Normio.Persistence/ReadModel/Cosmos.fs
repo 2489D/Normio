@@ -32,8 +32,8 @@ let private getExam connString (examId: Guid) =
         | _ -> return None
     }
 
-let private openExam connString examId title = async {
-    let exam = ExamReadModel.Initial examId title
+let private openExam connString examId title startTime duration = async {
+    let exam = ExamReadModel.Initial examId title startTime duration
     try
         do! getConn connString
             |> Cosmos.insert exam
@@ -140,7 +140,7 @@ let private changeTitle connString examId title = async {
 
 let examActions connString =
     { new IExamAction with
-        member this.OpenExam examId title = openExam connString examId title
+        member this.OpenExam examId title startTime duration = openExam connString examId title startTime duration
         member this.StartExam examId = startExam connString examId
         member this.EndExam examId = endExam connString examId
         member this.CloseExam examId = closeExam connString examId

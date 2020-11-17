@@ -7,7 +7,7 @@ open Normio.Core.States
 [<AutoOpen>]
 module Helper =
     let getExamIdFromEvent = function
-        | ExamOpened (id, _) -> id
+        | ExamOpened (id, _, _, _) -> id
         | ExamStarted id -> id
         | ExamEnded id -> id
         | ExamClosed id -> id

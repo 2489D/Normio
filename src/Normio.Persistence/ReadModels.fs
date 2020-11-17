@@ -35,11 +35,11 @@ type ExamReadModel = {
     [<JsonPropertyName("hosts")>]
     Hosts: Host seq
     [<JsonPropertyName("startDateTime")>]
-    StartDateTime: DateTime option
+    StartDateTime: DateTime
     [<JsonPropertyName("duration")>]
-    Duration: TimeSpan option
+    Duration: TimeSpan
 } with
-    static member Initial examId title =
+    static member Initial examId title startTime duration =
         { Id = examId
           ExamId = examId
           Status = BeforeExam
@@ -49,5 +49,5 @@ type ExamReadModel = {
           Messages = Seq.empty
           Students = Seq.empty
           Hosts = Seq.empty
-          StartDateTime = None
-          Duration = None }
+          StartDateTime = startTime
+          Duration = duration }
