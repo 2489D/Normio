@@ -63,9 +63,10 @@ type InMemoryTimersReadModel internal (timerUri: string) =
 type InMemoryExamsReadModel internal () =
     let exams = Dictionary<Guid, ExamReadModel>()
 
-    let openExam examId title startTime duration =
+    let openExam examId title startTime (duration: TimeSpan) =
         async {
-            let exam = ExamReadModel.Initial examId title startTime duration
+            let minutes = duration.TotalMinutes
+            let exam = ExamReadModel.Initial examId title startTime minutes
             exams.Add(examId, exam)
         }
 

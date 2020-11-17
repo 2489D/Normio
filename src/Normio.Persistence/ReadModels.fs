@@ -41,10 +41,10 @@ type ExamReadModel = {
     Hosts: Host seq
     [<JsonPropertyName("startDateTime")>]
     StartDateTime: DateTime
-    [<JsonPropertyName("duration")>]
-    Duration: TimeSpan
+    [<JsonPropertyName("durationMins")>]
+    DurationMinutes: float
 } with
-    static member Initial examId title startTime duration =
+    static member Initial examId title startTime durationMinutes =
         { Id = examId
           ExamId = examId
           Status = BeforeExam
@@ -55,4 +55,4 @@ type ExamReadModel = {
           Students = Seq.empty
           Hosts = Seq.empty
           StartDateTime = startTime
-          Duration = duration }
+          DurationMinutes = durationMinutes }
