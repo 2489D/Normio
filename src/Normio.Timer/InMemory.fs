@@ -39,14 +39,18 @@ module InMemory =
             if time < DateTime.Now
             then failwithf "The given time is in the past: %A" time
 
-        let setTimer timerData =
+        let setTimer command time =
+            let timerData = {
+                TaskCommand = command
+                Time = time
+            }
             timerStore <- timerStore |> Heap.insert timerData
 
-        let deleteTimer timerData =
+        let deleteTimer command =
             let rec loop ts ns =
                 match ts with
                 | Heap.Cons(h, t) ->
-                    if h = timerData
+                    if h.TaskCommand = command
                     then ns |> Heap.merge t
                     else loop t (ns |> Heap.insert h)
                 | Heap.Nil -> Heap.empty minHeap
@@ -56,23 +60,23 @@ module InMemory =
             member _.Dispose() =
                 checker.Dispose()
 
-            member _.SetTimer timerData =
-                validateTime timerData.Time
-                async { setTimer timerData }
+            member _.SetTimer command time =
+                validateTime time
+                async { setTimer command time }
 
             member _.GetAllTimers = async {
                 return timerStore |> Heap.toSeq
             }
 
-            member _.DeleteTimer timerData = async {
-                deleteTimer timerData
+            member _.DeleteTimer command = async {
+                deleteTimer command
             }
 
-            member _.UpdateTimer prev newData =
-                validateTime newData.Time
+            member _.UpdateTimer command time =
+                validateTime time
                 async {
-                    deleteTimer prev
-                    setTimer newData
+                    deleteTimer command
+                    setTimer command time
                 }
 
     let createInMemoryTimer millisec postCommand =

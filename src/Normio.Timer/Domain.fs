@@ -7,8 +7,8 @@ open Normio.Core.Commands
 module Domain =
     [<CustomEquality; CustomComparison>]
     type TimerData = {
-        Time: DateTime
         TaskCommand: Command
+        Time: DateTime
     } with
         override this.Equals(other) =
             match other with

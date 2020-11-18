@@ -1,14 +1,14 @@
 ﻿namespace Normio.Timer
 
 open System
+open Normio.Core.Commands
 
 [<AutoOpen>]
 module Timer =
-    // TODO : has to select what are really needed
     type ITimer =
         inherit IDisposable
 
-        abstract SetTimer: TimerData -> Async<unit>
+        abstract SetTimer: command:Command -> time:DateTime -> Async<unit>
         abstract GetAllTimers: Async<seq<TimerData>>
-        abstract DeleteTimer: TimerData -> Async<unit>
-        abstract UpdateTimer: prev: TimerData -> newData: TimerData -> Async<unit>
+        abstract DeleteTimer: command:Command -> Async<unit>
+        abstract UpdateTimer: command:Command -> time:DateTime -> Async<unit>
