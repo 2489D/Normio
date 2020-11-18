@@ -7,12 +7,12 @@ open Normio.Core.Commands
 module Domain =
     [<CustomEquality; CustomComparison>]
     type TimerData = {
-        TaskCommand: Command
+        Command: Command
         Time: DateTime
     } with
         override this.Equals(other) =
             match other with
-            | :? TimerData as td -> this.Time = td.Time || this.TaskCommand = td.TaskCommand
+            | :? TimerData as td -> this.Time = td.Time || this.Command = td.Command
             | _ -> false
         override this.GetHashCode() = hash this
         interface IComparable with
