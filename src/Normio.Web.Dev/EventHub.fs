@@ -15,6 +15,7 @@ type INormioClient =
 type EventHub() =
     inherit Hub<INormioClient>()
 
+// TODO: should group users by examId
 type NormioEventWorker(hubContext: IHubContext<EventHub, INormioClient>, config: IConfiguration, env: IWebHostEnvironment) =
     let eventStream = Event<Event list>()
 

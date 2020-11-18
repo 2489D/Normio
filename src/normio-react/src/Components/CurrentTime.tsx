@@ -8,9 +8,12 @@ const CurrentTime: React.FC<CurrentTimeProps> = props => {
     const [currentTime, setCurrentTime] = useState(new Date().toLocaleTimeString());
 
     useEffect(() => {
-        setInterval(() => {
+        const ticker = setInterval(() => {
             setCurrentTime(new Date().toLocaleTimeString())
         }, 1000)
+        return () => {
+            clearInterval(ticker)
+        }
     }, [])
 
     return (

@@ -10,11 +10,11 @@ export default class NormioApi {
         })
     }
     
-    static async openExam(title: string, startDateTime?: string, duration?: string) {
+    static async openExam(title: string, startDateTime?: string, durationMins?: number) {
         return await axios.post(this.backendUrl + '/api/openExam', {
             title,
             startDateTime,
-            duration,
+            durationMins,
         })
     }
     

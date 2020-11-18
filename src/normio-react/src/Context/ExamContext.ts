@@ -1,18 +1,47 @@
 import {createContext} from "react";
 
-export type ExamReadModel = {
-    title: string
-    status: any,
-    startDateTime: string,
-    durationMins: number,
+export declare namespace Normio {
+    type Host = {
+        id: string,
+        name: string,
+    }
+    type Student = {
+        id: string,
+        name: string,
+    }
+    type Question = {
+        id: string,
+        examId: string,
+        hostId: string,
+        title: string,
+        timestamp: string,
+        description: string | null,
+    }
+    
+    type ExamStatus =
+        | { BeforeExam: {}}
+        | { DuringExam: {}}
+        | { AfterExam: {}}
+
+    type Exam = {
+        id: string,
+        title: string,
+        status: Normio.ExamStatus,
+        startDateTime: string,
+        durationMins: number,
+        hosts: Normio.Host[],
+        students: Normio.Student[],
+        questions: Normio.Question[],
+    }
 }
 
+
 type ExamContext = {
-    exam: ExamReadModel | null,
-    updateExam: (data: ExamReadModel) => void,
+    exam: Normio.Exam | null,
+    updateExam: (exam: Normio.Exam) => void,
 }
 
 export const ExamContext = createContext<ExamContext>({
     exam: null,
-    updateExam: (data: ExamReadModel) => {},
+    updateExam: (exam: Normio.Exam) => {},
 });

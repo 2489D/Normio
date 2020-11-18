@@ -19,6 +19,7 @@ let configureCors (builder : CorsPolicyBuilder) =
     builder.WithOrigins("http://localhost:3000")
            .AllowAnyMethod()
            .AllowAnyHeader()
+           .AllowCredentials()
            |> ignore
 
 let configureApp webApp (app : IApplicationBuilder) =
@@ -28,6 +29,7 @@ let configureApp webApp (app : IApplicationBuilder) =
     | _ -> app.UseGiraffeErrorHandler(errorHandler)
     ).UseHttpsRedirection()
         .UseCors(configureCors)
+        .UseCors("ClientPermission")
         .UseStaticFiles()
         .UseRouting()
         .UseEndpoints(fun endpoints ->
@@ -36,12 +38,18 @@ let configureApp webApp (app : IApplicationBuilder) =
         .UseGiraffe(webApp)
 
 let configureServices (services : IServiceCollection) =
-    services.AddCors() |> ignore
     services.AddSignalR()
         .AddJsonProtocol(fun options ->
-            options.PayloadSerializerOptions.Converters.Add(JsonFSharpConverter()))
-    |> ignore
-    
+            options.PayloadSerializerOptions.Converters.Add(JsonFSharpConverter())) |> ignore
+    services.AddCors(fun options ->
+        options.AddPolicy("ClientPermission", fun policy ->
+            policy.AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials()
+                .WithOrigins("http://localhost:3000")
+                |> ignore
+            )
+        ) |> ignore
     services.AddSingleton<NormioEventWorker>() |> ignore
     services.AddGiraffe() |> ignore
     services.AddSingleton<IJsonSerializer>(SystemTextJsonSerializer(fsSerializationOption)) |> ignore

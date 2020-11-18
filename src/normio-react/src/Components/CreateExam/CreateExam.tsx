@@ -14,8 +14,8 @@ const CreateExamCard: React.FC<CreateExamCardProps> = ({ hostId, handleSubmitCre
     const { register, handleSubmit } = useForm()
  
     // FIXME: error handling
-    const onSubmit = useCallback(async data => {
-        const response = await NormioApi.openExam(data.title, data.startDateTime)
+    const onSubmit = useCallback(async ({ title, startDateTime, durationMins}) => {
+        const response = await NormioApi.openExam(title, startDateTime, Number(durationMins))
         setCreated(true)
         handleSubmitCreateExam()
     }, [setCreated])
@@ -30,12 +30,11 @@ const CreateExamCard: React.FC<CreateExamCardProps> = ({ hostId, handleSubmitCre
                     <div className={"form-group"}>
                         <input
                             name={"hostId"}
-                            ref={register(
-                                
-                            )}
+                            ref={register}
                             className={"form-control"}
                             placeholder={"Host ID"} 
                             defaultValue={hostId}
+                            autoComplete={"off"}
                         />
                     </div>
                     <div className={"form-group"}>
@@ -44,6 +43,7 @@ const CreateExamCard: React.FC<CreateExamCardProps> = ({ hostId, handleSubmitCre
                             ref={register}
                             className={"form-control"}
                             placeholder={"시험 명"}
+                            autoComplete={"off"}
                         />
                     </div>
                     <div className={"form-group"}>
@@ -52,6 +52,17 @@ const CreateExamCard: React.FC<CreateExamCardProps> = ({ hostId, handleSubmitCre
                             ref={register}
                             className={"form-control"}
                             placeholder={"시험 시작 시간"}
+                            autoComplete={"off"}
+                        />
+                    </div>
+                    <div className={"form-group"}>
+                        <input
+                            name={"durationMins"}
+                            ref={register}
+                            type={"number"}
+                            className={"form-control"}
+                            placeholder={"시험 시간(분)"}
+                            autoComplete={"off"}
                         />
                     </div>
                     <input type="submit" className={`btn btn-${ created ? "success"  : "primary"} btn-block`} value={`${created ? "시험이 생성 되었습니다!"  : "시험을 생성합니다"}`} />

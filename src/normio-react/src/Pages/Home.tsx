@@ -17,17 +17,13 @@ const Card: React.FC<HomeCardProps> = props => {
                 </span>
             </div>
             <div className="card-body">
-                <p className="card-text">
-                    {props.children}
-                </p>
-                {props.action && props.actionRoute
-                    ? 
+                <div className="card-text"> {props.children} </div>
+                {props.action && props.actionRoute ? 
                     <div className={"my-2"}>
                         <Link to={props.actionRoute}>
                             <button className="btn btn-light btn-block">{props.action}</button>
                         </Link>
-                    </div>
-                    : null}
+                    </div> : null}
                 <div className={"my-2"}>
                     <a href="#" className="btn btn-sm btn-info btn-block">방법 살펴보기</a>
                 </div>

@@ -78,7 +78,6 @@ const FindExam: React.FC = props => {
                                         className="form-control"
                                         type={"password"}
                                         placeholder={"Exam Password"}
-                                        current-password
                                     />
                                 </div>
                                 <div className="form-group">

@@ -3,10 +3,10 @@ import { Root, NavBar } from './Routes';
 
 import Home from './Pages/Home';
 import { BrowserRouter } from 'react-router-dom';
-import {ExamContext, ExamReadModel} from './Context/ExamContext';
+import {ExamContext, Normio} from './Context/ExamContext';
 
 function App() {
-    const [exam, setExam] = useState<ExamReadModel | null>(null)
+    const [exam, setExam] = useState<Normio.Exam | null>(null)
     return (
         <BrowserRouter>
             <ExamContext.Provider value={{

@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import {Link} from "react-router-dom";
-import {ExamReadModel} from "../../Context/ExamContext";
+import {Normio} from "../../Context/ExamContext";
 
 type ExamInfoProps = {
-    exam : ExamReadModel,
+    exam : Normio.Exam,
 }
 
 const ExamInfo: React.FC<ExamInfoProps> = ({ exam, ...props }) => {
