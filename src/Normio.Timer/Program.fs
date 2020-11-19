@@ -14,20 +14,26 @@ open Normio.Core.Commands
 
 let postCommandHandler backendUrl command =
     async {
-        match command with
-        | StartExam examId ->
-            httpAsync {
-                POST (backendUrl + "startExam")
-                body
-                json (sprintf """{ "examId" : %A }""" examId)
-            } |> ignore
-        | EndExam examId ->
-            httpAsync {
-                POST (backendUrl + "endExam")
-                body
-                json (sprintf """{ "examId" : %A }""" examId)
-            } |> ignore
-        | _ -> () // TODO
+        printfn "%s, %A" backendUrl command
+        try
+            match command with
+            | StartExam examId ->
+                http {
+                    POST (backendUrl + "/api/startExam")
+                    body
+                    json (sprintf """{ "examId" : "%A" }""" examId)
+                }
+                |> printfn "response: %A"
+            | EndExam examId ->
+                http {
+                    POST (backendUrl + "/api/endExam")
+                    body
+                    json (sprintf """{ "examId" : "%A" }""" examId)
+                }
+                |> printfn "response: %A"
+            | _ -> () // TODO
+        with
+            | e -> printfn "post failed: %A" e
     }
 
 let tryParseRawCommand (rawCommand: string) =
@@ -54,9 +60,11 @@ let handleCreateRequest (timer: ITimer): WebPart =
     fun (ctx : HttpContext) ->
         async {
             let req = ctx.request.rawForm |> fromJson<CreateRequest>
+            printfn "%A" req
             match req.RawCommand |> tryParseRawCommand with
             | Some command ->
                 do! timer.CreateTimer command (req.RawTime |> DateTime.Parse)
+                printfn "%A" command
                 return! CREATED (sprintf "command %s at %A created" req.RawCommand req.RawTime) ctx
             | None -> return! NOT_FOUND (sprintf "invalid argument: %A" req) ctx
         }

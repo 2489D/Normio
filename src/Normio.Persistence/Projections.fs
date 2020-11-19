@@ -33,7 +33,7 @@ let projectReadModel actions = function
 | ExamOpened (examId, title, startTime, duration) ->
     [actions.Exam.OpenExam examId title startTime duration
      actions.Timer.CreateTimer (StartExam(examId)) startTime
-     actions.Timer.CreateTimer (EndExam(examId)) (startTime + duration)] |> Async.Parallel
+     actions.Timer.CreateTimer (EndExam(examId)) (startTime + duration)] |> Async.Sequential
 | ExamStarted examId ->
     [actions.Exam.StartExam examId
      actions.Timer.RemoveTimer <| StartExam(examId)] |> Async.Parallel

@@ -2,6 +2,7 @@ module Normio.Web.Dev.CommandApiHandler
 
 open System
 open System.IO
+open System.Text.Json
 open System.Text.Json.Serialization
 open Microsoft.AspNetCore.Http
 open FSharp.Control.Tasks.V2.ContextInsensitive
@@ -23,7 +24,7 @@ let commandApiHandler handler (eventStore : IEventStore) request : HttpHandler =
             | Ok (state, events) ->
                 do! eventStore.SaveEvents events
                 eventHub.Trigger events
-                return! json state next ctx
+                return! json events next ctx
             | Error msg ->
                 // TODO : status code
                 return! (setStatusCode 400 >=> json msg) next ctx
@@ -80,39 +81,51 @@ let fileUploadHandler uploadContext (fileSaver: IFileSaver) =
                 return! next ctx
         }
 
+let tryBindJson<'T> requestHandler =
+    fun (next: HttpFunc) (ctx : HttpContext) ->
+        task {
+            try
+                let! body = ctx.BindJsonAsync<'T>()
+                return! requestHandler body next ctx
+            with
+            | :? JsonException as exc ->
+                return! RequestErrors.BAD_REQUEST exc.Message next ctx
+        }
+            
+
 // Naming Convention: Resource names follows RPC style (example: Slack API)
 let commandApi eventStore fileSaver =
     POST >=> subRoute "/api" (
         choose [
-            route "/openExam" >=> bindJson<OpenExamRequest> (fun req -> commandApiHandler handleOpenExamRequest eventStore req)
-            route "/startExam" >=> bindJson<StartExamRequest> (fun req -> commandApiHandler handleStartExamRequest eventStore req)
-            route "/endExam" >=> bindJson<EndExamRequest> (fun req -> commandApiHandler handleEndExamRequest eventStore req)
-            route "/closeExam" >=> bindJson<CloseExamRequest> (fun req -> commandApiHandler handleCloseExamRequest eventStore req)
+            route "/openExam" >=> tryBindJson<OpenExamRequest> (fun req -> commandApiHandler handleOpenExamRequest eventStore req)
+            route "/startExam" >=> tryBindJson<StartExamRequest> (fun req -> commandApiHandler handleStartExamRequest eventStore req)
+            route "/endExam" >=> tryBindJson<EndExamRequest> (fun req -> commandApiHandler handleEndExamRequest eventStore req)
+            route "/closeExam" >=> tryBindJson<CloseExamRequest> (fun req -> commandApiHandler handleCloseExamRequest eventStore req)
 
-            route "/addStudent" >=> bindJson<AddStudentRequest> (fun req -> commandApiHandler handleAddStudentRequest eventStore req)
-            route "/removeStudent" >=> bindJson<RemoveStudentRequest> (fun req -> commandApiHandler handleRemoveStudentRequest eventStore req)
-            route "/letStudentIn" >=> bindJson<LetStudentInRequest> (fun req -> commandApiHandler handleLetStudentInRequest eventStore req)
-            route "/letStudentOut" >=> bindJson<LetStudentOutRequest> (fun req -> commandApiHandler handleLetStudentOutRequest eventStore req)
-            route "/addHost" >=> bindJson<AddHostRequest> (fun req -> commandApiHandler handleAddHostRequest eventStore req)
-            route "/removeHost" >=> bindJson<RemoveHostRequest> (fun req -> commandApiHandler handleRemoveHostRequest eventStore req)
-            route "/letHostIn" >=> bindJson<LetHostInRequest> (fun req -> commandApiHandler handleLetHostInRequest eventStore req)
-            route "/letHostOut" >=> bindJson<LetHostOutRequest> (fun req -> commandApiHandler handleLetHostOutRequest eventStore req)
-            route "/changeTitle" >=> bindJson<ChangeTitleRequest> (fun req -> commandApiHandler handleChangeTitleRequest eventStore req)
+            route "/addStudent" >=> tryBindJson<AddStudentRequest> (fun req -> commandApiHandler handleAddStudentRequest eventStore req)
+            route "/removeStudent" >=> tryBindJson<RemoveStudentRequest> (fun req -> commandApiHandler handleRemoveStudentRequest eventStore req)
+            route "/letStudentIn" >=> tryBindJson<LetStudentInRequest> (fun req -> commandApiHandler handleLetStudentInRequest eventStore req)
+            route "/letStudentOut" >=> tryBindJson<LetStudentOutRequest> (fun req -> commandApiHandler handleLetStudentOutRequest eventStore req)
+            route "/addHost" >=> tryBindJson<AddHostRequest> (fun req -> commandApiHandler handleAddHostRequest eventStore req)
+            route "/removeHost" >=> tryBindJson<RemoveHostRequest> (fun req -> commandApiHandler handleRemoveHostRequest eventStore req)
+            route "/letHostIn" >=> tryBindJson<LetHostInRequest> (fun req -> commandApiHandler handleLetHostInRequest eventStore req)
+            route "/letHostOut" >=> tryBindJson<LetHostOutRequest> (fun req -> commandApiHandler handleLetHostOutRequest eventStore req)
+            route "/changeTitle" >=> tryBindJson<ChangeTitleRequest> (fun req -> commandApiHandler handleChangeTitleRequest eventStore req)
             subRoute "/createSubmission" (
                 choose [
-                    route "/" >=> bindJson<CreateSubmissionRequest> (fun req -> commandApiHandler handleCreateSubmissionRequest eventStore req)
+                    route "/" >=> tryBindJson<CreateSubmissionRequest> (fun req -> commandApiHandler handleCreateSubmissionRequest eventStore req)
                     // TODO : validate upload information
                     route "/upload" >=> tryBindForm<SubmissionUpload> (fun err -> RequestErrors.BAD_REQUEST err) None (fun upload -> fileUploadHandler (Submission upload) fileSaver)
                 ]
             )
             subRoute "/createQuestion" (
                 choose [
-                    route "/" >=> bindJson<CreateQuestionRequest> (fun req -> commandApiHandler handleCreateQuestionRequest eventStore req)
+                    route "/" >=> tryBindJson<CreateQuestionRequest> (fun req -> commandApiHandler handleCreateQuestionRequest eventStore req)
                     // TODO : validate upload information
                     route "/upload" >=> tryBindForm<QuestionUpload> (fun err -> RequestErrors.BAD_REQUEST err) None (fun upload -> fileUploadHandler (Question upload) fileSaver)
                 ]
             )
-            route "/sendMessage" >=> bindJson<SendMessageRequest> (fun req -> commandApiHandler handleSendMessageRequest eventStore req)
-            route "/deleteQuestion" >=> bindJson<DeleteQuestionRequest> (fun req -> commandApiHandler handleDeleteQuestionRequest eventStore req)
+            route "/sendMessage" >=> tryBindJson<SendMessageRequest> (fun req -> commandApiHandler handleSendMessageRequest eventStore req)
+            route "/deleteQuestion" >=> tryBindJson<DeleteQuestionRequest> (fun req -> commandApiHandler handleDeleteQuestionRequest eventStore req)
         ]
     )

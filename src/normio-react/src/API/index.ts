@@ -51,6 +51,21 @@ export default class NormioApi {
             studentId,
         })
     }
+    
+    static async letStudentIn(examId: string, studentId: string, name: string) {
+        return await axios.post(this.backendUrl + '/api/letStudentIn', {
+            examId,
+            studentId,
+            name,
+        })
+    }
+
+    static async letStudentOut(examId: string, studentId: string) {
+        return await axios.post(this.backendUrl + '/api/letStudentOut', {
+            examId,
+            studentId,
+        })
+    }
 
     static async addHost(examId: string, name: string) {
         return await axios.post(this.backendUrl + '/api/addHost', {
@@ -65,7 +80,21 @@ export default class NormioApi {
             hostId,
         })
     }
+    
+    static async letHostIn(examId: string, hostId: string, name: string) {
+        return await axios.post(this.backendUrl + '/api/letHostIn', {
+            examId,
+            hostId,
+            name,
+        })
+    }
 
+    static async letHostOut(examId: string, hostId: string) {
+        return await axios.post(this.backendUrl + '/api/letHostOut', {
+            examId,
+            hostId,
+        })
+    }
     static async createSubmission(examId: string, studentId: string, title: string, description?: string) {
         return await axios.post(this.backendUrl + '/api/createSubmission', {
             examId,
