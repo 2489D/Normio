@@ -3,7 +3,6 @@ module Normio.Persistence.ReadModels.InMemory
 open System
 open System.Collections.Generic
 
-open FsHttp
 open FsHttp.DslCE
 
 open Normio.Core.Commands
@@ -16,44 +15,47 @@ let timerServiceUri = "https://localhost:8083"
 
 type InMemoryTimersReadModel internal (timerUri: string) =
     let mutable timers: TimerReadModel list = List.empty
-    
+
     let registerCommand (command: Command) (time: DateTime) =
         async {
-            let timer =
-                { Command = command
-                  Time = time }
-            if timers |> Seq.map (fun t -> t.Command) |> Seq.contains command |> not
-            then
+            let timer = { Command = command; Time = time }
+            if timers
+               |> Seq.map (fun t -> t.Command)
+               |> Seq.contains command
+               |> not then
                 // TODO: this is forget and fire
                 try
                     http {
-                        POST (timerUri + "/api/create")
+                        POST(timerUri + "/api/create")
                         CacheControl "no-cache"
                         body
                         json (sprintf """{ "command" : %s, "time" : %s }""" (string command) (string time))
-                    } |> ignore
-                with
-                | _ -> () // TODO -> timer creation failed
+                    }
+                    |> ignore
+                with _ -> () // TODO -> timer creation failed
                 do timers <- timer :: timers
         }
-    
+
     let removeCommand (command: Command) =
         async {
-            do timers <- timers |> List.filter (fun timer -> timer.Command <> command)
+            do timers <-
+                timers
+                |> List.filter (fun timer -> timer.Command <> command)
             try
                 http {
-                    POST (timerUri + "/api/delete")
+                    POST(timerUri + "/api/delete")
                     CacheControl "no-cache"
                     body
                     json (sprintf """{ "command" : %s }""" (string command))
-                } |> ignore
-            with
-            | _ -> ()
+                }
+                |> ignore
+            with _ -> ()
         }
-    
-    member _.GetCommandsById (id: Guid) =
+
+    member _.GetCommandsById(id: Guid) =
         async {
-            return timers |> List.filter (fun timer -> timer.Command.ExamId = id)
+            return timers
+                   |> List.filter (fun timer -> timer.Command.ExamId = id)
         }
 
     interface ITimerAction with
@@ -66,7 +68,10 @@ type InMemoryExamsReadModel internal () =
     let openExam examId title startTime (duration: TimeSpan) =
         async {
             let minutes = duration.TotalMinutes
-            let exam = ExamReadModel.Initial examId title startTime minutes
+
+            let exam =
+                ExamReadModel.Initial examId title startTime minutes
+
             exams.Add(examId, exam)
         }
 
@@ -82,77 +87,76 @@ type InMemoryExamsReadModel internal () =
             exams.[examId] <- { exam with Status = AfterExam }
         }
 
-    let closeExam examId =
-        async {
-            exams.Remove(examId) |> ignore
-        }
+    let closeExam examId = async { exams.Remove(examId) |> ignore }
 
-    let addStudent examId student =
+    let letStudentIn examId student =
         async {
             let exam = exams.[examId]
-            let students =
-                seq {
-                    yield student
-                    yield! exam.Students
-                }
-            exams.[examId] <- { exam with Students = students }
+            exams.[examId] <- { exam with Students = seq { yield student; yield! exam.Students }}
         }
 
-    let removeStudent examId studentId =
+    let letStudentOut examId studentId =
         async {
             let exam = exams.[examId]
-            exams.[examId] <- { exam with Students = exam.Students |> Seq.filter (fun s -> s.Id <> studentId) }
+            exams.[examId] <- { exam with Students = exam.Students |> Seq.filter (fun student -> student.Id <> studentId) }
         }
-
-    let addHost examId host =
+ 
+    let letHostIn examId host =
         async {
             let exam = exams.[examId]
-            let hosts =
-                seq {
-                    yield host
-                    yield! exam.Hosts
-                }
-            exams.[examId] <- { exam with Hosts = hosts }
+            exams.[examId] <- { exam with Hosts = seq { yield host; yield! exam.Hosts }}
         }
 
-    let removeHost examId hostId =
+    let letHostOut examId hostId =
         async {
             let exam = exams.[examId]
-            exams.[examId] <- { exam with Hosts = exam.Hosts |> Seq.filter (fun h -> h.Id <> hostId) }
+            exams.[examId] <- { exam with Hosts = exam.Hosts |> Seq.filter (fun host -> host.Id <> hostId) }
         }
-
+ 
     let createQuestion examId question =
         async {
             let exam = exams.[examId]
+
             let questions =
                 seq {
                     yield question
                     yield! exam.Questions
                 }
+
             exams.[examId] <- { exam with Questions = questions }
         }
 
     let createSubmission examId submission =
         async {
             let exam = exams.[examId]
+
             let submissions =
                 seq {
                     yield submission
                     yield! exam.Submissions
                 }
+
             exams.[examId] <- { exam with Submissions = submissions }
         }
 
     let deleteQuestion examId questionId =
         async {
             let exam = exams.[examId]
-            exams.[examId] <- { exam with Questions = exam.Questions |> Seq.filter (fun question -> question.Id <> questionId)}
+            exams.[examId] <- { exam with
+                                    Questions =
+                                        exam.Questions
+                                        |> Seq.filter (fun question -> question.Id <> questionId) }
         }
 
     let sendMessage examId message =
         async {
             let exam = exams.[examId]
-            exams.[examId] <- { exam with Messages = seq { yield message; yield! exam.Messages }}
+            exams.[examId] <- { exam with
+                                    Messages =
+                                        seq {
+                                            yield message
+                                            yield! exam.Messages
+                                        } }
         }
 
     let changeTitle examId title =
@@ -160,23 +164,23 @@ type InMemoryExamsReadModel internal () =
             let exam = exams.[examId]
             exams.[examId] <- { exam with Title = title }
         }
-    
+
     member this.GetExam examId =
         async {
             match exams.TryGetValue examId with
             | true, exam -> return Some exam
             | _ -> return None
         }
-    
+
     interface IExamAction with
         member this.OpenExam examId title startTime duration = openExam examId title startTime duration
         member this.StartExam examId = startExam examId
         member this.EndExam examId = endExam examId
         member this.CloseExam examId = closeExam examId
-        member this.AddStudent examId student = addStudent examId student
-        member this.RemoveStudent examId studentId = removeStudent examId studentId
-        member this.AddHost examId host = addHost examId host
-        member this.RemoveHost examId hostId = removeHost examId hostId
+        member this.LetStudentIn examId student = letStudentIn examId student
+        member this.LetStudentOut examId studentId = letStudentOut examId studentId
+        member this.LetHostIn examId host = letHostIn examId host
+        member this.LetHostOut examId hostId = letHostOut examId hostId
         member this.CreateSubmission examId submission = createSubmission examId submission
         member this.CreateQuestion examId question = createQuestion examId question
         member this.DeleteQuestion examId questionId = deleteQuestion examId questionId
@@ -185,24 +189,23 @@ type InMemoryExamsReadModel internal () =
 
 let private inMemoryExamsReadModelInstance = InMemoryExamsReadModel()
 let private inMemoryTimersReadModelInstance = InMemoryTimersReadModel(timerServiceUri)
- 
-let examActions = inMemoryExamsReadModelInstance :> IExamAction
-let timerActions = inMemoryTimersReadModelInstance :> ITimerAction
 
-let inMemoryTimerQueries = {
-    GetCommandsById = inMemoryTimersReadModelInstance.GetCommandsById
-}
+let examActions =
+    inMemoryExamsReadModelInstance :> IExamAction
 
-let inMemoryExamQueries = {
-    GetExamByExamId = inMemoryExamsReadModelInstance.GetExam
-}
+let timerActions =
+    inMemoryTimersReadModelInstance :> ITimerAction
 
-let inMemoryQueries = {
-    Exam = inMemoryExamQueries
-    Timer = inMemoryTimerQueries
-}
+let inMemoryTimerQueries =
+    { GetCommandsById = inMemoryTimersReadModelInstance.GetCommandsById }
 
-let inMemoryActions: ProjectionActions = {
-    Exam = examActions
-    Timer = timerActions
-}
+let inMemoryExamQueries =
+    { GetExamByExamId = inMemoryExamsReadModelInstance.GetExam }
+
+let inMemoryQueries =
+    { Exam = inMemoryExamQueries
+      Timer = inMemoryTimerQueries }
+
+let inMemoryActions: ProjectionActions =
+    { Exam = examActions
+      Timer = timerActions }

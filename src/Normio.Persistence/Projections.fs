@@ -13,10 +13,10 @@ type IExamAction =
     abstract StartExam: examId:Guid -> Async<unit>
     abstract EndExam: examId:Guid -> Async<unit>
     abstract CloseExam: examId:Guid -> Async<unit>
-    abstract AddStudent: examId:Guid -> Student -> Async<unit>
-    abstract RemoveStudent: examId:Guid -> studentId:Guid -> Async<unit>
-    abstract AddHost: examId:Guid -> host:Host -> Async<unit>
-    abstract RemoveHost: examId:Guid -> hostId:Guid -> Async<unit>
+    abstract LetStudentIn: examId:Guid -> student:Student -> Async<unit>
+    abstract LetStudentOut: examId:Guid -> studentId:Guid -> Async<unit>
+    abstract LetHostIn: examId:Guid -> host:Host -> Async<unit>
+    abstract LetHostOut: examId:Guid -> hostId:Guid -> Async<unit>
     abstract CreateSubmission: examId:Guid -> submission:Submission -> Async<unit>
     abstract CreateQuestion: examId:Guid -> question:Question -> Async<unit>
     abstract DeleteQuestion: examId:Guid -> questionId:Guid -> Async<unit>
@@ -42,14 +42,20 @@ let projectReadModel actions = function
      actions.Timer.RemoveTimer <| EndExam(examId) ] |> Async.Parallel
 | ExamClosed examId ->
     [actions.Exam.CloseExam examId] |> Async.Parallel
+| StudentAdded _
+| StudentRemoved _ ->
+    [] |> Async.Parallel
 | StudentEntered (examId, student) ->
-    [actions.Exam.AddStudent examId student] |> Async.Parallel
+    [actions.Exam.LetStudentIn examId student] |> Async.Parallel
 | StudentLeft (examId, studentId) ->
-    [actions.Exam.RemoveStudent examId studentId] |> Async.Parallel
+    [actions.Exam.LetStudentOut examId studentId] |> Async.Parallel
+| HostAdded _
+| HostRemoved _ ->
+    [] |> Async.Parallel
 | HostEntered (examId, host) ->
-    [actions.Exam.AddHost examId host] |> Async.Parallel
+    [actions.Exam.LetHostIn examId host] |> Async.Parallel
 | HostLeft (examId, hostId) ->
-    [actions.Exam.RemoveHost examId hostId] |> Async.Parallel
+    [actions.Exam.LetHostOut examId hostId] |> Async.Parallel
 | SubmissionCreated (examId, submission) ->
     [actions.Exam.CreateSubmission examId submission] |> Async.Parallel
 | QuestionCreated (examId, question) ->

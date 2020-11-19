@@ -2,7 +2,6 @@
 module Normio.Persistence.Queries
 
 open System
-open Normio.Core.Commands
 open Normio.Persistence.ReadModels
 
 type TimerQueries = {

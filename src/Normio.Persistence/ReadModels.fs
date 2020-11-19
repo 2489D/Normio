@@ -36,9 +36,9 @@ type ExamReadModel = {
     [<JsonPropertyName("messages")>]
     Messages: Message seq
     [<JsonPropertyName("students")>]
-    Students: Student seq
+    Students: Student seq // Existing students (entered ones)
     [<JsonPropertyName("hosts")>]
-    Hosts: Host seq
+    Hosts: Host seq // Existing hosts (entered ones)
     [<JsonPropertyName("startDateTime")>]
     StartDateTime: DateTime
     [<JsonPropertyName("durationMins")>]
