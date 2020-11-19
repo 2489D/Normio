@@ -18,7 +18,7 @@ module ChangeTitle =
         }
 
     let validateChangeTitle req = async {
-        match req.Title |> ExamTitle40.create with
+        match req.Title |> ExamTitle40.Create with
         | Ok title -> return Ok (req.ExamId, title)
         | Error err -> return err.ToString() |> Error
     }

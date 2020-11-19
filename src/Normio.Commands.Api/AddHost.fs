@@ -18,7 +18,7 @@ module AddHost =
         }
 
     let validateAddHost req = async {
-        match req.Name |> UserName40.create with
+        match req.Name |> UserName40.Create with
         | Ok name40 ->
             return Ok (req.ExamId, name40)
         | Error err -> return err.ToString() |> Error

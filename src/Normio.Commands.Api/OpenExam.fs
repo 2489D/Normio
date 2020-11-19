@@ -20,7 +20,7 @@ module OpenExam =
         }
 
     let validateOpenExam req = async {
-        let titleRes = req.Title |> ExamTitle40.create
+        let titleRes = req.Title |> ExamTitle40.Create
         let isStartTimePast = req.StartDateTime <= DateTime.UtcNow
         let duration = TimeSpan.FromMinutes req.DurationMins
         let isDurationNegative = duration <= TimeSpan.Zero
