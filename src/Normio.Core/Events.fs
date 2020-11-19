@@ -13,9 +13,14 @@ module Events =
         | ExamEnded of examId:Guid
         | ExamClosed of examId:Guid
 
-        | StudentEntered of examId:Guid * student:Student
+        | StudentAdded of examId:Guid * student:Student
+        | StudentRemoved of examId:Guid * studentId:Guid
+        | StudentEntered of examId:Guid * studentId:Guid
         | StudentLeft of examId:Guid * studentId:Guid
-        | HostEntered of examId:Guid * host:Host
+        
+        | HostAdded of examId:Guid * host:Host
+        | HostRemoved of examId:Guid * hostId:Guid
+        | HostEntered of examId:Guid * hostId:Guid
         | HostLeft of examId:Guid * hostId:Guid
 
         | SubmissionCreated of examId:Guid * submission:Submission
@@ -33,8 +38,12 @@ module Events =
                 | ExamStarted id -> id
                 | ExamEnded id -> id
                 | ExamClosed id -> id
+                | StudentAdded (id, _) -> id
+                | StudentRemoved (id, _) -> id
                 | StudentEntered (id, _) -> id
                 | StudentLeft (id, _) -> id
+                | HostAdded (id, _) -> id
+                | HostRemoved (id, _) -> id
                 | HostEntered (id, _) -> id
                 | HostLeft (id, _) -> id
                 | SubmissionCreated (id, _) -> id

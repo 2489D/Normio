@@ -16,6 +16,11 @@ module CommandErrors =
         | NoQuestions
         | NoStudents
         | NoHosts
+        
+        | StudentAlreadyEntered
+        | StudentAlreadyLeft
+        | HostAlreadyEntered
+        | HostAlreadyLeft
 
         | CannotFindSender
         | CannotFindReceiver
@@ -27,7 +32,7 @@ module CommandErrors =
         | QuestionDuplicated
         | IDNotMatched of ctx:string
  
-        override this.ToString () =
+        override this.ToString() =
             match this with
             | ExamAlreadyOpened -> "The exam is already opened"
             | ExamAlreadyStarted -> "The exam is already started"
@@ -38,6 +43,10 @@ module CommandErrors =
             | NoQuestions -> "The exam has no questions"
             | NoStudents -> "The exam has no students"
             | NoHosts -> "The exam has no hosts"
+            | StudentAlreadyEntered -> "The student has already entered the exam"
+            | StudentAlreadyLeft -> "The student has already left the exam"
+            | HostAlreadyEntered -> "The host has already entered the exam"
+            | HostAlreadyLeft -> "The host has already left the exam"
             | CannotFindSender -> "The exam does not have the sender"
             | CannotFindReceiver -> "The exam does not have the receiver"
             | CannotFindStudent -> "The exam does not have the student"

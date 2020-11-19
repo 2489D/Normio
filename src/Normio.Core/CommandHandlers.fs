@@ -35,24 +35,52 @@ let handleCloseExam = function
 
 let handleAddStudent student = function
     | ExamIsWaiting exam ->
-        [StudentEntered (exam.Id, student)] |> Ok
+        [StudentAdded (exam.Id, student)] |> Ok
     | ExamIsClose _ -> ExamNotOpened |> Error
     | _ -> ExamAlreadyStarted |> Error
 
 let handleRemoveStudent studentId = function
-    | ExamIsWaiting exam
-    | ExamIsFinished exam ->
+    | ExamIsWaiting exam ->
         if exam.Students |> Map.containsKey studentId
-        then [StudentLeft (exam.Id, studentId)] |> Ok
+        then [StudentRemoved (exam.Id, studentId)] |> Ok
         else CannotFindStudent |> Error
+    | ExamIsFinished _ -> ExamAlreadyEnded |> Error
     | ExamIsClose _ -> ExamNotOpened |> Error
     | ExamIsRunning _ -> ExamAlreadyStarted |> Error
+
+let handleLetStudentIn studentId = function
+    | ExamIsWaiting exam ->
+        match exam.Students |> Map.tryFind studentId with
+        | Some student ->
+            match student with
+            | StudentInExam.Connected student ->
+                StudentAlreadyEntered |> Error
+            | StudentInExam.Disconnected student ->
+                [StudentEntered (exam.Id, studentId)] |> Ok
+        | _ -> CannotFindStudent |> Error
+    | ExamIsRunning _ -> ExamAlreadyStarted |> Error
+    | ExamIsFinished _ -> ExamAlreadyEnded |> Error
+    | ExamIsClose _ -> ExamNotOpened |> Error
+
+let handleLetStudentOut studentId = function
+    | ExamIsWaiting exam
+    | ExamIsRunning exam
+    | ExamIsFinished exam ->
+        match exam.Students |> Map.tryFind studentId with
+        | Some student ->
+            match student with
+            | StudentInExam.Connected student ->
+                [StudentLeft (exam.Id, studentId)] |> Ok
+            | StudentInExam.Disconnected student ->
+                StudentAlreadyLeft |> Error
+        | _ -> CannotFindStudent |> Error
+    | ExamIsClose _ -> ExamNotOpened |> Error
 
 let handleAddHost host = function
     | ExamIsWaiting exam
     | ExamIsRunning exam
     | ExamIsFinished exam ->
-        [HostEntered (exam.Id, host)] |> Ok
+        [HostAdded (exam.Id, host)] |> Ok
     | _ -> ExamNotOpened |> Error
 
 let handleRemoveHost hostId = function
@@ -60,9 +88,37 @@ let handleRemoveHost hostId = function
     | ExamIsRunning exam
     | ExamIsFinished exam ->
         if exam.Hosts |> Map.containsKey hostId
-        then [HostLeft (exam.Id, hostId)] |> Ok
+        then [HostRemoved (exam.Id, hostId)] |> Ok
         else CannotFindHost |> Error
     | _ -> ExamNotOpened |> Error
+
+let handleLetHostIn hostId = function
+    | ExamIsWaiting exam
+    | ExamIsRunning exam
+    | ExamIsFinished exam ->
+        match exam.Hosts |> Map.tryFind hostId with
+        | Some host ->
+            match host with
+            | HostInExam.Connected _ ->
+                HostAlreadyEntered |> Error
+            | HostInExam.Disconnected _ ->
+                [HostEntered (exam.Id, hostId)] |> Ok
+        | _ -> CannotFindHost |> Error
+    | ExamIsClose _ -> ExamNotOpened |> Error
+
+let handleLetHostOut hostId = function
+    | ExamIsWaiting exam
+    | ExamIsRunning exam
+    | ExamIsFinished exam ->
+        match exam.Hosts |> Map.tryFind hostId with
+        | Some host ->
+            match host with
+            | HostInExam.Connected _ ->
+                [HostLeft (exam.Id, hostId)] |> Ok
+            | HostInExam.Disconnected _ ->
+                HostAlreadyLeft |> Error
+        | _ -> CannotFindHost |> Error
+    | ExamIsClose _ -> ExamNotOpened |> Error
 
 let handleCreateSubmission (submission: Submission) = function
     | ExamIsRunning exam ->
@@ -144,10 +200,17 @@ let execute state = function
     | StartExam _ -> handleStartExam state
     | EndExam _ -> handleEndExam state
     | CloseExam _ -> handleCloseExam state
+ 
     | AddStudent (_, student) -> handleAddStudent student state
     | RemoveStudent (_, studentId) -> handleRemoveStudent studentId state
+    | LetStudentIn (_, studentId) -> handleLetStudentIn studentId state
+    | LetStudentOut (_, studentId) -> handleLetStudentOut studentId state
+
     | AddHost (_, host) -> handleAddHost host state
     | RemoveHost (_, hostId) -> handleRemoveHost hostId state
+    | LetHostIn (_, hostId) -> handleLetHostIn hostId state
+    | LetHostOut (_, hostId) -> handleLetHostOut hostId state
+
     | CreateSubmission (_, submission) -> handleCreateSubmission submission state
     | CreateQuestion (_, questionId) -> handleCreateQuestion questionId state
     | DeleteQuestion (_, questionId) -> handleDeleteQuestion questionId state

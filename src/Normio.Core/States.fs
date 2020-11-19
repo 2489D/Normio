@@ -10,11 +10,10 @@ open Normio.Core
 /// 4. ExamIsFinished Exam
 /// 5. ExamIsClose Guid(Exam.Id)
 type State =
-    | ExamIsClose of examId:Guid option
-    | ExamIsWaiting of Exam
-    | ExamIsRunning of Exam
-    | ExamIsFinished of Exam
-
+    | ExamIsClose of examId: Guid option
+    | ExamIsWaiting of exam:Exam
+    | ExamIsRunning of exam:Exam
+    | ExamIsFinished of exam:Exam
 
 (**
 Style Guide:
@@ -31,65 +30,149 @@ the compiler can help us by issuing compilation error.
 Now, this function is breaking the
 'Make the illegal states unrepresentable' Principle.
 **)
+
 let apply state event =
     match state, event with
     | ExamIsClose None, ExamOpened (id, title, startTime, duration) ->
-        ExamIsWaiting (Exam.Initial id title startTime duration)
+        ExamIsWaiting(Exam.Initial id title startTime duration)
 
-    | ExamIsWaiting exam, StudentEntered (_, student) ->
-        { exam with Students = Map.add student.Id student exam.Students }
+    | ExamIsWaiting exam, StudentAdded (_, student) ->
+        { exam with
+              Students =
+                  exam.Students
+                  |> Map.add student.Id (StudentInExam.Disconnected student) }
         |> ExamIsWaiting
+    | ExamIsWaiting exam, StudentRemoved (_, studentId) ->
+        { exam with
+              Students = exam.Students |> Map.remove studentId }
+        |> ExamIsWaiting
+    | ExamIsWaiting exam, StudentEntered (_, studentId) ->
+        let student = exam.Students |> Map.tryFind studentId
+        match student with
+        | Some s ->
+            { exam with
+                  Students =
+                      exam.Students
+                      |> Map.add studentId (StudentInExam.Connected s.Value) }
+            |> ExamIsWaiting
+        | _ -> ExamIsWaiting exam
     | ExamIsWaiting exam, StudentLeft (_, studentId) ->
-        { exam with Students = Map.remove studentId exam.Students }
+        let student = exam.Students |> Map.tryFind studentId
+        match student with
+        | Some s ->
+            { exam with
+                  Students =
+                      exam.Students
+                      |> Map.add studentId (StudentInExam.Disconnected s.Value) }
+            |> ExamIsWaiting
+        | _ -> ExamIsWaiting exam
+    | ExamIsWaiting exam, HostAdded (_, host) ->
+        { exam with
+              Hosts =
+                  exam.Hosts
+                  |> Map.add host.Id (HostInExam.Disconnected host) }
         |> ExamIsWaiting
-    | ExamIsWaiting exam, HostEntered (_, host) ->
-        { exam with Hosts = Map.add host.Id host exam.Hosts }
+    | ExamIsWaiting exam, HostRemoved (_, hostId) ->
+        { exam with
+              Hosts = exam.Hosts |> Map.remove hostId }
         |> ExamIsWaiting
+    | ExamIsWaiting exam, HostEntered (_, hostId) ->
+        let host = exam.Hosts |> Map.tryFind hostId
+        match host with
+        | Some h ->
+            { exam with
+                  Hosts =
+                      exam.Hosts
+                      |> Map.add hostId (HostInExam.Connected h.Value) }
+            |> ExamIsWaiting
+        | _ -> ExamIsWaiting exam
     | ExamIsWaiting exam, HostLeft (_, hostId) ->
-        { exam with Hosts = Map.remove hostId exam.Hosts }
-        |> ExamIsWaiting
+        let host = exam.Hosts |> Map.tryFind hostId
+        match host with
+        | Some h ->
+            { exam with
+                  Hosts =
+                      exam.Hosts
+                      |> Map.add hostId (HostInExam.Disconnected h.Value) }
+            |> ExamIsWaiting
+        | _ -> ExamIsWaiting exam
     | ExamIsWaiting exam, QuestionCreated (_, question) ->
-        { exam with Questions = question :: exam.Questions  }
+        { exam with
+              Questions = question :: exam.Questions }
         |> ExamIsWaiting
     | ExamIsWaiting exam, QuestionDeleted (_, questionId) ->
-        { exam with Questions = exam.Questions |> List.filter (fun question -> question.Id <> questionId )}
+        { exam with
+              Questions =
+                  exam.Questions
+                  |> List.filter (fun question -> question.Id <> questionId) }
         |> ExamIsWaiting
     | ExamIsWaiting exam, MessageSent (_, message) ->
-        { exam with Messages = message :: exam.Messages }
+        { exam with
+              Messages = message :: exam.Messages }
         |> ExamIsWaiting
-    | ExamIsWaiting exam, TitleChanged (_, newTitle) ->
-        { exam with Title = newTitle }
-        |> ExamIsWaiting
-    | ExamIsWaiting exam, ExamStarted _ ->
-        ExamIsRunning exam
+    | ExamIsWaiting exam, TitleChanged (_, newTitle) -> { exam with Title = newTitle } |> ExamIsWaiting
+    | ExamIsWaiting exam, ExamStarted _ -> ExamIsRunning exam
 
-    | ExamIsRunning exam, HostEntered (_, host) ->
-        { exam with Hosts = Map.add host.Id host exam.Hosts }
-        |> ExamIsRunning
+    | ExamIsRunning exam, HostEntered (_, hostId) ->
+        let host = exam.Hosts |> Map.tryFind hostId
+        match host with
+        | Some h ->
+            { exam with
+                  Hosts =
+                      exam.Hosts
+                      |> Map.add hostId (HostInExam.Connected h.Value) }
+            |> ExamIsRunning
+        | _ -> ExamIsRunning exam
     | ExamIsRunning exam, HostLeft (_, hostId) ->
-        { exam with Hosts = Map.remove hostId exam.Hosts }
-        |> ExamIsRunning
+        let host = exam.Hosts |> Map.tryFind hostId
+        match host with
+        | Some h ->
+            { exam with
+                  Hosts =
+                      exam.Hosts
+                      |> Map.add hostId (HostInExam.Disconnected h.Value) }
+            |> ExamIsRunning
+        | _ -> ExamIsRunning exam
     | ExamIsRunning exam, SubmissionCreated (_, submission) ->
-        { exam with Submissions = submission :: exam.Submissions }
+        { exam with
+              Submissions = submission :: exam.Submissions }
         |> ExamIsRunning
     | ExamIsRunning exam, MessageSent (_, message) ->
-        { exam with Messages = message :: exam.Messages }
+        { exam with
+              Messages = message :: exam.Messages }
         |> ExamIsRunning
-    | ExamIsRunning exam, ExamEnded _ ->
-        ExamIsFinished exam
+    | ExamIsRunning exam, ExamEnded _ -> ExamIsFinished exam
 
     | ExamIsFinished exam, StudentLeft (_, studentId) ->
-        { exam with Students = Map.remove studentId exam.Students }
+        let student = exam.Students |> Map.tryFind studentId
+        match student with
+        | Some s -> 
+            { exam with
+                  Students = exam.Students |> Map.add studentId (StudentInExam.Disconnected s.Value) }
+        | _ -> exam
         |> ExamIsFinished
-    | ExamIsFinished exam, HostEntered (_, host) ->
-        { exam with Hosts = Map.add host.Id host exam.Hosts }
+    | ExamIsFinished exam, HostEntered (_, hostId) ->
+        let host = exam.Hosts |> Map.tryFind hostId
+        match host with
+        | Some h ->
+            { exam with
+                  Hosts =
+                      exam.Hosts
+                      |> Map.add hostId (HostInExam.Connected h.Value) }
+        | _ -> exam
         |> ExamIsFinished
     | ExamIsFinished exam, HostLeft (_, hostId) ->
-        { exam with Hosts = Map.remove hostId exam.Hosts }
+        let host = exam.Hosts |> Map.tryFind hostId
+        match host with
+        | Some h ->
+            { exam with
+                  Hosts =
+                      exam.Hosts
+                      |> Map.add hostId (HostInExam.Disconnected h.Value) }
+        | _ -> exam
         |> ExamIsFinished
     | ExamIsFinished exam, MessageSent (_, message) ->
-        { exam with Messages = message :: exam.Messages }
+        { exam with
+              Messages = message :: exam.Messages }
         |> ExamIsFinished
-    | ExamIsFinished exam, ExamClosed _ ->
-        ExamIsClose (Some exam.Id)
-
+    | ExamIsFinished exam, ExamClosed _ -> ExamIsClose(Some exam.Id)

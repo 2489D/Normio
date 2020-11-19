@@ -8,9 +8,7 @@ module Values =
     type ExamTitle40 =
         private | ExamTitle40 of string
         member this.Value = this |> fun (ExamTitle40 title) -> title
-
-    module ExamTitle40 =
-        let create title =
+        static member Create title =
             let len = title |> String.length
             if len > 40
             then StringTooLong "Exam Title should be less than or equal to 40" |> Error
@@ -22,9 +20,7 @@ module Values =
     type UserName40 =
         private | UserName40 of string
         member this.Value = this |> fun (UserName40 name) -> name
-
-    module UserName40 =
-        let create name =
+        static member Create name =
             let len = name |> String.length
             if len > 40
             then StringTooLong "User Name should be less than or equal to 40" |> Error
@@ -34,7 +30,6 @@ module Values =
 
     type MessageContent =
         private | MessageContent of string
-        
         static member Create content =
             let len = content |> String.length
             if len = 0 || isNull content
