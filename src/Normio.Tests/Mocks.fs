@@ -6,12 +6,12 @@ open Normio.Core
 let newGuid () = Guid.NewGuid ()
 
 let validTitle =
-    match "valid title" |> ExamTitle40.create with
+    match "valid title" |> ExamTitle40.Create with
     | Ok title -> title
     | Error _ -> failwith "this should be a valid title"
 
 let validName =
-    match "valid name" |> UserName40.create with
+    match "valid name" |> UserName40.Create with
     | Ok name -> name
     | Error _ -> failwith "this should be valid name"
 

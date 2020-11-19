@@ -63,7 +63,7 @@ let ``ExamIsWaiting without a host can not start`` () =
 
 [<Fact>]
 let ``Empty string should not be a valid exam title`` () =
-    match "" |> ExamTitle40.create with
+    match "" |> ExamTitle40.Create with
     | Ok _ ->
         XunitException("Empty string can not be a title")
         |> raise
@@ -72,16 +72,16 @@ let ``Empty string should not be a valid exam title`` () =
 [<Fact>]
 let ``Too long string should not be a valid exam title`` () =
     let tooLong = String.init 41 (fun _ -> "1")
-    tooLong |> ExamTitle40.create
+    tooLong |> ExamTitle40.Create
     |> thenShouldBeError
 
 [<Fact>]
 let ``Empty string should not be a valid user name`` () =
-    "" |> UserName40.create
+    "" |> UserName40.Create
     |> thenShouldBeError
 
 [<Fact>]
 let ``Too long string should not be a valid user name`` () =
     let tooLong = String.init 41 (fun _ -> "1")
-    tooLong |> UserName40.create
+    tooLong |> UserName40.Create
     |> thenShouldBeError
