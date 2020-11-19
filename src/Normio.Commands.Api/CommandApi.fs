@@ -24,13 +24,29 @@ module Compositions =
     let handleRemoveStudentRequest eventStore req =
         removeStudentCommander
         |> handleCommand eventStore req
+    
+    let handleLetStudentInRequest eventStore req =
+        letStudentInCommander
+        |> handleCommand eventStore req
 
+    let handleLetStudentOutRequest eventStore req =
+        letStudentOutCommander
+        |> handleCommand eventStore req
+ 
     let handleAddHostRequest eventStore req =
         addHostCommander
         |> handleCommand eventStore req
 
     let handleRemoveHostRequest eventStore req =
         removeHostCommander
+        |> handleCommand eventStore req
+    
+    let handleLetHostInRequest eventStore req =
+        letHostInCommander
+        |> handleCommand eventStore req
+
+    let handleLetHostOutRequest eventStore req =
+        letHostOutCommander
         |> handleCommand eventStore req
 
     let handleCreateSubmissionRequest eventStore req =

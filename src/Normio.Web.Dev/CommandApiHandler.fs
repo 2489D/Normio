@@ -88,10 +88,15 @@ let commandApi eventStore fileSaver =
             route "/startExam" >=> bindJson<StartExamRequest> (fun req -> commandApiHandler handleStartExamRequest eventStore req)
             route "/endExam" >=> bindJson<EndExamRequest> (fun req -> commandApiHandler handleEndExamRequest eventStore req)
             route "/closeExam" >=> bindJson<CloseExamRequest> (fun req -> commandApiHandler handleCloseExamRequest eventStore req)
+
             route "/addStudent" >=> bindJson<AddStudentRequest> (fun req -> commandApiHandler handleAddStudentRequest eventStore req)
             route "/removeStudent" >=> bindJson<RemoveStudentRequest> (fun req -> commandApiHandler handleRemoveStudentRequest eventStore req)
+            route "/letStudentIn" >=> bindJson<LetStudentInRequest> (fun req -> commandApiHandler handleLetStudentInRequest eventStore req)
+            route "/letStudentOut" >=> bindJson<LetStudentOutRequest> (fun req -> commandApiHandler handleLetStudentOutRequest eventStore req)
             route "/addHost" >=> bindJson<AddHostRequest> (fun req -> commandApiHandler handleAddHostRequest eventStore req)
             route "/removeHost" >=> bindJson<RemoveHostRequest> (fun req -> commandApiHandler handleRemoveHostRequest eventStore req)
+            route "/letHostIn" >=> bindJson<LetHostInRequest> (fun req -> commandApiHandler handleLetHostInRequest eventStore req)
+            route "/letHostOut" >=> bindJson<LetHostOutRequest> (fun req -> commandApiHandler handleLetHostOutRequest eventStore req)
             route "/changeTitle" >=> bindJson<ChangeTitleRequest> (fun req -> commandApiHandler handleChangeTitleRequest eventStore req)
             subRoute "/createSubmission" (
                 choose [
