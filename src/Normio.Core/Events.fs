@@ -25,3 +25,20 @@ module Events =
         | MessageSent of examId: Guid * message:Message
 
         | TitleChanged of examId:Guid * title:ExamTitle40
+        
+        with
+            member this.ExamId =
+                match this with
+                | ExamOpened (id, _, _, _) -> id
+                | ExamStarted id -> id
+                | ExamEnded id -> id
+                | ExamClosed id -> id
+                | StudentEntered (id, _) -> id
+                | StudentLeft (id, _) -> id
+                | HostEntered (id, _) -> id
+                | HostLeft (id, _) -> id
+                | SubmissionCreated (id, _) -> id
+                | QuestionCreated (id, _) -> id
+                | QuestionDeleted (id, _) -> id
+                | MessageSent (id, _) -> id
+                | TitleChanged (id, _) -> id
