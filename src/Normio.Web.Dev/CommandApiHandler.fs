@@ -81,6 +81,21 @@ let fileUploadHandler uploadContext (fileSaver: IFileSaver) =
                 return! next ctx
         }
 
+// TODO : this should be in persistence logic
+// if the question doesn't exist, command does not enter Commands.api
+let deleteQuestionUsingFileDeleterHandler (fileDeleter: IFileDeleter) (handler: DeleteQuestionRequest -> HttpHandler) (req: DeleteQuestionRequest) =
+    fun (next : HttpFunc) (ctx : HttpContext) ->
+        task {
+            let ids = (req.ExamId, req.QuestionId)
+            let! existQuestion = fileDeleter.DeleteQuestion ids
+            if existQuestion
+            then
+                return! handler req next ctx
+            else
+                let resStr = sprintf "Exam: %A has no Question: %A" req.ExamId req.QuestionId
+                return! RequestErrors.NOT_FOUND resStr next ctx
+        }
+
 let tryBindJson<'T> requestHandler =
     fun (next: HttpFunc) (ctx : HttpContext) ->
         task {
@@ -94,7 +109,7 @@ let tryBindJson<'T> requestHandler =
             
 
 // Naming Convention: Resource names follows RPC style (example: Slack API)
-let commandApi eventStore fileSaver =
+let commandApi eventStore fileSaver fileDeleter =
     POST >=> subRoute "/api" (
         choose [
             route "/openExam" >=> tryBindJson<OpenExamRequest> (fun req -> commandApiHandler handleOpenExamRequest eventStore req)
@@ -126,6 +141,7 @@ let commandApi eventStore fileSaver =
                 ]
             )
             route "/sendMessage" >=> tryBindJson<SendMessageRequest> (fun req -> commandApiHandler handleSendMessageRequest eventStore req)
-            route "/deleteQuestion" >=> tryBindJson<DeleteQuestionRequest> (fun req -> commandApiHandler handleDeleteQuestionRequest eventStore req)
+            // fits perfectly!!
+            route "/deleteQuestion" >=> tryBindJson<DeleteQuestionRequest> (deleteQuestionUsingFileDeleterHandler fileDeleter (fun req -> commandApiHandler handleDeleteQuestionRequest eventStore req))
         ]
     )

@@ -22,11 +22,13 @@ let webApp =
         let config = ctx.GetService<IConfiguration>()
         let eventStore = getEventStore config env
         let queries = getQuerySide config env
-        let fileSaver = inMemoryFileSaver """/Users/bonjune/2489D/Normio/src"""
+        let fileSaver = getFileSaver config env // should be called first
+        let fileGetter = getFileGetter config env
+        let fileDeleter = getFileDeleter config env
         task {
             return! choose [
-                commandApi eventStore fileSaver
-                queriesApi queries
+                commandApi eventStore fileSaver fileDeleter
+                queriesApi queries fileGetter
                 setStatusCode 404 >=> text "Not Found"
             ] next ctx
         }

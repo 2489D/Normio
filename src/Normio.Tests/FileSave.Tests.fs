@@ -71,6 +71,7 @@ let ``submission should be saved``() =
 [<Fact>]
 let ``length of question should equal with source``() =
     let streamLength (stream: FileStream) = stream.Length
+    let ifQuestionNotFound _ = failwith "this should not fail"
     let sourceStreamLength =
         use sourceStream = File.OpenRead sourceFilePath
         streamLength sourceStream
@@ -88,7 +89,7 @@ let ``length of question should equal with source``() =
 
     let fileGetter = inMemoryFileGetter root
 
-    fileGetter.GetQuestion questionCtx extension streamLength
+    fileGetter.GetQuestion questionCtx streamLength ifQuestionNotFound
     |> Async.RunSynchronously
     |> should equal sourceStreamLength
 
@@ -97,6 +98,7 @@ let ``length of question should equal with source``() =
 [<Fact>]
 let ``length of submission should equal with source``() =
     let streamLength (stream: FileStream) = stream.Length
+    let ifSubmissionNotFound _ = failwith "this should not fail"
     let sourceStreamLength =
         use sourceStream = File.OpenRead sourceFilePath
         streamLength sourceStream
@@ -108,15 +110,94 @@ let ``length of submission should equal with source``() =
     let submissionId = Guid.NewGuid()
 
     use submissionStream = File.OpenRead sourceFilePath
-    
+
     let submissionCtx = (examId, studentId, submissionId)
     fileSaver.SaveSubmission submissionCtx extension submissionStream.CopyTo
     |> Async.RunSynchronously
 
     let fileGetter = inMemoryFileGetter root
 
-    fileGetter.GetSubmission submissionCtx extension streamLength
+    fileGetter.GetSubmission submissionCtx streamLength ifSubmissionNotFound
     |> Async.RunSynchronously
     |> should equal sourceStreamLength
+
+    if autoClean then Directory.Delete(root, true)
+
+[<Fact>]
+let ``exception handler of getQuestion should be executed``() =
+    let callback _ = failwith "this should not fail"
+    let ifQuestionNotFound ids = ids
+
+    // needed to create root
+    let _ = inMemoryFileSaver root
+
+    let examId = Guid.NewGuid()
+    let questionId = Guid.NewGuid()
+    let questionCtx = (examId, questionId)
+
+    let fileGetter = inMemoryFileGetter root
+
+    fileGetter.GetQuestion questionCtx callback ifQuestionNotFound
+    |> Async.RunSynchronously
+    |> should equal questionCtx
+
+    if autoClean then Directory.Delete(root, true)
+
+[<Fact>]
+let ``exception handler of getSubmission should be executed``() =
+    let callback _ = failwith "this should not fail"
+    let ifSubmissionNotFound ids = ids
+
+    // needed to create root
+    let _ = inMemoryFileSaver root
+
+    let examId = Guid.NewGuid()
+    let studentId = Guid.NewGuid()
+    let submissionId = Guid.NewGuid()
+    let submissionCtx = (examId, studentId, submissionId)
+
+    let fileGetter = inMemoryFileGetter root
+
+    fileGetter.GetSubmission submissionCtx callback ifSubmissionNotFound
+    |> Async.RunSynchronously
+    |> should equal submissionCtx
+
+    if autoClean then Directory.Delete(root, true)
+
+[<Fact>]
+let ``question should be deleted``() =
+    let examId = Guid.NewGuid()
+    let questionId = Guid.NewGuid()
+    let questionCtx = (examId, questionId)
+
+    let fileSaver = inMemoryFileSaver root
+
+    use questionStream = File.OpenRead sourceFilePath
+
+    fileSaver.SaveQuestion questionCtx extension questionStream.CopyTo
+    |> Async.RunSynchronously
+
+    let fileDeleter = inMemoryFileDeleter root
+
+    fileDeleter.DeleteQuestion questionCtx
+    |> Async.RunSynchronously
+    |> should equal true
+
+    if autoClean then Directory.Delete(root, true)
+
+[<Fact>]
+let ``delete question should return false if the file does not exist``() =
+    let examId = Guid.NewGuid()
+    let questionId = Guid.NewGuid()
+    let questionCtx = (examId, questionId)
+
+    // needed to create root
+    let _ = inMemoryFileSaver root
+
+    let fileDeleter = inMemoryFileDeleter root
+
+    fileDeleter.DeleteQuestion questionCtx
+    |> Async.RunSynchronously
+    |> should equal false
 
     if autoClean then Directory.Delete(root, true)
