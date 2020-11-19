@@ -18,8 +18,8 @@ type IFileSaver =
     3. return Task<byte[]> (return value from File.ReadAllBytesAsync)
 *)
 type IFileGetter =
-    abstract GetQuestion: (Guid * Guid) -> extension: string -> callback: (FileStream -> 'a) -> Async<'a>
-    abstract GetSubmission: (Guid * Guid * Guid) -> extension: string -> callback: (FileStream -> 'a) -> Async<'a>
+    abstract GetQuestion: (Guid * Guid) -> callback: (FileStream -> 'a) -> ifQuestionNotFound: (Guid * Guid -> 'a) -> Async<'a>
+    abstract GetSubmission: (Guid * Guid * Guid) -> callback: (FileStream -> 'a) -> ifSubmissionNotFound: (Guid * Guid * Guid -> 'a) -> Async<'a>
     // both two can throw exception
 
 
@@ -65,14 +65,24 @@ let private saveSubmission root ((examId, studentId, submissionId): Guid * Guid 
     return! saveFile studentDirectory (submissionId.ToString() + extension) callback
 }
 
-let private getQuestion root ((examId, questionId): Guid * Guid) extension callback = async {
-    let questionFilePath = root +. examId +. "Questions" +. questionId + extension
-    return! getFile questionFilePath callback
+let private getQuestion root ((examId, questionId): Guid * Guid) callback ifNotFound = async {
+    let questionDirectory = root +. examId +. "Questions"
+    let questionFileNameArray = Directory.GetDirectories(questionDirectory, questionId.ToString())
+    if questionFileNameArray.Length >= 2
+    then failwithf "duplicated question at %s" (questionDirectory +. questionId) // this must not happen
+    match questionFileNameArray with
+        | [|questionFileName|] -> return! getFile (questionDirectory +. questionFileName) callback
+        | _ -> return ifNotFound (examId, questionId)
 }
 
-let private getSubmission root ((examId, studentId, submissionId): Guid * Guid * Guid) extension callback = async {
-    let submissionFilePath = root +. examId +. studentId +. submissionId + extension
-    return! getFile submissionFilePath callback
+let private getSubmission root ((examId, studentId, submissionId): Guid * Guid * Guid) callback ifNotFound = async {
+    let submissionDirectory = root +. examId +. studentId
+    let submissionFileNameArray = Directory.GetDirectories(submissionDirectory, submissionId.ToString())
+    if submissionFileNameArray.Length >= 2
+    then failwithf "duplicated submission at %s" (submissionDirectory +. submissionId) // this must not happen
+    match submissionFileNameArray with
+        | [|submissionFileName|] -> return! getFile (submissionDirectory +. submissionFileName) callback
+        | _ -> return ifNotFound (examId, studentId, submissionId)
 }
 
 
@@ -81,13 +91,13 @@ let inMemoryFileSaver root =
     if Directory.Exists root |> not
     then Directory.CreateDirectory root |> ignore
     { new IFileSaver with
-        member _.SaveQuestion ctx extension callback = saveQuestion root ctx extension callback
-        member _.SaveSubmission ctx extension callback = saveSubmission root ctx extension callback }
+        member _.SaveQuestion ids extension callback = saveQuestion root ids extension callback
+        member _.SaveSubmission ids extension callback = saveSubmission root ids extension callback }
 
 // can throw exception
 let inMemoryFileGetter root =
     if Directory.Exists root |> not
-    then failwith "Invalid root"
+    then failwithf "Invalid root: %s" root
     { new IFileGetter with
-        member _.GetQuestion ctx extension callback = getQuestion root ctx extension callback
-        member _.GetSubmission ctx extension callback = getSubmission root ctx extension callback }
+        member _.GetQuestion ids callback ifQuestionNotFound = getQuestion root ids callback ifQuestionNotFound
+        member _.GetSubmission ids callback ifSubmissionNotFound = getSubmission root ids callback ifSubmissionNotFound }
