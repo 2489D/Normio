@@ -17,7 +17,7 @@ type SystemTextJsonSerializer(options: JsonSerializerOptions) =
 let fsSerializationOption =
     let option = JsonSerializerOptions()
     let unionEncoding =
-        JsonUnionEncoding.ExternalTag
+        JsonUnionEncoding.AdjacentTag
         ||| JsonUnionEncoding.NamedFields
         ||| JsonUnionEncoding.UnwrapOption
         ||| JsonUnionEncoding.UnwrapSingleCaseUnions

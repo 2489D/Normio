@@ -11,7 +11,7 @@ open Normio.Persistence.Queries
 open Normio.Persistence.ReadModels
 
 // FIXME: let entry point configure this
-let timerServiceUri = "https://localhost:8083"
+let timerServiceUri = "http://localhost:8080"
 
 type InMemoryTimersReadModel internal (timerUri: string) =
     let mutable timers: TimerReadModel list = List.empty
@@ -29,7 +29,7 @@ type InMemoryTimersReadModel internal (timerUri: string) =
                         POST(timerUri + "/api/create")
                         CacheControl "no-cache"
                         body
-                        json (sprintf """{ "command" : %s, "time" : %s }""" (string command) (string time))
+                        json (sprintf """{ "command" : "%s", "time" : "%s" }""" (string command) (string time))
                     }
                     |> ignore
                 with _ -> () // TODO -> timer creation failed
