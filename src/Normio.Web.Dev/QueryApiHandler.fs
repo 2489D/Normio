@@ -95,6 +95,6 @@ let getSubmission (fileGetter: IFileGetter) =
 let queriesApi queries fileGetter =
     GET >=> choose [
         route "/exam" >=> getExamByExamId queries.Exam.GetExamByExamId
-        route "/Question" >=> getQuestion fileGetter
-        route "/Submission" >=> getSubmission fileGetter
+        route "/question" >=> getQuestion fileGetter
+        route "/submission" >=> getSubmission fileGetter
     ]
