@@ -8,6 +8,7 @@ open Suave.Json
 open Suave.Filters
 open Suave.Operators
 open Suave.Successful
+open Suave.RequestErrors
 
 open Normio.Core.Commands
 
@@ -29,16 +30,16 @@ let postCommandHandler backendUrl command =
         | _ -> () // TODO
     }
 
-let rawCommandParser (rawCommand: string) =
+let tryParseRawCommand (rawCommand: string) =
     let stringArray = rawCommand.Split(' ')
     match stringArray.[0] with
     | "StartExam" ->
-        if stringArray.Length <> 2 then failwith "Command argument error"
-        StartExam (Guid.Parse stringArray.[1])
+        if stringArray.Length <> 2 then None
+        else StartExam (Guid.Parse stringArray.[1]) |> Some
     | "EndExam" ->
-        if stringArray.Length <> 2 then failwith "Command argument error"
-        EndExam (Guid.Parse stringArray.[1])
-    | _ -> failwith "TODO" // TODO
+        if stringArray.Length <> 2 then None
+        else EndExam (Guid.Parse stringArray.[1]) |> Some
+    | _ -> None // TODO
 
 [<DataContract>]
 type CreateRequest =
@@ -53,8 +54,11 @@ let handleCreateRequest (timer: ITimer): WebPart =
     fun (ctx : HttpContext) ->
         async {
             let req = ctx.request.rawForm |> fromJson<CreateRequest>
-            do! timer.CreateTimer (req.RawCommand |> rawCommandParser) (req.RawTime |> DateTime.Parse)
-            return! CREATED (sprintf "command %s at %A created" req.RawCommand req.RawTime) ctx
+            match req.RawCommand |> tryParseRawCommand with
+            | Some command ->
+                do! timer.CreateTimer command (req.RawTime |> DateTime.Parse)
+                return! CREATED (sprintf "command %s at %A created" req.RawCommand req.RawTime) ctx
+            | None -> return! NOT_FOUND (sprintf "invalid argument: %A" req) ctx
         }
 
 [<DataContract>]
@@ -68,9 +72,11 @@ let handleDeleteRequest (timer: ITimer): WebPart =
     fun (ctx : HttpContext) ->
         async {
             let req = ctx.request.rawForm |> fromJson<DeleteRequest>
-            printf "%A" req
-            do! timer.DeleteTimer (req.RawCommand |> rawCommandParser)
-            return! OK (sprintf "command %s deleted" req.RawCommand) ctx
+            match req.RawCommand |> tryParseRawCommand with
+            | Some command ->
+                do! timer.DeleteTimer command
+                return! OK (sprintf "command %s deleted" req.RawCommand) ctx
+            | None -> return! NOT_FOUND (sprintf "invalid argument: %A" req) ctx
         }
 
 let app timer =
