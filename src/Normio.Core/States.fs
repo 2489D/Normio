@@ -46,24 +46,22 @@ let apply state event =
         { exam with
               Students = exam.Students |> Map.remove studentId }
         |> ExamIsWaiting
-    | ExamIsWaiting exam, StudentEntered (_, studentId) ->
-        let student = exam.Students |> Map.tryFind studentId
-        match student with
-        | Some s ->
+    | ExamIsWaiting exam, StudentEntered (_, student) ->
+        match exam.Students |> Map.tryFind student.Id with
+        | Some student ->
             { exam with
                   Students =
                       exam.Students
-                      |> Map.add studentId (StudentInExam.Connected s.Value) }
+                      |> Map.add student.Id (StudentInExam.Connected student.Value) }
             |> ExamIsWaiting
         | _ -> ExamIsWaiting exam
     | ExamIsWaiting exam, StudentLeft (_, studentId) ->
-        let student = exam.Students |> Map.tryFind studentId
-        match student with
-        | Some s ->
+        match exam.Students |> Map.tryFind studentId with
+        | Some student ->
             { exam with
                   Students =
                       exam.Students
-                      |> Map.add studentId (StudentInExam.Disconnected s.Value) }
+                      |> Map.add studentId (StudentInExam.Disconnected student.Value) }
             |> ExamIsWaiting
         | _ -> ExamIsWaiting exam
     | ExamIsWaiting exam, HostAdded (_, host) ->
@@ -76,14 +74,13 @@ let apply state event =
         { exam with
               Hosts = exam.Hosts |> Map.remove hostId }
         |> ExamIsWaiting
-    | ExamIsWaiting exam, HostEntered (_, hostId) ->
-        let host = exam.Hosts |> Map.tryFind hostId
-        match host with
-        | Some h ->
+    | ExamIsWaiting exam, HostEntered (_, host) ->
+        match exam.Hosts |> Map.tryFind host.Id with
+        | Some host ->
             { exam with
                   Hosts =
                       exam.Hosts
-                      |> Map.add hostId (HostInExam.Connected h.Value) }
+                      |> Map.add host.Id (HostInExam.Connected host.Value) }
             |> ExamIsWaiting
         | _ -> ExamIsWaiting exam
     | ExamIsWaiting exam, HostLeft (_, hostId) ->
@@ -113,14 +110,14 @@ let apply state event =
     | ExamIsWaiting exam, TitleChanged (_, newTitle) -> { exam with Title = newTitle } |> ExamIsWaiting
     | ExamIsWaiting exam, ExamStarted _ -> ExamIsRunning exam
 
-    | ExamIsRunning exam, HostEntered (_, hostId) ->
-        let host = exam.Hosts |> Map.tryFind hostId
+    | ExamIsRunning exam, HostEntered (_, host) ->
+        let host = exam.Hosts |> Map.tryFind host.Id
         match host with
-        | Some h ->
+        | Some host ->
             { exam with
                   Hosts =
                       exam.Hosts
-                      |> Map.add hostId (HostInExam.Connected h.Value) }
+                      |> Map.add host.Id (HostInExam.Connected host.Value) }
             |> ExamIsRunning
         | _ -> ExamIsRunning exam
     | ExamIsRunning exam, HostLeft (_, hostId) ->
@@ -144,21 +141,19 @@ let apply state event =
     | ExamIsRunning exam, ExamEnded _ -> ExamIsFinished exam
 
     | ExamIsFinished exam, StudentLeft (_, studentId) ->
-        let student = exam.Students |> Map.tryFind studentId
-        match student with
-        | Some s -> 
+        match exam.Students |> Map.tryFind studentId with
+        | Some student -> 
             { exam with
-                  Students = exam.Students |> Map.add studentId (StudentInExam.Disconnected s.Value) }
+                  Students = exam.Students |> Map.add studentId (StudentInExam.Disconnected student.Value) }
         | _ -> exam
         |> ExamIsFinished
-    | ExamIsFinished exam, HostEntered (_, hostId) ->
-        let host = exam.Hosts |> Map.tryFind hostId
-        match host with
-        | Some h ->
+    | ExamIsFinished exam, HostEntered (_, host) ->
+        match exam.Hosts |> Map.tryFind host.Id with
+        | Some host ->
             { exam with
                   Hosts =
                       exam.Hosts
-                      |> Map.add hostId (HostInExam.Connected h.Value) }
+                      |> Map.add host.Id (HostInExam.Connected host.Value) }
         | _ -> exam
         |> ExamIsFinished
     | ExamIsFinished exam, HostLeft (_, hostId) ->

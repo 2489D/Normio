@@ -11,12 +11,12 @@ type Command =
 
     | AddStudent of examId:Guid * student:Student
     | RemoveStudent of examId:Guid * studentId:Guid
-    | LetStudentIn of examId:Guid * studentId:Guid
+    | LetStudentIn of examId:Guid * student:Student
     | LetStudentOut of examId:Guid * studentId:Guid
 
     | AddHost of examId:Guid * host:Host
     | RemoveHost of examId:Guid * hostId:Guid
-    | LetHostIn of examId:Guid * hostId:Guid
+    | LetHostIn of examId:Guid * host:Host
     | LetHostOut of examId:Guid * hostId:Guid
 
     | CreateSubmission of examId:Guid * submission:Submission

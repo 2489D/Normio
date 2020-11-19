@@ -15,12 +15,12 @@ module Events =
 
         | StudentAdded of examId:Guid * student:Student
         | StudentRemoved of examId:Guid * studentId:Guid
-        | StudentEntered of examId:Guid * studentId:Guid
+        | StudentEntered of examId:Guid * student:Student
         | StudentLeft of examId:Guid * studentId:Guid
         
         | HostAdded of examId:Guid * host:Host
         | HostRemoved of examId:Guid * hostId:Guid
-        | HostEntered of examId:Guid * hostId:Guid
+        | HostEntered of examId:Guid * host:Host
         | HostLeft of examId:Guid * hostId:Guid
 
         | SubmissionCreated of examId:Guid * submission:Submission

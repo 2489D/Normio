@@ -48,15 +48,15 @@ let handleRemoveStudent studentId = function
     | ExamIsClose _ -> ExamNotOpened |> Error
     | ExamIsRunning _ -> ExamAlreadyStarted |> Error
 
-let handleLetStudentIn studentId = function
+let handleLetStudentIn (student: Student) = function
     | ExamIsWaiting exam ->
-        match exam.Students |> Map.tryFind studentId with
-        | Some student ->
-            match student with
-            | StudentInExam.Connected student ->
+        match exam.Students |> Map.tryFind student.Id with
+        | Some student' ->
+            match student' with
+            | StudentInExam.Connected _ ->
                 StudentAlreadyEntered |> Error
-            | StudentInExam.Disconnected student ->
-                [StudentEntered (exam.Id, studentId)] |> Ok
+            | StudentInExam.Disconnected _ ->
+                [StudentEntered (exam.Id, student)] |> Ok
         | _ -> CannotFindStudent |> Error
     | ExamIsRunning _ -> ExamAlreadyStarted |> Error
     | ExamIsFinished _ -> ExamAlreadyEnded |> Error
@@ -69,9 +69,9 @@ let handleLetStudentOut studentId = function
         match exam.Students |> Map.tryFind studentId with
         | Some student ->
             match student with
-            | StudentInExam.Connected student ->
+            | StudentInExam.Connected _ ->
                 [StudentLeft (exam.Id, studentId)] |> Ok
-            | StudentInExam.Disconnected student ->
+            | StudentInExam.Disconnected _ ->
                 StudentAlreadyLeft |> Error
         | _ -> CannotFindStudent |> Error
     | ExamIsClose _ -> ExamNotOpened |> Error
@@ -92,17 +92,17 @@ let handleRemoveHost hostId = function
         else CannotFindHost |> Error
     | _ -> ExamNotOpened |> Error
 
-let handleLetHostIn hostId = function
+let handleLetHostIn (host: Host) = function
     | ExamIsWaiting exam
     | ExamIsRunning exam
     | ExamIsFinished exam ->
-        match exam.Hosts |> Map.tryFind hostId with
-        | Some host ->
-            match host with
+        match exam.Hosts |> Map.tryFind host.Id with
+        | Some host' ->
+            match host' with
             | HostInExam.Connected _ ->
                 HostAlreadyEntered |> Error
             | HostInExam.Disconnected _ ->
-                [HostEntered (exam.Id, hostId)] |> Ok
+                [HostEntered (exam.Id, host)] |> Ok
         | _ -> CannotFindHost |> Error
     | ExamIsClose _ -> ExamNotOpened |> Error
 
@@ -203,12 +203,12 @@ let execute state = function
  
     | AddStudent (_, student) -> handleAddStudent student state
     | RemoveStudent (_, studentId) -> handleRemoveStudent studentId state
-    | LetStudentIn (_, studentId) -> handleLetStudentIn studentId state
+    | LetStudentIn (_, student) -> handleLetStudentIn student state
     | LetStudentOut (_, studentId) -> handleLetStudentOut studentId state
 
     | AddHost (_, host) -> handleAddHost host state
     | RemoveHost (_, hostId) -> handleRemoveHost hostId state
-    | LetHostIn (_, hostId) -> handleLetHostIn hostId state
+    | LetHostIn (_, host) -> handleLetHostIn host state
     | LetHostOut (_, hostId) -> handleLetHostOut hostId state
 
     | CreateSubmission (_, submission) -> handleCreateSubmission submission state
