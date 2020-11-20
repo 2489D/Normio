@@ -1,6 +1,15 @@
 import {config} from "../config/development";
 import axios from 'axios';
 
+export declare namespace Normio {
+    enum MessageKind {
+        FromStudentToHost,
+        FromHostToStudents,
+        FromHostToHosts,
+        Notice,
+    }
+}
+
 export default class NormioApi {
     static backendUrl = config.backendUrl
 
@@ -120,7 +129,7 @@ export default class NormioApi {
         })
     }
 
-    static async sendMessage(examId: string, messageKind: number, senderId: string, receiverId: string[], content: string) {
+    static async sendMessage(examId: string, messageKind: Normio.MessageKind, senderId: string, receiverId: string[], content: string) {
         return await axios.post(this.backendUrl + '/api/createSubmission', {
             examId,
             messageKind,

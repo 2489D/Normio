@@ -121,10 +121,12 @@ let commandApi eventStore fileSaver fileDeleter =
             route "/removeStudent" >=> tryBindJson<RemoveStudentRequest> (fun req -> commandApiHandler handleRemoveStudentRequest eventStore req)
             route "/letStudentIn" >=> tryBindJson<LetStudentInRequest> (fun req -> commandApiHandler handleLetStudentInRequest eventStore req)
             route "/letStudentOut" >=> tryBindJson<LetStudentOutRequest> (fun req -> commandApiHandler handleLetStudentOutRequest eventStore req)
+
             route "/addHost" >=> tryBindJson<AddHostRequest> (fun req -> commandApiHandler handleAddHostRequest eventStore req)
             route "/removeHost" >=> tryBindJson<RemoveHostRequest> (fun req -> commandApiHandler handleRemoveHostRequest eventStore req)
             route "/letHostIn" >=> tryBindJson<LetHostInRequest> (fun req -> commandApiHandler handleLetHostInRequest eventStore req)
             route "/letHostOut" >=> tryBindJson<LetHostOutRequest> (fun req -> commandApiHandler handleLetHostOutRequest eventStore req)
+
             route "/changeTitle" >=> tryBindJson<ChangeTitleRequest> (fun req -> commandApiHandler handleChangeTitleRequest eventStore req)
             subRoute "/createSubmission" (
                 choose [

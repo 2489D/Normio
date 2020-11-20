@@ -8,16 +8,25 @@ type CreateExamCardProps = {
 }
 
 const CreateExamCard: React.FC<CreateExamCardProps> = ({ hostId, handleSubmitCreateExam }) => {
+    const [examId, setExamId] = useState("")
     const [created, setCreated] = useState(false)
     const { register, handleSubmit } = useForm()
+    const [error, setError] = useState<number | null>(null)
  
     // FIXME: error handling
     const onSubmit = useCallback(async ({ title, startDateTime, durationMins}) => {
-        const { data } = await NormioApi.openExam(title, startDateTime, Number(durationMins))
-        const examId = data.ExamIsWaiting.id
-        await NormioApi.addHost(examId, "John Mayer")
-        setCreated(true)
-        handleSubmitCreateExam({ examId, title })
+        try {
+            const { data } = await NormioApi.openExam(title, startDateTime, Number(durationMins))
+            const examId = data[0].Fields.examId
+            setExamId(examId)
+            await NormioApi.addHost(examId, "John Mayer")
+            setCreated(true)
+            handleSubmitCreateExam({ examId, title })
+        } catch (err) {
+            if (err.response?.status) {
+                setError(err.response.status)
+            }
+        }
     }, [setCreated])
 
     return (
@@ -52,6 +61,7 @@ const CreateExamCard: React.FC<CreateExamCardProps> = ({ hostId, handleSubmitCre
                             ref={register}
                             className={"form-control"}
                             placeholder={"시험 시작 시간"}
+                            defaultValue={"2020-11-20T15:10+09:00"}
                             autoComplete={"off"}
                         />
                     </div>
@@ -62,11 +72,17 @@ const CreateExamCard: React.FC<CreateExamCardProps> = ({ hostId, handleSubmitCre
                             type={"number"}
                             className={"form-control"}
                             placeholder={"시험 시간(분)"}
+                            defaultValue={5}
                             autoComplete={"off"}
                         />
                     </div>
                     <input type="submit" className={`btn btn-${ created ? "success"  : "primary"} btn-block`} value={`${created ? "시험이 생성 되었습니다!"  : "시험을 생성합니다"}`} />
                 </form>
+                { examId !== "" ?
+                    <div className={"text-center my-1"}>
+                        <p>시험 ID 입니다. 호스트와 학생들에게 알려주세요.</p>
+                        <div className={"font-weight-light"}> {examId} </div>
+                    </div> : null }
             </div>
         </div>
     )

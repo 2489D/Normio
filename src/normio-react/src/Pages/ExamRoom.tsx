@@ -6,10 +6,11 @@ import {HubConnectionBuilder} from "@microsoft/signalr";
 import {config} from "../config/development";
 import NormioApi from "../API";
 import Questions from "../Components/Question";
-import HostLive from "../Components/HostLive";
+import HostCard from "../Components/HostCard";
 import ExamGreeting from "../Components/ExamGreeting";
 import {formatTime} from "../Utils";
 import SelfVideo from "../Components/WebRTC/SelfVIdeo";
+import PaperSubmission from "../Components/PaperSubmission";
 
 const ExamRoom: React.FC = () => {
     const { exam, updateExam } = useContext(ExamContext);
@@ -118,7 +119,7 @@ const ExamRoom: React.FC = () => {
                             { exam.hosts.length > 0 ? exam.hosts.map(host => {
                                 return (
                                     <div className={"col-6 my-1"}>
-                                        <HostLive host={host} />
+                                        <HostCard host={host} />
                                     </div>
                                 )
                             }) : <p>아직 호스트가 없어요!</p>}
@@ -129,17 +130,7 @@ const ExamRoom: React.FC = () => {
                         <Questions questions={exam.questions} />
                         <h2>답안 제출</h2>
                         <div>
-                            <form className={"form-group"} onSubmit={e => alert(JSON.stringify(e))}>
-                                <div className="input-group">
-                                    <div className="custom-file">
-                                        <input type="file" className="custom-file-input" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04" />
-                                        <label className="custom-file-label" htmlFor="inputGroupFile04">답안 선택</label>
-                                    </div>
-                                    <div className="input-group-append">
-                                        <button className="btn btn-outline-secondary" type="button" id="inputGroupFileAddon04">제출</button>
-                                    </div>
-                                </div>
-                            </form>
+                            <PaperSubmission />
                         </div>
                     </div>
                 </div>
