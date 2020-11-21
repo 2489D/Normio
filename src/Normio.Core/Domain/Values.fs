@@ -50,6 +50,16 @@ module Values =
                         else System.Net.Mail.MailAddress(email) |> Ok
                     with
                     | :? FormatException as exp -> WrongFormat "The string is not in a right email format" |> Error
+
+        type UserPhoneNumber = private UserPhoneNumber of string
+        
+            with
+                member this.Value = this |> fun (UserPhoneNumber email) -> email
+                
+                // TODO
+                static member Create number =
+                    UserPhoneNumber number |> Ok
+                    
                 
 
         type MessageContent = private MessageContent of string
