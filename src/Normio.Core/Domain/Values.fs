@@ -1,11 +1,13 @@
 namespace Normio.Core
 
+open System
+open System.Net.Mail
 open System.Text.Json.Serialization
 
 [<AutoOpen>]
 module Values =
     [<AutoOpen>]
-    module String =
+    module Strings =
         type ExamTitle40 = private ExamTitle40 of string
             with
                 member this.Value = this |> fun (ExamTitle40 title) -> title
@@ -35,6 +37,20 @@ module Values =
                         |> Error
                     else
                         UserName40 name |> Ok
+
+        /// Reference: https://docs.microsoft.com/ko-kr/dotnet/api/system.net.mail.mailaddress.-ctor?view=net-5.0
+        type UserEmail = private UserEmail of MailAddress
+
+            with
+                member this.Value = this |> fun (UserEmail email) -> email
+                static member Create email =
+                    try
+                        if isNull email || email |> String.length = 0
+                        then EmptyString "Email should not be empty" |> Error
+                        else System.Net.Mail.MailAddress(email) |> Ok
+                    with
+                    | :? FormatException as exp -> WrongFormat "The string is not in a right email format" |> Error
+                
 
         type MessageContent = private MessageContent of string
 
