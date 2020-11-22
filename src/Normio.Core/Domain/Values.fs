@@ -1,4 +1,4 @@
-namespace Normio.Core
+namespace Normio.Core.Domain
 
 open System
 open System.Net.Mail
@@ -56,7 +56,9 @@ module Values =
             with
                 member this.Value = this |> fun (UserPhoneNumber email) -> email
                 
-                // TODO
+                // TODO: how to validate a phone number(Maybe regex?)
+                // Domain Knowledge problem:
+                // 1. Korea phone number is different from phone number of other countries 
                 static member Create number =
                     UserPhoneNumber number |> Ok
                     

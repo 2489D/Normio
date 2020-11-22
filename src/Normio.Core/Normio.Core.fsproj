@@ -6,6 +6,8 @@
   <ItemGroup>
     <Compile Include="Domain\Errors.fs" />
     <Compile Include="Domain\Values.fs" />
+    <Compile Include="Domain\Users.fs" />
+    <Compile Include="Domain\Exams.fs" />
     <Compile Include="Domain\Entities.fs" />
     <Compile Include="Events.fs" />
     <Compile Include="States.fs" />

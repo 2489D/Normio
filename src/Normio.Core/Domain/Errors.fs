@@ -1,4 +1,4 @@
-namespace Normio.Core
+namespace Normio.Core.Domain
 
 [<AutoOpen>]
 module Errors =

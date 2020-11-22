@@ -1,4 +1,4 @@
-namespace Normio.Core
+namespace Normio.Core.Domain
 
 open System
 open System.Text.Json.Serialization
@@ -12,12 +12,14 @@ module Entities =
           Id: Guid
           [<JsonPropertyName("name")>]
           Name: UserName40 }
-        override this.Equals(other) =
-            match other with
-            | :? Student as s -> this.Id = s.Id
-            | _ -> false
 
-        override this.GetHashCode() = hash this.Id
+        with
+            override this.Equals(other) =
+                match other with
+                | :? Student as s -> this.Id = s.Id
+                | _ -> false
+
+            override this.GetHashCode() = hash this.Id
 
 
     [<CustomEquality; NoComparison>]
@@ -25,22 +27,24 @@ module Entities =
     type StudentInExam =
         | Connected of Student
         | Disconnected of Student
-        member this.Id =
-            match this with
-            | Connected student -> student.Id
-            | Disconnected student -> student.Id
 
-        member this.Value =
-            match this with
-            | Connected student -> student
-            | Disconnected student -> student
+        with
+            member this.Id =
+                match this with
+                | Connected student -> student.Id
+                | Disconnected student -> student.Id
 
-        override this.Equals(other) =
-            match other with
-            | :? StudentInExam as s -> this.Id = s.Id
-            | _ -> false
+            member this.Value =
+                match this with
+                | Connected student -> student
+                | Disconnected student -> student
 
-        override this.GetHashCode() = hash this.Id
+            override this.Equals(other) =
+                match other with
+                | :? StudentInExam as s -> this.Id = s.Id
+                | _ -> false
+
+            override this.GetHashCode() = hash this.Id
 
     [<CustomEquality; NoComparison>]
     [<JsonFSharpConverter>]
@@ -170,7 +174,7 @@ module Entities =
           Description: string option }
         override this.Equals(other) =
             match other with
-            | :? Question as sbms -> this.Id = sbms.Id
+            | :? Question as question -> this.Id = question.Id
             | _ -> false
 
         override this.GetHashCode() = hash this.Id
